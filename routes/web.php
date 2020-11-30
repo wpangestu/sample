@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Members; //Load class Members 
+use App\Models\User;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,12 +15,15 @@ use App\Http\Livewire\Members; //Load class Members
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
+});
+Route::get('tes', function () {
+    auth()->user()->assignRole('user');
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/dashboard', function() {
-        return view('dashboard');
+        return view('dashboard/index');
     })->name('dashboard');
 
     Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
