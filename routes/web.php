@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Members; //Load class Members 
 use App\Models\User;
+use App\Http\Controllers\CategoryServiceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,4 +28,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     })->name('dashboard');
 
     Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
+
+    Route::get('/category_service',[CategoryServiceController::class, 'index']);
+
 });
