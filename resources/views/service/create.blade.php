@@ -68,7 +68,7 @@
                             <div class="form-group row">
                                 <label for="inputPrice" class="col-sm-2 col-form-label">Harga</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="icon" class="form-control" id="inputPrice" placeholder="">
+                                    <input type="text" name="price" class="form-control" id="inputPrice" placeholder="">
                                 </div>
                             </div>
                             <div class="form-group row">

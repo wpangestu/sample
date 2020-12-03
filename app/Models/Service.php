@@ -9,9 +9,9 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','service_category_id','image','description'];
+    protected $fillable = ['name','category_service_id','image','description','price'];
 
     public function service_category(){
-        return $this->belongsTo('App\Models\CategoryService','service_category_id','id');
+        return $this->belongsTo('App\Models\CategoryService','category_service_id','id');
     }
 }

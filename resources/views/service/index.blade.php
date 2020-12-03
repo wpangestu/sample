@@ -96,7 +96,7 @@
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'name', name: 'name'},
-                {data: 'service_category', name: 'service_category'},
+                {data: 'service_category_id', name: 'service_category_id'},
                 {data: 'price', name: 'price'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]

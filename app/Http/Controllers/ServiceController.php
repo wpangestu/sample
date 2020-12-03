@@ -21,11 +21,14 @@ class ServiceController extends Controller
             $data = Service::latest()->get();
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('service_category_id',function($row){
+                        return $row->service_category->name??'-';
+                    })
                     ->addColumn('action', function($row){
    
                             $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
    
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('services.delete',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('services.destroy',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
                     })
@@ -44,7 +47,7 @@ class ServiceController extends Controller
     public function create()
     {
         //
-        $categoryServices = CategoryService::all();
+        $categoryServices = CategoryService::where('status',1)->get();
         return view('service.create',compact('categoryServices'));
     }
 
@@ -57,7 +60,21 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         //
-        
+        $request->validate([
+            'name' => 'required',
+            'category_service_id' => 'required|integer',
+            'price' => 'required|integer'
+        ]);
+
+        $insert = Service::create($request->all());
+
+        if($insert){
+            return redirect()->route('services.index')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('services.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
     }
 
     /**
