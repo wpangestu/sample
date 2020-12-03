@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\Members; //Load class Members 
 use App\Models\User;
 use App\Http\Controllers\CategoryServiceController;
+use App\Http\Controllers\ServiceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,9 +19,6 @@ use App\Http\Controllers\CategoryServiceController;
 Route::get('/', function () {
     return redirect('login');
 });
-Route::get('tes', function () {
-    auth()->user()->assignRole('user');
-});
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/dashboard', function() {
@@ -30,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
     
     Route::resource('service_category', CategoryServiceController::class);
+    Route::resource('services', ServiceController::class);
     Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax'); //Tambahkan routing ini
 
 });
