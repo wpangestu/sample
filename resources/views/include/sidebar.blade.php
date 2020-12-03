@@ -48,7 +48,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/forms/advanced.html" class="nav-link">
+                <a href="{{ route('services.index') }}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>List Jasa</p>
                 </a>

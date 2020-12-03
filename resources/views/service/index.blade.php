@@ -33,7 +33,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('service_category.create')}}" class="btn btn-primary mb-3">Tambah</a>
+                <a href="{{route('services.create')}}" class="btn btn-primary mb-3">Tambah</a>
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
@@ -112,7 +112,7 @@
                     url: url,
                     dataType: 'json',
                     success: function(res){
-                        var oTable = $('#table_category_service').dataTable();
+                        var oTable = $('#table-datatables').dataTable();
                         oTable.fnDraw(false);
                     }
                 });

@@ -28,7 +28,7 @@ class ServiceController extends Controller
    
                             $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
    
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('services.destroy',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
                     })
@@ -97,6 +97,9 @@ class ServiceController extends Controller
     public function edit($id)
     {
         //
+        $categoryServices = CategoryService::where('status',1)->get();
+        $service = Service::find($id);
+        return view('service.edit',compact('categoryServices','service'));
     }
 
     /**
@@ -109,6 +112,21 @@ class ServiceController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $request->validate([
+            'name' => 'required',
+            'category_service_id' => 'required|integer',
+            'price' => 'required|integer'
+        ]);
+
+        $update = Service::find($id)->update($request->all());
+
+        if($update){
+            return redirect()->route('services.index')
+                        ->with('success','Data berhasil diubah');
+        }else{
+            return redirect()->route('services.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
     }
 
     /**
@@ -120,5 +138,8 @@ class ServiceController extends Controller
     public function destroy($id)
     {
         //
+        $delete = Service::find($id)->delete();
+
+        return Response()->json($delete);        
     }
 }

@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
     
     Route::resource('service_category', CategoryServiceController::class);
-    Route::resource('services', ServiceController::class);
     Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax'); //Tambahkan routing ini
-
+    Route::resource('services', ServiceController::class);
+    Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
 });
