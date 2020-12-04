@@ -61,17 +61,17 @@ class CustomerController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'phone' => 'required',
-            'password' => 'required'
+            'password' => 'required|min:6|confirmed'
         ]);
 
         $data = [
             "name"      => $request->input('name'),
             "email"     => $request->input('email'),
             "phone"     => $request->input('phone'),
-            "password"  => $request->input('password'),
-            "status"    => $request->input('active')??0,
+            "password"  => bcrypt($request->input('password')),
             "address"   => $request->input('address'),
             "userid"    => Str::random(6),
+            "is_active" => $request->input('active')??0
         ];
 
         $insert = User::create($data);
@@ -107,6 +107,8 @@ class CustomerController extends Controller
     public function edit($id)
     {
         //
+        $data = User::Role('user')->where('userid',$id)->first();
+        return view('customer.edit',compact('data'));
     }
 
     /**
@@ -119,6 +121,41 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $user = User::where('userid', $id)->first();
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'phone' => 'required',
+        ]);
+
+        $data = [
+            "name"      => $request->input('name'),
+            "email"     => $request->input('email'),
+            "phone"     => $request->input('phone'),
+            "address"   => $request->input('address'),
+            "is_active" => $request->input('active')??0
+        ];
+
+        $user = User::Role('user')->where('userid', $id)->first();
+        $update = $user->update($data);
+
+        if(!empty($request->input('password'))){
+
+            $request->validate([
+                'password' => 'required|min:6|confirmed'
+            ]);
+
+            $user->password = bcrypt($request->input('password'));
+            $user->save();
+        }
+
+        if($update){
+            return redirect()->route('customer.index')
+                        ->with('success','Data berhasil diubah');            
+        }else{
+            return redirect()->route('customer.index')
+                        ->with('error','Opps, Terjadi kesalahan.');            
+        }
     }
 
     /**

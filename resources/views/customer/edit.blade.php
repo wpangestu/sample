@@ -29,7 +29,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tambah Pelanggan</h3>
+                <h3 class="card-title">Ubah Pelanggan</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -46,19 +46,20 @@
                             </div>
                         @endif
 
-                        <form action="{{route('customer.store')}}" method="post">
+                        <form action="{{route('customer.update',$data->userid)}}" method="post">
+                            @method('put')
                             @csrf
                             <div class="form-group">
                                 <label for="inputName" class="col-form-label">Nama</label>
-                                <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama" value="{{ old('name') }}">
+                                <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama" value="{{ old('name',$data->name) }}">
                             </div>
                             <div class="form-group">
                                 <label for="inputEmail" class="col-form-label">Email</label>
-                                <input type="email" name="email" class="form-control" id="inputEmail" value="{{ old('email') }}" placeholder="Email">
+                                <input type="email" name="email" class="form-control" id="inputEmail" value="{{ old('email',$data->email) }}" placeholder="Email">
                             </div>
                             <div class="form-group">
                                 <label for="inputPhone" class="col-sm-2 col-form-label">No Hp</label>
-                                <input type="text" name="phone" class="form-control" id="inputPhone" placeholder="No hp" value="{{ old('phone') }}">
+                                <input type="text" name="phone" class="form-control" id="inputPhone" placeholder="No hp" value="{{ old('phone',$data->phone) }}">
                             </div>
                             <div class="form-group">
                                 <label for="inputPassword" class="col-form-label">Password</label>
@@ -83,14 +84,14 @@
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>
-                            <textarea name="address" class="form-control" id="inputAddress" rows="5">{{ old('address') }}</textarea>
+                            <textarea name="address" class="form-control" id="inputAddress" rows="5">{{ old('address',$data->address) }}</textarea>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-group">
                         <label for="inputStatus" class="col-form-label"></label>
-                        <button class="btn btn-primary">Simpan</button>
+                        <button class="btn btn-primary">Ubah</button>
                     </div>
                 </div>
                 </form>

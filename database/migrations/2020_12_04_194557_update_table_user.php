@@ -15,9 +15,10 @@ class UpdateTableUser extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            // $table->string('userid')->unique()->after('email');
+            $table->string('userid')->unique()->after('email');
             $table->string('phone')->after('email');
             $table->longText('address')->nullable(true)->after('email');
+            $table->$table->tinyInteger('is_active')->default(1)->after('profile_photo_path');
         });
     }
 
@@ -30,7 +31,7 @@ class UpdateTableUser extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn(['phone', 'user_id', 'address']);
+            $table->dropColumn(['phone', 'user_id', 'address','is_active']);
         });
     }
 }
