@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use DataTables;
+use Illuminate\Support\Str;
 
 class CustomerController extends Controller
 {
@@ -44,6 +45,7 @@ class CustomerController extends Controller
     public function create()
     {
         //
+        return view('customer.create');
     }
 
     /**
@@ -55,6 +57,34 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'phone' => 'required',
+            'password' => 'required'
+        ]);
+
+        $data = [
+            "name"      => $request->input('name'),
+            "email"     => $request->input('email'),
+            "phone"     => $request->input('phone'),
+            "password"  => $request->input('password'),
+            "status"    => $request->input('active')??0,
+            "address"   => $request->input('address'),
+            "userid"    => Str::random(6),
+        ];
+
+        $insert = User::create($data);
+
+        $insert->assignRole('user');
+
+        if($insert){
+            return redirect()->route('customer.index')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('customer.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
     }
 
     /**
