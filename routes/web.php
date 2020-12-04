@@ -5,6 +5,7 @@ use App\Http\Livewire\Members; //Load class Members
 use App\Models\User;
 use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\CustomerController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,8 +28,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
     
+    // Kategori Jas
     Route::resource('service_category', CategoryServiceController::class);
-    Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax'); //Tambahkan routing ini
+    Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax');
+    // Jasa
     Route::resource('services', ServiceController::class);
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
+
+    // Customer
+    Route::resource('customer', CustomerController::class);
 });
