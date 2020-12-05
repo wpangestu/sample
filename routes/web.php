@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EnginnerController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,7 +36,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::resource('services', ServiceController::class);
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
     
-    // Customer
+    // Pelanggan
     Route::resource('customer', CustomerController::class);
     Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
+    // Teknisi
+    Route::resource('engineer', EnginnerController::class);
+    Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');;
 });

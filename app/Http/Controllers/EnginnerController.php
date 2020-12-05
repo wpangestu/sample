@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\User;
+use DataTables;
+use Illuminate\Support\Str;
+
+class EnginnerController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        //
+        if ($request->ajax()) {
+            $data = User::latest()->Role('teknisi')->get();
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($row){
+   
+                            $btn = '<a href="'.route('engineer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+   
+                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+    
+                            return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+
+        return view('engineer.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+        return view('engineer.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'phone' => 'required',
+            'password' => 'required|min:6|confirmed'
+        ]);
+
+        $data = [
+            "name"      => $request->input('name'),
+            "email"     => $request->input('email'),
+            "phone"     => $request->input('phone'),
+            "password"  => bcrypt($request->input('password')),
+            "address"   => $request->input('address'),
+            "userid"    => Str::random(6),
+            "is_active" => $request->input('active')??0
+        ];
+
+        $insert = User::create($data);
+
+        $insert->assignRole('teknisi');
+
+        if($insert){
+            return redirect()->route('engineer.index')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('engineer.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+        $data = User::Role('teknisi')->where('userid',$id)->first();
+        return view('engineer.edit',compact('data'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+        $user = User::Role('teknisi')->where('userid', $id)->first();
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'phone' => 'required',
+        ]);
+
+        $data = [
+            "name"      => $request->input('name'),
+            "email"     => $request->input('email'),
+            "phone"     => $request->input('phone'),
+            "address"   => $request->input('address'),
+            "is_active" => $request->input('active')??0
+        ];
+
+        $user = User::Role('teknisi')->where('userid', $id)->first();
+        $update = $user->update($data);
+
+        if(!empty($request->input('password'))){
+
+            $request->validate([
+                'password' => 'required|min:6|confirmed'
+            ]);
+
+            $user->password = bcrypt($request->input('password'));
+            $user->save();
+        }
+
+        if($update){
+            return redirect()->route('engineer.index')
+                        ->with('success','Data berhasil diubah');            
+        }else{
+            return redirect()->route('engineer.index')
+                        ->with('error','Opps, Terjadi kesalahan.');            
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+        $user = User::Role('teknisi')->where('userid',$id)->first();
+        
+        $user->removeRole('teknisi');
+
+        $delete = $user->delete();
+
+        return Response()->json($delete);
+    }
+}
