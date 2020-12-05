@@ -34,7 +34,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Jasa
     Route::resource('services', ServiceController::class);
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
-
+    
     // Customer
     Route::resource('customer', CustomerController::class);
+    Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
 });

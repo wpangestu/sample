@@ -25,7 +25,7 @@ class CustomerController extends Controller
    
                             $btn = '<a href="'.route('customer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
    
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('customer.destroy',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('customer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
                     })
@@ -167,5 +167,12 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         //
+        $user = User::Role('user')->where('userid',$id)->first();
+        
+        $user->removeRole('user');
+
+        $delete = $user->delete();
+
+        return Response()->json($delete);
     }
 }

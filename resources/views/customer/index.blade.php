@@ -117,7 +117,7 @@
                     url: url,
                     dataType: 'json',
                     success: function(res){
-                        var oTable = $('#table_category_service').dataTable();
+                        var oTable = $('#table_datatable').dataTable();
                         oTable.fnDraw(false);
                     }
                 });
