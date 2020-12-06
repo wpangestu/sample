@@ -25,14 +25,14 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="#" class="nav-link active">
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard')?'active':'' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
               </p>
             </a>
           </li>
-          <li class="nav-item has-treeview">
+          <li class="nav-item has-treeview {{ request()->routeIs('service_category*')||request()->routeIs('services*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
@@ -42,13 +42,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('service_category.index') }}" class="nav-link">
+                <a href="{{ route('service_category.index') }}" class="nav-link {{ request()->routeIs('service_category*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Kategori Jasa</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('services.index') }}" class="nav-link">
+                <a href="{{ route('services.index') }}" class="nav-link {{ request()->routeIs('services*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>List Jasa</p>
                 </a>
@@ -56,7 +56,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('customer.index') }}" class="nav-link {{ request()->routeIs('customer*')?'active':'' }}">
               <i class="nav-icon fas fa-address-book"></i>
               <p>
                 Pelanggan
@@ -64,7 +64,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('engineer.index') }}" class="nav-link {{ request()->routeIs('engineer*')?'active':'' }}">
               <i class="nav-icon fas fa-tools"></i>
               <p>
                 Teknisi
