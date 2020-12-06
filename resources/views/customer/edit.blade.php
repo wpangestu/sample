@@ -46,7 +46,7 @@
                             </div>
                         @endif
 
-                        <form action="{{route('customer.update',$data->userid)}}" method="post">
+                        <form action="{{route('customer.update',$data->userid)}}" enctype="multipart/form-data" method="post">
                             @method('put')
                             @csrf
                             <div class="form-group">
@@ -72,15 +72,24 @@
                             <div class="form-group">
                                 <label for="inputStatus" class="col-form-label">Status</label>
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" name="active" type="checkbox" id="inputActive" value="1" checked>
+                                    <input class="custom-control-input" name="active" type="checkbox" id="inputActive" value="1" {{ $data->is_active==1?'checked':'' }}>
                                     <label for="inputActive" class="custom-control-label">Aktif</label>
                                 </div>
                             </div>
                     </div>
                     <div class="col-md-6">
+                        @if(!empty($data->profile_photo_path))
                         <div class="form-group">
-                            <label for="inputAddress" class="col-form-label">Photo Profil</label>
+                            <label for="inputAddress" class="col-form-label">Photo Sebelum</label>
+                            <div>
+                              <img src="{{ asset('images/user_profile/'.$data->profile_photo_path)}}" height="150px">
+                            </div>
+                        </div>
+                        @endif
+                        <div class="form-group">
+                            <label for="inputAddress" class="col-form-label">Photo Profil <span class="text-muted text-sm">(biarkan jika tidak ingin diubah)</span></label>
                             <input type="file" class="form-control" name="photo">
+                            <span class="text-muted text-sm">format:jpeg,png,jpg|max:2048kb</span>
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>

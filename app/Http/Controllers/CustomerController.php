@@ -61,7 +61,8 @@ class CustomerController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'phone' => 'required',
-            'password' => 'required|min:6|confirmed'
+            'password' => 'required|min:6|confirmed',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
@@ -75,9 +76,19 @@ class CustomerController extends Controller
         ];
 
         $insert = User::create($data);
-
         $insert->assignRole('user');
 
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $destination = 'images/user_profile';
+            $file_name = time()."_".$insert->userid.".".$file->getClientOriginalExtension();
+            $file->move($destination,$file_name);
+
+            $user = User::find($insert->id);
+            $user->profile_photo_path = $file_name;
+            $user->save();
+        }
+        
         if($insert){
             return redirect()->route('customer.index')
                         ->with('success','Data berhasil ditambahkan');
@@ -126,6 +137,7 @@ class CustomerController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
@@ -138,6 +150,16 @@ class CustomerController extends Controller
 
         $user = User::Role('user')->where('userid', $id)->first();
         $update = $user->update($data);
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $destination = 'images/user_profile';
+            $file_name = time()."_".$user->userid.".".$file->getClientOriginalExtension();
+            $file->move($destination,$file_name);
+
+            $user->profile_photo_path = $file_name;
+            $user->save();
+        }
 
         if(!empty($request->input('password'))){
 
