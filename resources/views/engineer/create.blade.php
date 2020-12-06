@@ -46,7 +46,7 @@
                             </div>
                         @endif
 
-                        <form action="{{route('engineer.store')}}" method="post">
+                        <form action="{{route('engineer.store')}}" enctype="multipart/form-data" method="post">
                             @csrf
                             <div class="form-group">
                                 <label for="inputName" class="col-form-label">Nama</label>
@@ -80,6 +80,7 @@
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Photo Profil</label>
                             <input type="file" class="form-control" name="photo">
+                            <span class="text-muted rext-sm">format:jpeg,png,jpg|max:2048kb</span>
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>

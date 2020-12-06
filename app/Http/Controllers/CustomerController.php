@@ -62,7 +62,7 @@ class CustomerController extends Controller
             'email' => 'required|email|unique:users',
             'phone' => 'required',
             'password' => 'required|min:6|confirmed',
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048', 
         ]);
 
         $data = [

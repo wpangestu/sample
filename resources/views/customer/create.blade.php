@@ -34,7 +34,7 @@
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6"> 
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <strong>Whoops!</strong> There were some problems with your input.<br><br>
@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Photo Profil</label>
                             <input type="file" class="form-control" name="photo">
-                            <span class="text-muted">format:jpeg,png,jpg|max:2048kb</span>
+                            <span class="text-muted text-sm">format:jpeg,png,jpg|max:2048kb</span>
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>
