@@ -24,15 +24,22 @@ class ServiceOrderController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                            $btn = '<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                                            Aksi 
-                                        <div class="dropdown-menu" role="menu">
-                                            <a class="dropdown-item" href="#"><i class="fa fa-info-circle"></i> Detail</a>
-                                            <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'"><i class="fa fa-edit"></i> Ubah</a>
-                                            <a class="dropdown-item" href="#"><i class="fa fa-times"></i> Hapus</a>
-                                        </div>
-                                    </button>';    
-                            return $btn;
+
+                        $btn = '<a href="'.route('service_order.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+   
+                        $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_order.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+
+                        return $btn;
+
+                            // $btn = '<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                            //             <span class="sr-only">Toggle Dropdown</span>
+                            //                 Aksi 
+                            //             <div class="dropdown-menu" role="menu">
+                            //                 <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'"><i class="fa fa-edit"></i> Ubah</a>
+                            //                 <a class="dropdown-item btn_delete" data-url="'.route('service_order.delete.ajax',$row->id).'" href="'.route('dashboard').'"><i class="fa fa-times"></i> Hapus</a>
+                            //             </div>
+                            //         </button>';
+                            // return $btn;
                     })
                     ->addColumn('status','-')
                     ->addColumn('created_at', function($row){
@@ -121,6 +128,11 @@ class ServiceOrderController extends Controller
     public function edit($id)
     {
         //
+        $service_order = ServiceOrder::find($id);
+        $customers = User::Role('user')->get();
+        $engineers = User::Role('teknisi')->get();
+        $services = Service::all();
+        return view('service_order.edit',compact('customers','engineers','services','service_order'));
     }
 
     /**
@@ -133,6 +145,21 @@ class ServiceOrderController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $request->validate([
+            'customer_id' => 'required|integer',
+            'engineer_id' => 'required|integer',
+            'service_id' => 'required|integer',
+        ]);
+
+        $update = ServiceOrder::find($id)->update($request->all());
+
+        if($update){
+            return redirect()->route('service_order.index')
+                        ->with('success','Data berhasil diubah');
+        }else{
+            return redirect()->route('service_ordeSSSr.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
     }
 
     /**
@@ -144,5 +171,8 @@ class ServiceOrderController extends Controller
     public function destroy($id)
     {
         //
+        $delete = ServiceOrder::find($id)->delete();
+
+        return Response()->json($delete);
     }
 }

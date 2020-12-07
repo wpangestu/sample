@@ -72,7 +72,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('service_order.index') }}" class="nav-link {{ request()->routeIs('service_order*')?'active':'' }}">
               <i class="nav-icon fas fa-clipboard-list"></i>
               <p>
                 Pesanan Jasa
