@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnginnerController;
+use App\Http\Controllers\ServiceOrderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,6 +21,9 @@ use App\Http\Controllers\EnginnerController;
 
 Route::get('/', function () {
     return redirect('login');
+});
+Route::get('/cek', function () {
+    dd(uniqid());
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
@@ -42,4 +46,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Teknisi
     Route::resource('engineer', EnginnerController::class);
     Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');;
+
+    // Service Order
+    Route::resource('service_order', ServiceOrderController::class);
+    Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
+
 });
