@@ -8,4 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceOrder extends Model
 {
     use HasFactory;
+    protected $fillable = ['serviceorder_id','customer_id','engineer_id','service_id','description'];
+
+    public function customer(){
+        return $this->belongsTo('App\Models\User','customer_id','id');
+    }
+
+    public function engineer(){
+        return $this->belongsTo('App\Models\User','engineer_id','id');
+    }
+
+    public function service(){
+        return $this->belongsTo('App\Models\Service','service_id','id');
+    }
+
 }

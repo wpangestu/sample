@@ -7,6 +7,7 @@ use App\Models\ServiceOrder;
 use App\Models\User;
 use App\Models\Service;
 use DataTables;
+use Carbon\Carbon;
 
 class ServiceOrderController extends Controller
 {
@@ -23,15 +24,28 @@ class ServiceOrderController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-                            $btn .= '<button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                            $btn = '<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
                                             Aksi 
                                         <div class="dropdown-menu" role="menu">
-                                            <a class="dropdown-item" href="#">Detail</a>
-                                            <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'">Ubah</a>
-                                            <a class="dropdown-item" href="#">Hapus</a>
+                                            <a class="dropdown-item" href="#"><i class="fa fa-info-circle"></i> Detail</a>
+                                            <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'"><i class="fa fa-edit"></i> Ubah</a>
+                                            <a class="dropdown-item" href="#"><i class="fa fa-times"></i> Hapus</a>
                                         </div>
                                     </button>';    
                             return $btn;
+                    })
+                    ->addColumn('status','-')
+                    ->addColumn('created_at', function($row){
+                        return Carbon::parse($row->created_at)->format("d/m/Y H:i");
+                    })
+                    ->addColumn('customer_id', function($row){
+                        return $row->customer->name;
+                    })
+                    ->addColumn('engineer_id', function($row){
+                        return $row->engineer->name;
+                    })
+                    ->addColumn('service_id', function($row){
+                        return $row->service->name;
                     })
                     ->rawColumns(['action'])
                     ->make(true);
@@ -63,6 +77,28 @@ class ServiceOrderController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'customer_id' => 'required|integer',
+            'engineer_id' => 'required|integer',
+            'service_id' => 'required|integer',
+        ]);
+
+        $data = [
+            "customer_id" => $request->customer_id,
+            "engineer_id" => $request->engineer_id,
+            "service_id" => $request->service_id,
+            "serviceorder_id" => uniqid()
+        ];
+
+        $insert = ServiceOrder::create($data);
+
+        if($insert){
+            return redirect()->route('service_order.index')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('service_order.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
     }
 
     /**

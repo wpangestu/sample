@@ -19,7 +19,7 @@ class CreateServiceOrdersTable extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('engineer_id');
             $table->unsignedBigInteger('service_id');
-            $table->text('description');
+            $table->text('description')->nullable(true);
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('users');
