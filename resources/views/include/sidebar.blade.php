@@ -104,7 +104,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('review_service.index') }}" class="nav-link {{ request()->routeIs('review_service*')?'active':'' }}">
               <i class="nav-icon fas fa-smile"></i>
               <p>
                 Ulasan Pelanggan

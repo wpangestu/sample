@@ -8,6 +8,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnginnerController;
 use App\Http\Controllers\ServiceOrderController;
+use App\Http\Controllers\ReviewServiceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -50,5 +51,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Service Order
     Route::resource('service_order', ServiceOrderController::class);
     Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
+
+    // Review Service
+    Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
 
 });
