@@ -112,7 +112,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment*')?'active':'' }}">
               <i class="nav-icon fas fa-money-bill-wave"></i>
               <p>
                 Konfirmasi Pembayaran

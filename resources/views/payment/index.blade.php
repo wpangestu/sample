@@ -8,7 +8,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Ulasan Pelanggan</h1>
+            <h1 class="m-0 text-dark">Konfirmasi Pembayaran</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <!-- <ol class="breadcrumb float-sm-right">
@@ -29,7 +29,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">List Ulasan Pelanggan</h3>
+                <h3 class="card-title">List Pembayaran</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -55,10 +55,12 @@
                   <tr>
                     <th>No</th>
                     <th>Tanggal</th>
+                    <th>ID Pembayaran</th>
                     <th>ID Service</th>
-                    <th>Teknisi</th>
-                    <th>Bintang</th>
-                    <th>Keterangan</th>
+                    <th>No Transaksi</th>
+                    <th>Metode</th>
+                    <th>Service</th>
+                    <th>Customer</th>
                     <th>Aksi</th>
                   </tr>
                   </thead>
@@ -67,10 +69,12 @@
                         <tr>
                             <td>1</td>
                             <td>09/12/2020 13:21</td>
+                            <td><a href="#">5fce9cb897979</a> </td>
                             <td><a href="#">5fce9cb329f75</a> </td>
-                            <td><a href="#">Alfiansyah</a></td>
-                            <td>5</td>
-                            <td>Lorem ipsum dolor sit amet...</td>
+                            <td>{{ uniqid() }}</td>
+                            <td>Transfer Bank</td>
+                            <td>Service Standart</td>
+                            <td>Efendi</td>
                             <td><button class="btn btn-sm btn-primary">Aksi</button></td>
                         </tr>
                     </tbody>

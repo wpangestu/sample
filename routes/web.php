@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnginnerController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
+use App\Http\Controllers\PaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -54,5 +55,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Review Service
     Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
+
+    // Kofirmasi Pembayaran
+    Route::get('payment', [PaymentController::class,'index'])->name('payment.index');
 
 });
