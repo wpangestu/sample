@@ -69,5 +69,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('setting/term_of_service', [SettingController::class,'termOfService'])->name('setting.term_of_service');
     Route::post('setting/term_of_service', [SettingController::class,'storeTermOfService'])->name('setting.term_of_service.store');
     Route::post('setting/term_of_service/{id}/update', [SettingController::class,'updateTermOfService'])->name('setting.term_of_service.update');
+    //Help
+    Route::get('setting/help', [SettingController::class,'help'])->name('setting.help');
+    Route::post('setting/help', [SettingController::class,'storeHelp'])->name('setting.help.store');
+    Route::post('setting/help/{id}/update', [SettingController::class,'updateHelp'])->name('setting.help.update');
      
 });

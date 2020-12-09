@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PrivacyPolicy;
 use App\Models\TermOfService;
+use App\Models\Help;
 
 class SettingController extends Controller
 {
@@ -98,6 +99,48 @@ class SettingController extends Controller
                         ->with('success','Data berhasil diubah');
         }else{
             return redirect()->route('setting.term_of_service')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+    }
+
+    public function help()
+    {
+        $help = Help::first();
+        return view('setting.help', compact('help'));
+    }
+
+    public function storeHelp(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        
+        $insert = Help::create($request->all());
+
+        if($insert){
+            return redirect()->route('setting.help')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('setting.help')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+    }
+
+    public function updateHelp(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        
+        $update = Help::find($id)->update($request->all());
+
+        if($update){
+            return redirect()->route('setting.help')
+                        ->with('success','Data berhasil diubah');
+        }else{
+            return redirect()->route('setting.help')
                         ->with('error','Opps, Terjadi kesalahan.');
         }
     }
