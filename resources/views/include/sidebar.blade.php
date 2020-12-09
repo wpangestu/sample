@@ -119,13 +119,34 @@
               </p>
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item has-treeview {{ request()->routeIs('setting*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>
               <p>
                 Pengaturan
+                <i class="fas fa-angle-left right"></i>
               </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('setting.privacy_policy') }}" class="nav-link {{ request()->routeIs('setting.privacy_policy')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Privacy Policy</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('setting.term_of_service') }}" class="nav-link {{ request()->routeIs('setting.term_of_service')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Term of Service</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('setting.help') }}" class="nav-link {{ request()->routeIs('setting.help')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Help</p>
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </nav>
