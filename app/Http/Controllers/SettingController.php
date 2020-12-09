@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PrivacyPolicy;
+use App\Models\TermOfService;
 
 class SettingController extends Controller
 {
@@ -55,6 +56,48 @@ class SettingController extends Controller
                         ->with('success','Data berhasil diubah');
         }else{
             return redirect()->route('setting.privacy_policy')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+    }
+
+    public function termOfService()
+    {
+        $termOfService = TermOfService::first();
+        return view('setting.term_of_service', compact('termOfService'));
+    }
+
+    public function storeTermOfService(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        
+        $insert = TermOfService::create($request->all());
+
+        if($insert){
+            return redirect()->route('setting.term_of_service')
+                        ->with('success','Data berhasil ditambahkan');
+        }else{
+            return redirect()->route('setting.term_of_service')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+    }
+
+    public function updateTermOfService(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+        
+        $update = TermOfService::find($id)->update($request->all());
+
+        if($update){
+            return redirect()->route('setting.term_of_service')
+                        ->with('success','Data berhasil diubah');
+        }else{
+            return redirect()->route('setting.term_of_service')
                         ->with('error','Opps, Terjadi kesalahan.');
         }
     }

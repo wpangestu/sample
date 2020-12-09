@@ -65,6 +65,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('setting/privacy_policy', [SettingController::class,'privacyPolicy'])->name('setting.privacy_policy');
     Route::post('setting/privacy_policy', [SettingController::class,'storePrivacyPolicy'])->name('setting.privacy_policy.store');
     Route::post('setting/privacy_policy/{id}/update', [SettingController::class,'updatePrivacyPolicy'])->name('setting.privacy_policy.update');
+    //Term of service
+    Route::get('setting/term_of_service', [SettingController::class,'termOfService'])->name('setting.term_of_service');
+    Route::post('setting/term_of_service', [SettingController::class,'storeTermOfService'])->name('setting.term_of_service.store');
+    Route::post('setting/term_of_service/{id}/update', [SettingController::class,'updateTermOfService'])->name('setting.term_of_service.update');
      
-
 });
