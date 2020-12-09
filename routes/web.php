@@ -10,6 +10,7 @@ use App\Http\Controllers\EnginnerController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SettingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -58,5 +59,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');
+    
+    // Pengaturan
+    //Privacy Policy
+    Route::get('setting/privacy_policy', [SettingController::class,'privacyPolicy'])->name('setting.privacy_policy');
+    Route::post('setting/privacy_policy', [SettingController::class,'storePrivacyPolicy'])->name('setting.privacy_policy.store');
+    Route::post('setting/privacy_policy/{id}/update', [SettingController::class,'updatePrivacyPolicy'])->name('setting.privacy_policy.update');
+     
 
 });
