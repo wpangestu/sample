@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceOrder extends Model
 {
     use HasFactory;
-    protected $fillable = ['serviceorder_id','customer_id','engineer_id','service_id','description'];
+    protected $fillable = ['serviceorder_id','customer_id','engineer_id','service_id','description','status'];
 
     public function customer(){
         return $this->belongsTo('App\Models\User','customer_id','id');

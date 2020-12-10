@@ -41,7 +41,18 @@ class ServiceOrderController extends Controller
                             //         </button>';
                             // return $btn;
                     })
-                    ->addColumn('status','-')
+                    ->addColumn('status',function($row){
+                        if($row->status==null){
+                            return "-";
+                        }elseif($row->status=="pending"){
+                            return '<badge class="badge badge-warning">pending</badge>';
+                        }elseif ($row->status=="process") {
+                            return '<badge class="badge badge-info">process</badge>';
+                        }
+                        elseif($row->status=="finish") {
+                            return '<badge class="badge badge-success">finish</badge>';
+                        }
+                    })
                     ->addColumn('created_at', function($row){
                         return Carbon::parse($row->created_at)->format("d/m/Y H:i");
                     })
@@ -54,7 +65,7 @@ class ServiceOrderController extends Controller
                     ->addColumn('service_id', function($row){
                         return $row->service->name;
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','status'])
                     ->make(true);
         }
 
@@ -72,7 +83,8 @@ class ServiceOrderController extends Controller
         $customers = User::Role('user')->get();
         $engineers = User::Role('teknisi')->get();
         $services = Service::all();
-        return view('service_order.create',compact('customers','engineers','services'));
+        $status = ['pending','process','finish'];
+        return view('service_order.create',compact('customers','engineers','services','status'));
     }
 
     /**
@@ -88,12 +100,14 @@ class ServiceOrderController extends Controller
             'customer_id' => 'required|integer',
             'engineer_id' => 'required|integer',
             'service_id' => 'required|integer',
+            'status' => 'required',
         ]);
 
         $data = [
             "customer_id" => $request->customer_id,
             "engineer_id" => $request->engineer_id,
             "service_id" => $request->service_id,
+            "status" => $request->status,
             "serviceorder_id" => uniqid()
         ];
 
@@ -132,7 +146,8 @@ class ServiceOrderController extends Controller
         $customers = User::Role('user')->get();
         $engineers = User::Role('teknisi')->get();
         $services = Service::all();
-        return view('service_order.edit',compact('customers','engineers','services','service_order'));
+        $status = ['pending','process','finish'];
+        return view('service_order.edit',compact('customers','engineers','services','service_order','status'));
     }
 
     /**
@@ -149,6 +164,7 @@ class ServiceOrderController extends Controller
             'customer_id' => 'required|integer',
             'engineer_id' => 'required|integer',
             'service_id' => 'required|integer',
+            'status' => 'required',
         ]);
 
         $update = ServiceOrder::find($id)->update($request->all());

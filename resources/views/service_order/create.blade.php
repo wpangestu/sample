@@ -75,6 +75,15 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="inputStatus" class="col-sm-2 col-form-label">Status</label>
+                                <select class="form-control" name="status" id="inputStatus">
+                                    <option value="">--PILIH--</option>
+                                    @foreach($status as $s)
+                                        <option value="{{ $s }}">{{ $s }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="inputDescription" class="col-form-label">Deskripsi</label>
                                 <textarea name="description" class="form-control" id="inputDescription" rows="5"></textarea>
                             </div>
@@ -93,7 +102,6 @@
               </div>
               <!-- /.card-body -->
             </div>
-
           </div>
           <!-- /.col-md-6 -->
         </div>
