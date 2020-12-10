@@ -113,3 +113,16 @@
   <!-- /.content-wrapper -->
 
 @endsection
+
+
+@section('scripts')
+
+  <script>
+    $(document).ready(function(){
+      $('#inputCustomer').select2();
+      $('#inputEngineer').select2();
+      $('#inputService').select2();
+    });
+  </script>
+
+@endsection
