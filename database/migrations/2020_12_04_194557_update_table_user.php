@@ -18,7 +18,7 @@ class UpdateTableUser extends Migration
             $table->string('userid')->unique()->after('email');
             $table->string('phone')->after('email');
             $table->longText('address')->nullable(true)->after('email');
-            $table->$table->tinyInteger('is_active')->default(1)->after('profile_photo_path');
+            $table->tinyInteger('is_active')->default(1)->after('profile_photo_path');
         });
     }
 
