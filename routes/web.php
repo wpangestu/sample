@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
     
     // Pelanggan
+    Route::get('customer/export', [CustomerController::class,'export'])->name('customer.export');
     Route::resource('customer', CustomerController::class);
     Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
     // Teknisi

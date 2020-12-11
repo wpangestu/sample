@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use DataTables;
 use Illuminate\Support\Str;
+use App\Exports\CustomerExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {
@@ -196,5 +198,20 @@ class CustomerController extends Controller
         $delete = $user->delete();
 
         return Response()->json($delete);
+    }
+
+    public function export() 
+    {
+        return (new CustomerExport)->download('invoices.xlsx');
+        // return (new CustomerExport)->download('invoices.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        // return Excel::download(new CustomerExport, 'customer.xlsx');
+        // return (new CustomerExport)->download('invoices.xlsx');
+    }
+
+    public function storeExcel() 
+    {
+        Excel::store(new CustomerExport(2018), 'invoices.xlsx', 's3', null, [
+            'visibility' => 'private',
+        ]);
     }
 }
