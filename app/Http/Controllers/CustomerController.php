@@ -7,6 +7,7 @@ use App\Models\User;
 use DataTables;
 use Illuminate\Support\Str;
 use App\Exports\CustomerExport;
+use App\Imports\CustomerImport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
@@ -202,16 +203,22 @@ class CustomerController extends Controller
 
     public function export() 
     {
-        return (new CustomerExport)->download('invoices.xlsx');
+        return (new CustomerExport)->download('customer.xlsx');
         // return (new CustomerExport)->download('invoices.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
         // return Excel::download(new CustomerExport, 'customer.xlsx');
         // return (new CustomerExport)->download('invoices.xlsx');
     }
 
-    public function storeExcel() 
+    public function import() 
     {
-        Excel::store(new CustomerExport(2018), 'invoices.xlsx', 's3', null, [
-            'visibility' => 'private',
-        ]);
+        return view('customer/import');
+    }
+
+    public function storeImport(Request $request) 
+    {
+        $user = Excel::import(new CustomerImport, $request->file('excel'));
+
+        return redirect()->route('customer.index')
+                            ->with('success','Data berhasil ditambahkan');
     }
 }

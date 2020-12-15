@@ -24,6 +24,7 @@ class CustomerExport implements FromCollection,WithHeadings,WithMapping
     {
         return [
             $customer->id,
+            $customer->created_at,
             $customer->name,
             $customer->email,
             $customer->address,
@@ -36,6 +37,7 @@ class CustomerExport implements FromCollection,WithHeadings,WithMapping
     {
         return [
             '#',
+            'Tanggal Daftar',
             'Name',
             'Email',
             'Alamat',

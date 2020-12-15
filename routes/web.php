@@ -45,6 +45,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     
     // Pelanggan
     Route::get('customer/export', [CustomerController::class,'export'])->name('customer.export');
+    Route::get('customer/import', [CustomerController::class,'import'])->name('customer.import');
+    Route::post('customer/store_import', [CustomerController::class,'storeImport'])->name('customer.store.import');
     Route::resource('customer', CustomerController::class);
     Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
     // Teknisi
