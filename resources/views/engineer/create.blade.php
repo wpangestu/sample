@@ -61,7 +61,7 @@
                                 <input type="text" name="phone" class="form-control" id="inputPhone" placeholder="No hp" value="{{ old('phone') }}">
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword" class="col-form-label">Password</label>
+                                <label for="inputPassword" class="col-form-label">Password</label><span class="text-muted text-sm"><i> (minimal 6 karakter)</i></span>
                                 <input type="password" name="password" class="form-control" id="inputPassword">
                             </div>
                             <div class="form-group">

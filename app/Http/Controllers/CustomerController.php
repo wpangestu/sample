@@ -27,7 +27,7 @@ class CustomerController extends Controller
                     ->addColumn('action', function($row){
    
                             $btn = '<a href="'.route('customer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-   
+                            $btn .= ' <a href="'.route('customer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('customer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
@@ -110,6 +110,8 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
+        $data = User::Role('user')->where('userid',$id)->first();
+        return view('customer.detail',compact('data'));
     }
 
     /**

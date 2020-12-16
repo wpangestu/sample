@@ -29,15 +29,13 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">List Pelanggan</h3>
+                <h3 class="card-title">Detail Pelanggan</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-12">
 
-                    <a href="{{route('customer.create')}}" class="btn btn-primary mb-3"><i class="fa fa-plus"></i> Tambah</a>
-                    <a href="{{route('customer.import')}}" class="btn bg-teal mb-3 float-right">Import</a>
                   </div>
                 </div>
                 
@@ -55,20 +53,30 @@
                     {{ $message }}
                 </div>
                 @endif
-                <div class="table-resonsive">
-                    <table id="table_datatable" class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Pelanggan ID</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>No Hp</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+
+                <dl class="row">
+                  <div class="images">
+                  <img src="{{ asset('images/user_profil/',$data->profile_photo_path) }}" alt="">
+                  </div>
+                  <dt class="col-sm-3">User ID</dt>
+                  <dd class="col-sm-8">: {{ $data->userid??'-' }}</dd>
+                  <dt class="col-sm-3">Nama</dt>
+                  <dd class="col-sm-8">: {{ $data->name??'-' }}</dd>
+                  <dt class="col-sm-3">Email</dt>
+                  <dd class="col-sm-8">: {{ $data->email??'-' }}</dd>
+                  <dt class="col-sm-3">Phone</dt>
+                  <dd class="col-sm-8">: {{ $data->phone??'-' }}</dd>
+                  <dt class="col-sm-3">Alamat</dt>
+                  <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
+                  <dt class="col-sm-3">Status</dt>
+                  <dd class="col-sm-8">: <span class="badge badge-{{ $data->is_active===1?'success':'secondary' }}">{{ $data->is_active===1?'Aktif':'Tidak Aktif' }}</span>
+                  <dt class="col-sm-3">Di buat</dt>
+                  <dd class="col-sm-8">: {{ $data->created_at??'-' }}</dd>
+                  <dt class="col-sm-3">Di Update</dt>
+                  <dd class="col-sm-8">: {{ $data->updated_at??'-' }}
+                  <dt class="col-sm-3"></dt>
+                  <dd class="col-sm-8"><a href="{{ route('customer.index') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a></dd>
+                </dl>
               </div>
               <!-- /.card-body -->
             </div>
@@ -91,43 +99,7 @@
 
     $(document).ready(function(){
 
-      $.ajaxSetup({
-        headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-      });
-
-        let table = $('#table_datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('customer.index') }}",
-            columns: [
-                {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
-                {data: 'userid', name: 'userid'},
-                {data: 'name', name: 'name'},
-                {data: 'email', name: 'email'},
-                {data: 'phone', name: 'phone'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
-        });
-
-        $('body').on('click', '.btn_delete', function () {
-            const url = $(this).data('url');
-
-            if (confirm("Apakah anda yakin?") == true) {
-                // ajax
-                $.ajax({
-                    type:"POST",
-                    url: url,
-                    dataType: 'json',
-                    success: function(res){
-                        var oTable = $('#table_datatable').dataTable();
-                        oTable.fnDraw(false);
-                    }
-                });
-            }
-
-        })
+      
 
     });
 </script>

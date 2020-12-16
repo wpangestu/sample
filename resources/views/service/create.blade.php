@@ -49,13 +49,13 @@
                         <form action="{{route('services.store')}}" method="post">
                             @csrf
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nama</label>
+                                <label for="inputName" class="col-sm-2 col-form-label">Nama*</label>
                                 <div class="col-sm-10">
                                     <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputCatSer" class="col-sm-2 col-form-label">Kategori</label>
+                                <label for="inputCatSer" class="col-sm-2 col-form-label">Kategori*</label>
                                 <div class="col-sm-10">
                                     <select class="form-control" name="category_service_id" id="inputCatSer">
                                         <option value="">PILIH</option>
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputPrice" class="col-sm-2 col-form-label">Harga</label>
+                                <label for="inputPrice" class="col-sm-2 col-form-label">Harga*</label>
                                 <div class="col-sm-10">
                                     <input type="text" name="price" class="form-control" id="inputPrice" placeholder="">
                                 </div>

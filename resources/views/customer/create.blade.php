@@ -49,19 +49,19 @@
                         <form action="{{route('customer.store')}}" enctype="multipart/form-data" method="post">
                             @csrf
                             <div class="form-group">
-                                <label for="inputName" class="col-form-label">Nama</label>
+                                <label for="inputName" class="col-form-label">Nama*</label>
                                 <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama" value="{{ old('name') }}">
                             </div>
                             <div class="form-group">
-                                <label for="inputEmail" class="col-form-label">Email</label>
+                                <label for="inputEmail" class="col-form-label">Email*</label>
                                 <input type="email" name="email" class="form-control" id="inputEmail" value="{{ old('email') }}" placeholder="Email">
                             </div>
                             <div class="form-group">
-                                <label for="inputPhone" class="col-sm-2 col-form-label">No Hp</label>
+                                <label for="inputPhone" class="col-sm-2 col-form-label">No Hp*</label>
                                 <input type="text" name="phone" class="form-control" id="inputPhone" placeholder="No hp" value="{{ old('phone') }}">
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword" class="col-form-label">Password</label>
+                                <label for="inputPassword" class="col-form-label">Password*</label><span class="text-muted text-sm"><i> (minimal 6 karakter)</i></span>
                                 <input type="password" name="password" class="form-control" id="inputPassword">
                             </div>
                             <div class="form-group">
@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Photo Profil</label>
                             <input type="file" class="form-control" name="photo">
-                            <span class="text-muted text-sm">format:jpeg,png,jpg|max:2048kb</span>
+                            <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>

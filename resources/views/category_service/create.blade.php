@@ -49,7 +49,7 @@
                         <form action="{{route('service_category.store')}}" method="post">
                             @csrf
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nama</label>
+                                <label for="inputName" class="col-sm-2 col-form-label">Nama *</label>
                                 <div class="col-sm-10">
                                     <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama">
                                 </div>
