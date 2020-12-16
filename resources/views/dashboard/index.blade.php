@@ -53,7 +53,8 @@
 @endsection
 
 @section('scripts')
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqK3bZ_zrgDmaMSLFHRBMwZn1HKCpPOp8&callback=initMap"
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBl646InFV853dlLkeO5mvHjF7c1LhesrA&callback=initMap"
   type="text/javascript"></script>
     <script type="text/javascript">
       let map;

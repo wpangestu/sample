@@ -31,6 +31,7 @@ class CategoryServiceController extends Controller
                     ->addColumn('action', function($row){
    
                             $btn = '<a href="'.route('service_category.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+                            $btn .= ' <a href="'.route('service_category.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-warning btn-sm">Detail</a>';
    
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_category.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
@@ -93,6 +94,8 @@ class CategoryServiceController extends Controller
     public function show($id)
     {
         //
+        $categoryService = CategoryService::find($id);
+        return view('category_service.detail',compact('categoryService'));
     }
 
     /**
