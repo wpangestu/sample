@@ -27,6 +27,8 @@ class ServiceController extends Controller
                     ->addColumn('action', function($row){
    
                             $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+
+                            $btn .= ' <a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
    
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
@@ -86,6 +88,8 @@ class ServiceController extends Controller
     public function show($id)
     {
         //
+        $service = Service::find($id);
+        return view('service.detail',compact('service'));
     }
 
     /**

@@ -107,3 +107,13 @@
   <!-- /.content-wrapper -->
 
 @endsection
+
+@section('scripts')
+
+  <script>
+    $(document).ready(function(){
+      $('#inputCatSer').select2();
+    })
+  </script>
+
+@endsection()
