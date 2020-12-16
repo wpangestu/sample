@@ -24,6 +24,7 @@ class EnginnerController extends Controller
                     ->addColumn('action', function($row){
    
                             $btn = '<a href="'.route('engineer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+                            $btn .= ' <a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
    
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
@@ -106,6 +107,8 @@ class EnginnerController extends Controller
     public function show($id)
     {
         //
+        $data = User::Role('teknisi')->where('userid',$id)->first();
+        return view('engineer.detail',compact('data'));
     }
 
     /**
