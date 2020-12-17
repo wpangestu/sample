@@ -26,7 +26,7 @@ Route::get('/', function () {
     return redirect('login');
 });
 Route::get('/cek', function () {
-    dd(uniqid());
+    
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
