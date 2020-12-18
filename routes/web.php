@@ -11,6 +11,7 @@ use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,9 +31,7 @@ Route::get('/cek', function () {
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
-    Route::get('/dashboard', function() {
-        return view('dashboard/index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
 
     // Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
     

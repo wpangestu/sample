@@ -37,7 +37,9 @@
                             {{$role->name}}         
                         @endforeach
                 </p>
-                <div id="map" style="width:100%;height:380px;"></div>
+                <div id="map" style="width:100%;height:450px;">
+                    {!! Mapper::render() !!}
+                </div>
               </div>
             </div>
           </div>
@@ -54,16 +56,7 @@
 
 @section('scripts')
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBl646InFV853dlLkeO5mvHjF7c1LhesrA&callback=initMap"
-  type="text/javascript"></script>
     <script type="text/javascript">
-      let map;
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: -7.424827456168968, lng: 109.23510945529932 },
-          zoom: 15,
-        });
-      }
+      
     </script>
 @endsection
