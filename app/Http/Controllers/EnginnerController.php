@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use DataTables;
 use Illuminate\Support\Str;
+use Mapper;
 
 class EnginnerController extends Controller
 {
@@ -45,6 +46,7 @@ class EnginnerController extends Controller
     public function create()
     {
         //
+        Mapper::map(-7.4181887466077265, 109.22154831237727,['zoom'=>14,'marker' => true, 'draggable' => true, 'eventDrag' => 'updateLatlang(event.latLng.lat(),event.latLng.lng());']);
         return view('engineer.create');
     }
 

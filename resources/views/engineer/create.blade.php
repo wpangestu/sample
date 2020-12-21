@@ -84,9 +84,43 @@
                         </div>
                         <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>
-                            <textarea name="address" class="form-control" id="inputAddress" rows="5">{{ old('address') }}</textarea>
+                            <textarea name="address" class="form-control" id="inputAddress" rows="4">{{ old('address') }}</textarea>
                         </div>
+                        <div class="form-group">
+                            <label for="inputLatitude" class="col-form-label">Latitude</label>
+                            <input type="text" name="latitude" class="form-control" readonly id="inputLatitude">
+                          </div>
+                          <div class="form-group">
+                              <label for="inpuLongitude" class="col-form-label">Longitude</label>
+                              <input type="text" name="latitude" class="form-control" readonly id="inpuLongitude">
+                          </div>
                     </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div id="accordion">
+                    <!-- we are adding the .class so bootstrap.js collapse plugin detects it -->
+                    <div class="card card-primary">
+                      <div class="card-header">
+                        <h4 class="card-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                            Pilih Lokasi Maps
+                          </a>
+                        </h4>
+                      </div>
+                      <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="card-body">
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div id="map" style="width:100%;height:300px;">
+                                {!! Mapper::render() !!}
+                              </div>                            
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="row">
                     <div class="form-group">
@@ -109,4 +143,16 @@
   </div>
   <!-- /.content-wrapper -->
 
+@endsection
+
+
+@section('scripts')
+
+<script type="text/javascript">
+    function updateLatlang(lat,lng)
+    {
+      $('#inputLatitude').val(lat)
+      $('#inpuLongitude').val(lng)
+    }
+</script>
 @endsection
