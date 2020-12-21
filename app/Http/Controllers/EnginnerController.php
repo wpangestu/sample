@@ -74,8 +74,12 @@ class EnginnerController extends Controller
             "password"  => bcrypt($request->input('password')),
             "address"   => $request->input('address'),
             "userid"    => Str::random(6),
-            "is_active" => $request->input('active')??0
+            "is_active" => $request->input('active')??0,
+            "lat"       => $request->input('lat'),
+            "lng"       => $request->input('lng'),
         ];
+
+        // dd($data);
 
         $insert = User::create($data);
         $insert->assignRole('teknisi');
@@ -123,6 +127,11 @@ class EnginnerController extends Controller
     {
         //
         $data = User::Role('teknisi')->where('userid',$id)->first();
+        if(!empty($data->lat) && !empty($data->lng)){
+            Mapper::map($data->lat, $data->lng,['zoom'=>14,'marker' => true, 'draggable' => true, 'eventDrag' => 'updateLatlang(event.latLng.lat(),event.latLng.lng());']);
+        }else{
+            Mapper::map(-7.4181887466077265, 109.22154831237727,['zoom'=>14,'marker' => true, 'draggable' => true, 'eventDrag' => 'updateLatlang(event.latLng.lat(),event.latLng.lng());']);
+        }
         return view('engineer.edit',compact('data'));
     }
 
@@ -149,7 +158,9 @@ class EnginnerController extends Controller
             "email"     => $request->input('email'),
             "phone"     => $request->input('phone'),
             "address"   => $request->input('address'),
-            "is_active" => $request->input('active')??0
+            "is_active" => $request->input('active')??0,
+            "lat"       => $request->input('lat'),
+            "lng"       => $request->input('lng'),
         ];
 
         $user = User::Role('teknisi')->where('userid', $id)->first();

@@ -88,11 +88,11 @@
                         </div>
                         <div class="form-group">
                             <label for="inputLatitude" class="col-form-label">Latitude</label>
-                            <input type="text" name="latitude" class="form-control" readonly id="inputLatitude">
+                            <input type="text" name="lat" class="form-control" readonly id="inputLatitude">
                           </div>
                           <div class="form-group">
                               <label for="inpuLongitude" class="col-form-label">Longitude</label>
-                              <input type="text" name="latitude" class="form-control" readonly id="inpuLongitude">
+                              <input type="text" name="lng" class="form-control" readonly id="inpuLongitude">
                           </div>
                     </div>
                 </div>
