@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ServiceOrder;
 use DataTables;
 use Illuminate\Support\Str;
 use Mapper;
@@ -114,7 +115,8 @@ class EnginnerController extends Controller
     {
         //
         $data = User::Role('teknisi')->where('userid',$id)->first();
-        return view('engineer.detail',compact('data'));
+        $service_orders = ServiceOrder::where('engineer_id',$data->id)->orderBy('created_at','desc')->get();
+        return view('engineer.detail2',compact('data','service_orders'));
     }
 
     /**
