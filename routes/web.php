@@ -57,7 +57,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
 
     // Review Service
-    Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
+    Route::resource('review_service', ReviewServiceController::class);
+    // Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');

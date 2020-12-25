@@ -33,7 +33,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <!-- <a href="{{route('services.create')}}" class="btn btn-primary mb-3">Tambah</a> -->
+                <a href="{{route('review_service.create')}}" class="btn btn-primary mb-3">Tambah</a>
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
@@ -56,24 +56,28 @@
                     <th>No</th>
                     <th>Tanggal</th>
                     <th>ID Service</th>
+                    <th>Pelanggan</th>
                     <th>Teknisi</th>
                     <th>Bintang</th>
-                    <th>Keterangan</th>
+                    <!-- <th>Keterangan</th> -->
                     <th>Aksi</th>
                   </tr>
                   </thead>
                 <!-- for sample data -->
-                    <tbody>
+                    <!-- <tbody>
+                      @php $no=1; @endphp
+                      @foreach($reviewServices as $review)
                         <tr>
-                            <td>1</td>
-                            <td>09/12/2020 13:21</td>
-                            <td><a href="#">5fce9cb329f75</a> </td>
-                            <td><a href="#">Alfiansyah</a></td>
-                            <td>5</td>
-                            <td>Lorem ipsum dolor sit amet...</td>
-                            <td><button class="btn btn-sm btn-primary">Aksi</button></td>
+                          <td>{{ $no++ }}</td>
+                          <td>{{ $review->created_at }}</td>
+                          <td>{{ $review->service_order->serviceorder_id }}</td>
+                          <td>{{ $review->service_order->engineer->name }}</td>
+                          <td>{{ $review->ratings }}</td>
+                          <td>{{ $review->description }}</td>
+                          <td>-</td>
                         </tr>
-                    </tbody>
+                      @endforeach
+                    </tbody> -->
                 <!-- endsample -->
                 </table>
               </div>
@@ -98,7 +102,7 @@
 
     $(document).ready(function(){
 
-        $('#table-datatables').DataTable();
+        // $('#table-datatables').DataTable();
 
       $.ajaxSetup({
         headers: {
@@ -106,18 +110,21 @@
         }
       });
 
-        // let table = $('#table-datatables').DataTable({
-        //     processing: true,
-        //     serverSide: true,
-        //     ajax: "{{ route('services.index') }}",
-        //     columns: [
-        //         {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
-        //         {data: 'name', name: 'name'},
-        //         {data: 'service_category_id', name: 'service_category_id'},
-        //         {data: 'price', name: 'price'},
-        //         {data: 'action', name: 'action', orderable: false, searchable: false},
-        //     ]
-        // });
+        let table = $('#table-datatables').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('review_service.index') }}",
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
+                {data: 'date', name: 'date'},
+                {data: 'service_id', name: 'service_id'},
+                {data: 'user_id', name: 'user_id'},
+                {data: 'engineer_id', name: 'engineer_id'},
+                {data: 'ratings', name: 'ratings'},
+                // {data: 'description', name: 'description'},s
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+            ]
+        });
 
         $('body').on('click', '.btn_delete', function () {
             const url = $(this).data('url');

@@ -76,7 +76,7 @@
               <i class="nav-icon fas fa-clipboard-list"></i>
               <p>
                 Pesanan Jasa
-                <span class="right badge badge-danger">2</span>
+                <!-- <span class="right badge badge-danger">2</span> -->
               </p>
             </a>
           </li>
