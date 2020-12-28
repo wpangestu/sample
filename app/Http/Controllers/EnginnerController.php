@@ -116,6 +116,11 @@ class EnginnerController extends Controller
         //
         $data = User::Role('teknisi')->where('userid',$id)->first();
         $service_orders = ServiceOrder::where('engineer_id',$data->id)->orderBy('created_at','desc')->get();
+
+        if(!empty($data->lat) && !empty($data->lng)){
+            Mapper::map($data->lat, $data->lng,['zoom'=>14]);
+            Mapper::informationWindow($data->lat, $data->lng, $data->name, []);
+        }
         return view('engineer.detail2',compact('data','service_orders'));
     }
 

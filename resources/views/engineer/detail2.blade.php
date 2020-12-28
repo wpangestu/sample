@@ -11,10 +11,7 @@
             <h1 class="m-0 text-dark">Teknisi</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -26,7 +23,6 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-lg-12">
-
           <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Detail Teknisi</h3>
@@ -35,7 +31,6 @@
               <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
-                        <!-- Profile Image -->
                         
                         <div class="card">
                             <!-- <div class="ribbon-wrapper ribbon-lg">
@@ -101,89 +96,98 @@
                     </div>
                     <div class="col-md-9">
                         <div class="card">
-                        <div class="card-header p-2">
-                            <ul class="nav nav-pills">
-                            <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Data  Diri</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#service_order" data-toggle="tab">Service Order</a></li>
-                            <!-- <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li> -->
-                            </ul>
-                        </div><!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="tab-content">
-                            <div class="active tab-pane" id="info">
-                            <dl class="row">
-                                <div class="images">
-                                    <img src="{{ asset('images/user_profil/',$data->profile_photo_path) }}" alt="">
+                            <div class="card-header p-2">
+                                <ul class="nav nav-pills">
+                                    <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Data  Diri</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="#service_order" data-toggle="tab">Service Order</a></li>
+                                    <!-- <li class="nav-item"><a class="nav-link" href="#maps" data-toggle="tab">Lokasi Maps</a></li> -->
+                                </ul>
+                            </div><!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="tab-content">
+                                    <div class="active tab-pane" id="info">
+                                        <dl class="row">
+                                            <div class="images">
+                                                <img src="{{ asset('images/user_profil/',$data->profile_photo_path) }}" alt="">
+                                            </div>
+
+                                            <dt class="col-sm-3">User ID</dt>
+                                            <dd class="col-sm-8">: {{ $data->userid??'-' }}</dd>
+                                            <dt class="col-sm-3">Nama</dt>
+                                            <dd class="col-sm-8">: {{ $data->name??'-' }}</dd>
+                                            <dt class="col-sm-3">Email</dt>
+                                            <dd class="col-sm-8">: {{ $data->email??'-' }}</dd>
+                                            <dt class="col-sm-3">Phone</dt>
+                                            <dd class="col-sm-8">: {{ $data->phone??'-' }}</dd>
+                                            <dt class="col-sm-3">Alamat</dt>
+                                            <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
+                                            <!-- <dt class="col-sm-3">Status</dt>
+                                            <dd class="col-sm-8">: </span> -->
+                                            <!-- <dt class="col-sm-3">Di buat</dt>
+                                            <dd class="col-sm-8">: {{ $data->created_at??'-' }}</dd>
+                                            <dt class="col-sm-3">Di Update</dt>
+                                            <dd class="col-sm-8">: {{ $data->updated_at??'-' }} -->
+                                            <dt class="col-sm-3">Lat</dt>
+                                            <dd class="col-sm-8">: {{ $data->lat??'-' }}</dd>
+                                            <dt class="col-sm-3">Lng</dt>
+                                            <dd class="col-sm-8">: {{ $data->lng??'-' }}</dd>
+                                        </dl>
+                                        <div id="map" style="width:100%;height:220px;">
+                                            {!! Mapper::render() !!}
+                                        </div>
                                     </div>
-                                    <dt class="col-sm-3">User ID</dt>
-                                    <dd class="col-sm-8">: {{ $data->userid??'-' }}</dd>
-                                    <dt class="col-sm-3">Nama</dt>
-                                    <dd class="col-sm-8">: {{ $data->name??'-' }}</dd>
-                                    <dt class="col-sm-3">Email</dt>
-                                    <dd class="col-sm-8">: {{ $data->email??'-' }}</dd>
-                                    <dt class="col-sm-3">Phone</dt>
-                                    <dd class="col-sm-8">: {{ $data->phone??'-' }}</dd>
-                                    <dt class="col-sm-3">Alamat</dt>
-                                    <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
-                                    <dt class="col-sm-3">Status</dt>
-                                    <dd class="col-sm-8">: </span>
-                                    <!-- <dt class="col-sm-3">Di buat</dt>
-                                    <dd class="col-sm-8">: {{ $data->created_at??'-' }}</dd>
-                                    <dt class="col-sm-3">Di Update</dt>
-                                    <dd class="col-sm-8">: {{ $data->updated_at??'-' }} -->
-                                    <dt class="col-sm-3"></dt>
-                                    <dd class="col-sm-8"><a href="{{ route('engineer.index') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a></dd>
-                                </dl>          
-                            </div>
-                            <!-- /.tab-pane -->
-                            <div class="tab-pane" id="service_order">
-                                <table id="table-datatables" class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Tanggal</th>
-                                        <th>ID</th>
-                                        <th>Pelanggan</th>
-                                        <th>Service</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $no=1; @endphp
-                                    @foreach($service_orders as $service_order)
-                                    <tr>
-                                        <td>{{ $no++ }}</td>
-                                        <td>{{ $service_order->created_at }}</td>
-                                        <td>{{ $service_order->serviceorder_id }}</td>
-                                        <td>{{ $service_order->customer->name }}</td>
-                                        <td>
-                                            {{ $service_order->service->name }}
-                                        </td>
-                                        <td>
-                                        @php
-                                        if($service_order->status==null){
-                                            echo "-";
-                                        }elseif($service_order->status=="pending"){
-                                            echo '<badge class="badge badge-warning">pending</badge>';
-                                        }elseif ($service_order->status=="process") {
-                                            echo '<badge class="badge badge-info">process</badge>';
-                                        }
-                                        elseif($service_order->status=="finish") {
-                                            echo '<badge class="badge badge-success">finish</badge>';
-                                        }
-                                        @endphp
-                                        </td>
-                                        <td>-</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </div>
-                            <!-- /.tab-pane -->
-                            <!-- /.tab-pane -->
-                            </div>
-                            <!-- /.tab-content -->
-                        </div><!-- /.card-body -->
+                                    <!-- /.tab-pane -->
+                                    <div class="tab-pane" id="service_order">
+                                        <table id="table-datatables" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Tanggal</th>
+                                                <th>ID</th>
+                                                <th>Pelanggan</th>
+                                                <th>Service</th>
+                                                <th>Status</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $no=1; @endphp
+                                            @foreach($service_orders as $service_order)
+                                            <tr>
+                                                <td>{{ $no++ }}</td>
+                                                <td>{{ $service_order->created_at }}</td>
+                                                <td>{{ $service_order->serviceorder_id }}</td>
+                                                <td>{{ $service_order->customer->name }}</td>
+                                                <td>
+                                                    {{ $service_order->service->name }}
+                                                </td>
+                                                <td>
+                                                @php
+                                                if($service_order->status==null){
+                                                    echo "-";
+                                                }elseif($service_order->status=="pending"){
+                                                    echo '<badge class="badge badge-warning">pending</badge>';
+                                                }elseif ($service_order->status=="process") {
+                                                    echo '<badge class="badge badge-info">process</badge>';
+                                                }
+                                                elseif($service_order->status=="finish") {
+                                                    echo '<badge class="badge badge-success">finish</badge>';
+                                                }
+                                                @endphp
+                                                </td>
+                                                <td>-</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </div>
+                                    <!-- /.tab-pane -->
+                                    <!-- <div class="tab-pane" id="maps">
+                                        <h1>d</h1>
+                                    </div> -->
+                                <!-- /.tab-pane -->
+                                </div>
+                                <!-- /.tab-content -->
+                            </div><!-- /.card-body -->
                         </div>
                         <!-- /.nav-tabs-custom -->
                     </div>

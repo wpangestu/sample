@@ -18,11 +18,13 @@ class DashboardController extends Controller
     public function index()
     {
         //
-        Mapper::map(-7.4181887466077265, 109.22154831237727,['zoom'=>14]);
-        Mapper::informationWindow(-7.414858422515413, 109.23044349947345, 'Service HP Purwokerto', []);
-        Mapper::informationWindow(-7.424652958349921, 109.23028470725927, 'Erafone', []);
-        Mapper::informationWindow(-7.433579789287531, 109.24881126732865, 'Multi Cellular', []);
-        Mapper::informationWindow(-7.419508203216844, 109.24469139415676, 'Mukti Cell', []);
+        Mapper::map(-7.4181887466077265, 109.22154831237727,['zoom'=>10]);
+
+        $locationEngineers = User::Role('teknisi')->whereNotNull('lat')->whereNotNull('lng')->get();
+
+        foreach($locationEngineers as $location){
+            Mapper::informationWindow($location->lat, $location->lng, $location->name, []);
+        }
 
         $numCategoryServices = CategoryService::where('status',1)->count();
         $numServices = Service::count();
