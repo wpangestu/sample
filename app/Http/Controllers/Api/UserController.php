@@ -21,6 +21,10 @@ class UserController extends Controller
         return response()->json($data);
     }
 
+    public function categoryservice(){
+        return response()->json("hai ini categori service");   
+    }
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -33,12 +37,15 @@ class UserController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        $user = User::where('email',$credentials['email'])->where('password', bcrypt($credentials['password']))->first();
+        $user = User::where('email', $credentials['email'])->first();
 
-        $data['success'] = true;
-        $data['message'] = "Login successfully";
-        $data['data'] = $user;
-        $data['token'] = $token;
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            $data['success'] = true;
+            $data['message'] = "Login successfully";
+            $data['data'] = $user;
+            $data['token'] = $token;
+        }
+        
 
         return response()->json($data);
     }
@@ -49,6 +56,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'phone' => 'required',
         ]);
 
         if($validator->fails()){
@@ -58,6 +66,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
+            "phone"     => $request->input('phone'),
             'password' => Hash::make($request->get('password')),
         ]);
 
