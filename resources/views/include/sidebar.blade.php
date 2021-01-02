@@ -119,6 +119,29 @@
               </p>
             </a>
           </li>
+          <li class="nav-item has-treeview {{ request()->routeIs('balance*')?'menu-open':'' }}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-wallet"></i>
+              <p>
+                Saldo
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('balance.customer.index') }}" class="nav-link {{ request()->routeIs('balance.customer.index')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Saldo Pelanggan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('balance.engineer.index') }}" class="nav-link {{ request()->routeIs('balance.engineer.index')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Saldo Teknisi</p>
+                </a>
+              </li>
+            </ul>
+          </li>
           <li class="nav-item has-treeview {{ request()->routeIs('setting*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>

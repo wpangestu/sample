@@ -12,6 +12,7 @@ use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BalanceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -59,6 +60,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Review Service
     Route::resource('review_service', ReviewServiceController::class);
     // Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
+
+    // Saldo
+    Route::get('balance/customer',[BalanceController::class,'customer'])->name('balance.customer.index');
+    Route::get('balance/engineer',[BalanceController::class,'engineer'])->name('balance.engineer.index');
+    Route::post('balance/update',[BalanceController::class,'update'])->name('balance.update');
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');

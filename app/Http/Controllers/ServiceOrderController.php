@@ -60,7 +60,7 @@ class ServiceOrderController extends Controller
                         return $row->customer->name;
                     })
                     ->addColumn('engineer_id', function($row){
-                        return $row->engineer->name;
+                        return $row->engineer->name??'-';
                     })
                     ->addColumn('service_id', function($row){
                         return $row->service->name;
@@ -98,7 +98,6 @@ class ServiceOrderController extends Controller
         //
         $request->validate([
             'customer_id' => 'required|integer',
-            'engineer_id' => 'required|integer',
             'service_id' => 'required|integer',
             'status' => 'required',
         ]);

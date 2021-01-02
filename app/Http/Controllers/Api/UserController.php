@@ -33,7 +33,14 @@ class UserController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        return response()->json(compact('token'));
+        $user = User::where('email',$credentials['email'])->where('password', bcrypt($credentials['password']))->first();
+
+        $data['success'] = true;
+        $data['message'] = "Login successfully";
+        $data['data'] = $user;
+        $data['token'] = $token;
+
+        return response()->json($data);
     }
 
     public function register(Request $request)
