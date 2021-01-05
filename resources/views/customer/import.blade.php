@@ -75,6 +75,36 @@
           <!-- /.col-md-6 -->
         </div>
         <!-- /.row -->
+
+        <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-text-width"></i>
+                  Keterangan File Template Import
+                </h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <dl>
+                  <dt>Nama</dt>
+                  <dd>Di isi dengan nama lengkap | contoh : DEDE SUHERMAN | <b>Wajib Diisi</b></dd>
+                  <dt>Email</dt>
+                  <dd>Di isi dengan email pelanggan | ex: dede@gmail.com | <b>Wajib Diisi</b></dd>
+                  <dt>Phone</dt>
+                  <dd>Di isi dengan no HP pelanggan | ex: 081313543xxx | <b>Wajib Diisi</b></dd>
+                  <dt>Password</dt>
+                  <dd>Di isi dengan password pelanggan | ex: dede123 | <b>Wajib Diisi</b></dd>
+                  <dt>Alamat</dt>
+                  <dd>Di isi dengan alamat pelanggan | ex: Jln. Merdeka No 1 | <b>Wajib Diisi</b></dd>
+                  <dt>Aktif</dt>
+                  <dd>Di isi untuk menentukan pelanggan itu sudah aktif atau tidak| 0: Tdk Aktif, 1: Aktif | <b>Wajib Diisi</b></dd>
+                </dl>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
