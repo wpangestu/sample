@@ -92,7 +92,7 @@
           <div class="col-lg-12">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Wellcome {{auth()->user()->name}}</h5>
+                <h5 class="card-title">Maps Teknisi</h5>
                 <div id="map" style="width:100%;height:450px;">
                     {!! Mapper::render() !!}
                 </div>

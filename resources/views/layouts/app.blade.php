@@ -13,6 +13,8 @@
         <!-- Styles -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
+        <link rel="shortcut icon" type="image/jpg" href="{{ asset('logo_app.png') }}"/>
+
         @livewireStyles
 
         <!-- Scripts -->
