@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -55,24 +56,70 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'phone' => 'required',
+            'id_card_number' => 'required',
+            'address' => 'required'
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+        $otp = mt_rand(1000,9999);
+
         $user = User::create([
-            'name' => $request->get('name'),
-            'email' => $request->get('email'),
-            "phone"     => $request->input('phone'),
-            'password' => Hash::make($request->get('password')),
+            'code_otp'          => $otp,
+            'name'              => $request->get('name'),
+            'email'             => $request->get('email'),
+            "phone"             => $request->get('phone'),
+            "address"           => $request->get('address'),
+            "id_card_number"    => $request->get('id_card_number'),
+            'userid'            => Str::random(6),
+            'password'          => Hash::make($request->get('password')),
         ]);
+
+        $user->assignRole('teknisi');
 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(compact('user','token'),201);
+        \Mail::to($request->get('email'))
+                    ->send(new \App\Mail\OtpMail($otp));
+
+        $message = "Register berhasil, silahkan cek email anda untuk memasukan kode otp";
+
+        return response()->json(compact('user','message'),201);
+    }
+
+    public function confirmation_otp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'code_otp' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()], 400);
+        }
+
+        $email = $request->get('email');
+        $code_otp = $request->get('code_otp');
+
+        $user = User::where('email',$email)->first();
+
+        if(is_null($user)){
+            $message = 'Email tidak ditemukan';
+        }else{
+            
+            if($user->code_otp===$code_otp){
+                $message = 'konfirmasi kode otp berhasil';
+                $user->verified = true;
+                $user->save();
+            }else{
+                $message = 'kode otp salah';
+            }
+        }
+        return response()->json(compact('message'));
     }
 
     public function getAuthenticatedUser()

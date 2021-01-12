@@ -36,7 +36,9 @@ class User extends Authenticatable implements JWTSubject
         'address',
         'is_active',
         'lat',
-        'lng'
+        'lng',
+        'id_card_number',
+        'code_otp'
 
     ];
 

@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\EngineerController;
 
 
 Route::post('/register', [UserController::class,'register']);
+Route::post('/confirmation-otp', [UserController::class,'confirmation_otp']);
 Route::post('/login', [UserController::class,'login']);
 Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
 
