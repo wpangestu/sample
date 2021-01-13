@@ -1,4 +1,5 @@
 @extends('layouts.app_layout')
+@section('title','Detail Kategori Jasa')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -8,7 +9,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Kategori Service</h1>
+            <h1 class="m-0 text-dark">Kategori Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <!-- <ol class="breadcrumb float-sm-right">
@@ -29,7 +30,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Detail Kategori Service</h3>
+                <h3 class="card-title">Detail Kategori Jasa</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">                

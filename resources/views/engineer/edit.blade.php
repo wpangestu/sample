@@ -1,4 +1,5 @@
 @extends('layouts.app_layout')
+@section('title','Edit Teknisi')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->

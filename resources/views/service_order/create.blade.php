@@ -1,4 +1,5 @@
 @extends('layouts.app_layout')
+@section('title','Tambah Pesanan Jasa')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
