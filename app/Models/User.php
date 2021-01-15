@@ -80,4 +80,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function engineer()
+    {
+        return $this->hasOne('App\Models\Engineer');
+    }
 }

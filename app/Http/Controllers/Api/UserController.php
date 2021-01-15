@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Models\Engineer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -59,36 +62,78 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
             'phone' => 'required',
             'id_card_number' => 'required',
-            'address' => 'required'
+            'address' => 'required',
+            'id_card' => 'required|mimes:img,png,jpeg,jpg|max:2048',
+            'selfie_id_card' => 'required|mimes:img,png,jpeg,jpg|max:2048',
+            'photo' => 'required|mimes:img,png,jpeg,jpg|max:2048',
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json(["message" => $validator->errors()], 400);
         }
 
         $otp = mt_rand(1000,9999);
 
-        $user = User::create([
-            'code_otp'          => $otp,
-            'name'              => $request->get('name'),
-            'email'             => $request->get('email'),
-            "phone"             => $request->get('phone'),
-            "address"           => $request->get('address'),
-            "id_card_number"    => $request->get('id_card_number'),
-            'userid'            => Str::random(6),
-            'password'          => Hash::make($request->get('password')),
-        ]);
+        try {
+            //code...
 
-        $user->assignRole('teknisi');
+            DB::beginTransaction();
 
-        $token = JWTAuth::fromUser($user);
+            $user = User::create([
+                'code_otp'          => $otp,
+                'name'              => $request->get('name'),
+                'email'             => $request->get('email'),
+                "phone"             => $request->get('phone'),
+                "address"           => $request->get('address'),
+                "id_card_number"    => $request->get('id_card_number'),
+                'userid'            => Str::random(6),
+                'password'          => Hash::make($request->get('password')),
+            ]);
 
-        \Mail::to($request->get('email'))
+            $user->assignRole('teknisi');
+
+            $engineer = Engineer::create([
+                                "id_card_number" => $request->get('id_card_number'),
+                                "name" => $request->get('name'),
+                                'email'             => $request->get('email'),
+                                "phone"             => $request->get('phone'),
+                                "address"           => $request->get('address'),
+                                "user_id"           => $user->id,
+                            ]);
+
+            $uploadFolder = 'users/card_id';
+            $id_card_image = $request->file('id_card');
+            $id_card_image_path = $id_card_image->store($uploadFolder, 'public');
+            
+            // 
+            $uploadFolder = 'users/selfie_card_id';
+            $id_card_selfie_image = $request->file('selfie_id_card');
+            $id_card_selfie_path = $id_card_selfie_image->store($uploadFolder,'public');
+            
+            $uploadFolder = 'users/photo';
+            $photo = $request->file('photo');
+            $photo_path = $photo->store($uploadFolder,'public');
+    
+            $engineer->id_card_image = Storage::disk('public')->url($id_card_image_path);
+            $engineer->id_card_selfie_image = Storage::disk('public')->url($id_card_selfie_path);
+            $engineer->save();
+
+            $user->profile_photo_path = Storage::disk('public')->url($photo_path);
+            $user->save();
+
+            DB::commit();
+
+            \Mail::to($request->get('email'))
                     ->send(new \App\Mail\OtpMail($otp));
 
-        $message = "Register berhasil, silahkan cek email anda untuk memasukan kode otp";
+            $message = "Register berhasil, silahkan cek email anda untuk memasukan kode otp";
 
-        return response()->json(compact('user','message'),201);
+            return response()->json(compact('message'),200);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>$th->getMessage()],422);
+        }
     }
 
     public function confirmation_otp(Request $request)
@@ -113,8 +158,9 @@ class UserController extends Controller
             
             if($user->code_otp===$code_otp){
                 $message = 'konfirmasi kode otp berhasil';
-                $user->verified = true;
-                $user->save();
+                $user->engineer->is_varified_email = true;
+                $user->engineer->varified_email_at = date('Y-m-d H:i:s');
+                $user->engineer->save();
             }else{
                 $message = 'kode otp salah';
             }
