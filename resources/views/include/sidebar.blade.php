@@ -63,13 +63,39 @@
               </p>
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="{{ route('engineer.index') }}" class="nav-link {{ request()->routeIs('engineer*')?'active':'' }}">
               <i class="nav-icon fas fa-tools"></i>
               <p>
                 Teknisi
               </p>
             </a>
+          </li> -->
+          <li class="nav-item has-treeview {{ request()->routeIs('engineer*')?'menu-open':'' }}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tools"></i>
+              <p>
+                Teknisi
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('engineer.confirm.index') }}" class="nav-link {{ request()->routeIs('engineer.confirm.index')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Konfirmasi Teknisi</p>
+                  @if(get_confirm_engineer()>0)
+                    <span class="right badge badge-info">{{ get_confirm_engineer() }}</span>
+                  @endif
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('engineer.index') }}" class="nav-link {{ request()->routeIs('engineer.index')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>List Teknisi</p>
+                </a>
+              </li>
+            </ul>
           </li>
           <li class="nav-item">
             <a href="{{ route('service_order.index') }}" class="nav-link {{ request()->routeIs('service_order*')?'active':'' }}">

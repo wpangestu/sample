@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::resource('customer', CustomerController::class);
     Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
     // Teknisi
+    Route::get('engineer/confirm', [EnginnerController::class,'confirmation'])->name('engineer.confirm.index');;
     Route::resource('engineer', EnginnerController::class);
     Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');;
 

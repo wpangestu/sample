@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\ServiceOrder;
+use App\Models\Engineer;
 use DataTables;
 use Illuminate\Support\Str;
 use Mapper;
+use Illuminate\Support\Facades\Hash;
+use DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class EnginnerController extends Controller
 {
@@ -20,7 +26,7 @@ class EnginnerController extends Controller
     {
         //
         if ($request->ajax()) {
-            $data = User::latest()->Role('teknisi')->get();
+            $data = User::latest()->Role('teknisi')->where('verified',true)->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
@@ -37,6 +43,43 @@ class EnginnerController extends Controller
         }
 
         return view('engineer.index');
+    }
+
+    public function confirmation(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = User::latest()
+                            ->Role('teknisi')
+                            ->where('verified',0)
+                            // ->whereHas('engineer', function (Builder $query) {
+                            //         $query->where('is_varified_email',1);
+                            // })
+                            ->get();
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('status', function($row){
+                            if($row->engineer==null){
+                                $badge = 'null';
+                            }
+                            elseif($row->engineer->status==="pending"){
+                                $badge = '<span class="badge badge-warning">Pending</span>';
+                            }
+                            elseif($row->engineer->status==="decline"){
+                                $badge = 'Tolak';
+                            }
+                            else{
+                                $badge = '-';
+                            }
+                            return $badge;
+                    })
+                    ->addColumn('action', function($row){
+                            $btn = ' <a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-info btn-sm">Detail</a>';
+                            return $btn;
+                    })
+                    ->rawColumns(['action','status'])
+                    ->make(true);        
+        }
+        return view('engineer.index_confirm');
     }
 
     /**
@@ -65,43 +108,72 @@ class EnginnerController extends Controller
             'email' => 'required|email|unique:users',
             'phone' => 'required',
             'password' => 'required|min:6|confirmed',
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'id_card_number' => 'required|numeric'
         ]);
 
-        $data = [
-            "name"      => $request->input('name'),
-            "email"     => $request->input('email'),
-            "phone"     => $request->input('phone'),
-            "password"  => bcrypt($request->input('password')),
-            "address"   => $request->input('address'),
-            "userid"    => Str::random(6),
-            "is_active" => $request->input('active')??0,
-            "lat"       => $request->input('lat'),
-            "lng"       => $request->input('lng'),
-        ];
-
-        // dd($data);
-
-        $insert = User::create($data);
-        $insert->assignRole('teknisi');
-
-        if ($request->hasFile('photo')) {
-            $file = $request->file('photo');
-            $destination = 'images/user_profile';
-            $file_name = time()."_".$insert->userid.".".$file->getClientOriginalExtension();
-            $file->move($destination,$file_name);
-
-            $user = User::find($insert->id);
-            $user->profile_photo_path = $file_name;
-            $user->save();
+        $cek = true;
+        while ($cek) {
+            # code...
+            $userid = mt_rand(100000,999999);
+            $cek_id = User::where('userid',$userid)->first();
+            if(empty($cek_id)){
+                $cek = false;
+            }
         }
 
-        if($insert){
-            return redirect()->route('engineer.index')
-                        ->with('success','Data berhasil ditambahkan');
-        }else{
-            return redirect()->route('engineer.index')
-                        ->with('error','Opps, Terjadi kesalahan.');
+        try {
+            //code...
+            DB::beginTransaction();
+
+            $data = [
+                "name"      => $request->input('name'),
+                "email"     => $request->input('email'),
+                "phone"     => $request->input('phone'),
+                "password"  => Hash::make($request->input('password')),
+                "address"   => $request->input('address'),
+                "userid"    => $userid,
+                "is_active" => $request->input('active')??0,
+                "lat"       => $request->input('lat'),
+                "lng"       => $request->input('lng'),
+            ];
+    
+            $insert = User::create($data);
+            $insert->assignRole('teknisi');
+    
+            $engineer = Engineer::create([
+                "id_card_number"    => $request->input('id_card_number'),
+                "name"              => $request->input('name'),
+                "email"             => $request->input('email'),
+                "phone"             => $request->input('phone'),
+                "address"           => $request->input('address'),
+                "user_id"           => $insert->id,
+            ]);
+    
+            if ($request->hasFile('photo')) {
+    
+                $uploadFolder = 'users/photo';
+                $photo = $request->file('photo');
+                $photo_path = $photo->store($uploadFolder,'public');
+    
+                $insert->profile_photo_path = Storage::disk('public')->url($photo_path);
+                $insert->save();
+            }
+
+            DB::commit();
+
+            if($insert){
+                return redirect()->route('engineer.index')
+                            ->with('success','Data berhasil ditambahkan');
+            }else{
+                return redirect()->route('engineer.index')
+                            ->with('error','Opps, Terjadi kesalahan.');
+            }
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            dd($th);
         }
     }
 

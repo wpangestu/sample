@@ -50,6 +50,10 @@
                         <form action="{{route('engineer.store')}}" enctype="multipart/form-data" method="post">
                             @csrf
                             <div class="form-group">
+                                <label for="inputIdCardNumber" class="col-form-label">No KTP</label>
+                                <input type="text" name="id_card_number" class="form-control" id="inputIdCardNumber" placeholder="Id Card" value="{{ old('id_card_number') }}">
+                            </div>
+                            <div class="form-group">
                                 <label for="inputName" class="col-form-label">Nama</label>
                                 <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama" value="{{ old('name') }}">
                             </div>
