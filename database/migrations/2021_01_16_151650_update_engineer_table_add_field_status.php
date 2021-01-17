@@ -15,7 +15,7 @@ class UpdateEngineerTableAddFieldStatus extends Migration
     {
         Schema::table('engineers', function (Blueprint $table) {
             //
-            $table->enum('status',['pending','decline'])->default('pending');
+            $table->enum('status',['pending','decline','success'])->default('pending');
         });
     }
 

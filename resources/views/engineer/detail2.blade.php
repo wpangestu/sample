@@ -40,9 +40,16 @@
                             </div> -->
                             <div class="card-body box-profile">
                                 <div class="text-center">
+                                    @if(!is_null($data->profile_photo_path))
+                                    <img class="profile-user-img img-fluid img-circle"
+                                        src="{{$data->profile_photo_path}}"
+                                        alt="User profile picture">
+                                    @else
                                     <img class="profile-user-img img-fluid img-circle"
                                         src="../../dist/img/avatar04.png"
                                         alt="User profile picture">
+                                    @endif
+
                                 </div>
 
                                 <h3 class="profile-username text-center">{{ $data->name }}</h3>

@@ -12,6 +12,7 @@ use Mapper;
 use Illuminate\Support\Facades\Hash;
 use DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 
 
@@ -65,7 +66,7 @@ class EnginnerController extends Controller
                                 $badge = '<span class="badge badge-warning">Pending</span>';
                             }
                             elseif($row->engineer->status==="decline"){
-                                $badge = 'Tolak';
+                                $badge = '<span class="badge badge-danger">Ditolak</span>';
                             }
                             else{
                                 $badge = '-';
@@ -73,13 +74,51 @@ class EnginnerController extends Controller
                             return $badge;
                     })
                     ->addColumn('action', function($row){
-                            $btn = ' <a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-info btn-sm">Detail</a>';
+                            if($row->engineer==null){
+                                $btn = ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            }else{
+                                $btn = ' <a href="'.route('engineer.confirm.detail',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-info btn-sm">Detail</a>';
+                            }
                             return $btn;
                     })
                     ->rawColumns(['action','status'])
                     ->make(true);        
         }
         return view('engineer.index_confirm');
+    }
+
+    public function show_confirmation($id)
+    {
+        $data = User::Role('teknisi')->where('userid',$id)->first();
+        return view('engineer.detail_confirm',compact('data'));
+    }
+
+    public function accept_engineer($id)
+    {
+        try {
+            //code...
+            DB::beginTransaction();
+
+            $user = User::Role('teknisi')->where('userid',$id)->first();
+            $user->verified = 1;
+            $user->save();
+            $user->engineer->is_verified_data = 1;
+            $user->engineer->verified_data_at = date('Y-m-d H:i:s');
+            $user->engineer->verified_by = Auth::user()->id;
+            $user->engineer->status = 'success';
+            $user->engineer->save();
+
+            DB::commit();
+
+            return redirect()->route('engineer.index')
+                            ->with('success','Teknisi berhasil diverifikasi');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            dd($th.getMessaage());
+        }
+
     }
 
     /**
@@ -158,6 +197,22 @@ class EnginnerController extends Controller
     
                 $insert->profile_photo_path = Storage::disk('public')->url($photo_path);
                 $insert->save();
+            }
+
+            if($request->hasFile('id_card_image')){
+                $uploadFolder = 'users/card_id';
+                $id_card_image = $request->file('id_card_image');
+                $id_card_image_path = $id_card_image->store($uploadFolder, 'public');
+                $engineer->id_card_image = Storage::disk('public')->url($id_card_image_path);
+                $engineer->save();
+            }
+
+            if($request->hasFile('id_card_selfie_image')){
+                $uploadFolder = 'users/selfie_card_id';
+                $id_card_selfie_image = $request->file('id_card_selfie_image');
+                $id_card_selfie_path = $id_card_selfie_image->store($uploadFolder,'public');
+                $engineer->id_card_selfie_image = Storage::disk('public')->url($id_card_selfie_path);
+                $engineer->save();
             }
 
             DB::commit();

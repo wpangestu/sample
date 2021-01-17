@@ -88,6 +88,16 @@
                             <span class="text-muted rext-sm">format:jpeg,png,jpg|max:2048kb</span>
                         </div>
                         <div class="form-group">
+                            <label for="inputAddress" class="col-form-label">Photo KTP</label>
+                            <input type="file" class="form-control" name="id_card_image">
+                            <span class="text-muted rext-sm">format:jpeg,png,jpg|max:2048kb</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAddress" class="col-form-label">Photo KTP Selfie</label>
+                            <input type="file" class="form-control" name="id_card_selfie_image">
+                            <span class="text-muted rext-sm">format:jpeg,png,jpg|max:2048kb</span>
+                        </div>
+                        <div class="form-group">
                             <label for="inputAddress" class="col-form-label">Alamat</label>
                             <textarea name="address" class="form-control" id="inputAddress" rows="4">{{ old('address') }}</textarea>
                         </div>

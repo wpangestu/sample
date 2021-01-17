@@ -77,6 +77,10 @@
               <p>
                 Teknisi
                 <i class="fas fa-angle-left right"></i>
+
+                @if(get_confirm_engineer()>0)
+                <i class="fas text-info fa-circle right"></i>
+                @endif
               </p>
             </a>
             <ul class="nav nav-treeview">

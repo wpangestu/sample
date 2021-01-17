@@ -14,7 +14,7 @@
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
           @if(get_all_notification()>0)
-            <span class="badge badge-warning navbar-badge">{{ get_all_notification() }}</span>
+            <span class="badge badge-danger navbar-badge">{{ get_all_notification() }}</span>
           @endif
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
