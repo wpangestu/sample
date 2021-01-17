@@ -169,7 +169,7 @@ class UserController extends Controller
         return response()->json(compact('message'));
     }
 
-    public function forgot_password()
+    public function forgot_password(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -192,10 +192,44 @@ class UserController extends Controller
             \Mail::to($request->get('email'))
             ->send(new \App\Mail\OtpMail($newotp));
             $message = "Kode Otp sudah dikirim ke email anda";
+            return response()->json(["message"=>$message], 200);
         }
-        return response()->json(["message"=>$message], 200);
 
     }
+
+    public function forgot_password_input_otp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'code_otp' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()], 422);
+        }
+
+        $email = $request->get('email');
+        $code_otp = $request->get('code_otp');
+
+        $user = User::where('email',$email)->first();
+
+        if(is_null($user)){
+            $message = 'Email tidak ditemukan';
+            return response()->json(["message"=>$message->errors()], 422);
+        }else{
+            if($user->code_otp===$code_otp){
+                $message = 'konfirmasi kode otp berhasil';
+                $user->engineer->is_varified_email = true;
+                $user->engineer->varified_email_at = date('Y-m-d H:i:s');
+                $user->engineer->save();
+                $kode=200;
+            }else{
+                $message = 'kode otp salah';
+                $kode=422;
+            }
+            return response()->json(['message'=>$message],$kode);
+        }
+    }    
 
     public function getAuthenticatedUser()
     {
