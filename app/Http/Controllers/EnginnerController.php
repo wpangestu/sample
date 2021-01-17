@@ -121,6 +121,35 @@ class EnginnerController extends Controller
 
     }
 
+    public function decline_engineer($id)
+    {
+        try {
+            //code...
+            DB::beginTransaction();
+
+            $user = User::Role('teknisi')->where('userid',$id)->first();
+            $user->verified = 0;
+            $user->save();
+
+            $user->engineer->is_verified_data = 0;
+            $user->engineer->verified_data_at = date('Y-m-d H:i:s');
+            $user->engineer->verified_by = Auth::user()->id;
+            $user->engineer->status = 'decline';
+            $user->engineer->save();
+
+            DB::commit();
+
+            return redirect()->route('engineer.confirm.index')
+                            ->with('success','Berhasil update verifikasi teknisi');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            dd($th.getMessaage());
+        }
+
+    }
+
     /**
      * Show the form for creating a new resource.
      *

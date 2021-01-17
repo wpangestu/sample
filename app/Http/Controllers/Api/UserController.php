@@ -169,6 +169,34 @@ class UserController extends Controller
         return response()->json(compact('message'));
     }
 
+    public function forgot_password()
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()], 422);
+        }   
+
+        $user = User::where('email',$email)->first();
+
+        if(is_null($user)){
+            $message = 'Email tidak ditemukan';
+            return response()->json(["message"=>$message], 422);
+        }else{
+            $newotp = mt_rand(1000,9999);
+            $user->code_otp = $newotp;
+            $user->save();
+
+            \Mail::to($request->get('email'))
+            ->send(new \App\Mail\OtpMail($newotp));
+            $message = "Kode Otp sudah dikirim ke email anda";
+        }
+        return response()->json(["message"=>$message], 200);
+
+    }
+
     public function getAuthenticatedUser()
     {
         try {

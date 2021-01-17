@@ -59,7 +59,7 @@
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>No Hp</th>
-                                <th>Alamat</th>
+                                <!-- <th>Alamat</th> -->
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -103,7 +103,7 @@
                 {data: 'name', name: 'name'},
                 {data: 'email', name: 'email'},
                 {data: 'phone', name: 'phone'},
-                {data: 'address', name: 'address'},
+                // {data: 'address', name: 'address'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

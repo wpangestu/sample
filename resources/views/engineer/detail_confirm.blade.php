@@ -120,7 +120,7 @@
                   <dt class="col-sm-3"></dt>
                   <dd class="col-sm-8">
                     <a onclick="return confirm('Apakah anda yakin?')" href="{{ route('engineer.confirm.accept',$data->userid) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Accept</a>
-                    <a href="{{ route('engineer.confirm.index') }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Decline</a>
+                    <a onclick="return confirm('Apakah anda yakin?')" href="{{ route('engineer.confirm.decline', $data->userid) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Decline</a>
                     <a href="{{ route('engineer.confirm.index') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a>
                   </dd>
                 </dl>

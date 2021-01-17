@@ -51,8 +51,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
     // Teknisi
     Route::get('engineer/confirm', [EnginnerController::class,'confirmation'])->name('engineer.confirm.index');;
-    Route::get('engineer/confirm/{id}/detail', [EnginnerController::class,'show_confirmation'])->name('engineer.confirm.detail');;
-    Route::get('engineer/confirm/{id}/accept', [EnginnerController::class,'accept_engineer'])->name('engineer.confirm.accept');;
+    Route::get('engineer/confirm/{id}/detail', [EnginnerController::class,'show_confirmation'])->name('engineer.confirm.detail');
+    Route::get('engineer/confirm/{id}/accept', [EnginnerController::class,'accept_engineer'])->name('engineer.confirm.accept');
+    Route::get('engineer/confirm/{id}/decline', [EnginnerController::class,'decline_engineer'])->name('engineer.confirm.decline');
     Route::resource('engineer', EnginnerController::class);
     Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');;
 
