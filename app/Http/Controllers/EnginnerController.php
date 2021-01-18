@@ -190,6 +190,8 @@ class EnginnerController extends Controller
             }
         }
 
+        $otp = mt_rand(1000,9999);
+
         try {
             //code...
             DB::beginTransaction();
@@ -204,6 +206,7 @@ class EnginnerController extends Controller
                 "is_active" => $request->input('active')??0,
                 "lat"       => $request->input('lat'),
                 "lng"       => $request->input('lng'),
+                "otp"       => $otp
             ];
     
             $insert = User::create($data);

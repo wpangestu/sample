@@ -194,7 +194,6 @@ class UserController extends Controller
             $message = "Kode Otp sudah dikirim ke email anda";
             return response()->json(["message"=>$message], 200);
         }
-
     }
 
     public function forgot_password_input_otp(Request $request)
@@ -215,7 +214,7 @@ class UserController extends Controller
 
         if(is_null($user)){
             $message = 'Email tidak ditemukan';
-            return response()->json(["message"=>$message->errors()], 422);
+            return response()->json(["message"=>$message], 422);
         }else{
             if($user->code_otp===$code_otp){
                 $message = 'konfirmasi kode otp berhasil';
@@ -230,6 +229,34 @@ class UserController extends Controller
             return response()->json(['message'=>$message],$kode);
         }
     }    
+
+    public function change_password(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()], 422);
+        }
+
+        $email = $request->get('email');
+        $password = $request->get('password');
+
+        $user = User::where('email',$email)->first();
+
+        if(is_null($user)){
+            $message = 'Email tidak ditemukan';
+            return response()->json(["message"=>$message], 422);
+        }else{
+            $user->password = Hash::make($password);
+            $user->save();
+            $message = "Password berhasil diubah";
+            $kode = 200;
+            return response()->json(['message'=>$message],$kode);
+        }
+    }
 
     public function getAuthenticatedUser()
     {
