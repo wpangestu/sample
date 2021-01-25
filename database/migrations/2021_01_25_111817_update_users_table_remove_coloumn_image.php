@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldImageKtpSelfieFormal extends Migration
+class UpdateUsersTableRemoveColoumnImage extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class AddFieldImageKtpSelfieFormal extends Migration
      */
     public function up()
     {
+        //
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->string('idcard_image')->nullable(); 
-            $table->string('idcard_selfie_image')->nullable(); 
-            $table->string('formal_image')->nullable(); 
+            $table->dropColumn(['idcard_image','idcard_selfie_image','formal_image']);
         });
     }
 
@@ -28,9 +27,12 @@ class AddFieldImageKtpSelfieFormal extends Migration
      */
     public function down()
     {
+        //
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn(['idcard_image','idcard_selfie_image','formal_image']);
+            $table->string('idcard_image')->nullable(); 
+            $table->string('idcard_selfie_image')->nullable(); 
+            $table->string('formal_image')->nullable(); 
         });
     }
 }
