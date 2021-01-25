@@ -358,4 +358,13 @@ class UserController extends Controller
         return response()->json($response);
     }
 
+    public function EngineerBalance()
+    {
+        $user = auth()->user();
+
+        $balance = $user->balance;
+
+        return response()->json(compact('balance'));
+    }
+
 }

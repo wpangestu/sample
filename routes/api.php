@@ -45,6 +45,7 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
+    Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
 
 });
 
