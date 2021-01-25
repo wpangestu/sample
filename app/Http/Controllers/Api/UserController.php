@@ -35,22 +35,27 @@ class UserController extends Controller
 
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+                return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
             }
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
+            // dd($user);
+            $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
+
             $data['success'] = true;
             $data['message'] = "Login successfully";
             $data['data'] = $user;
             $data['token'] = $token;
+        }else{
+            $data['message'] = "Opps... email atau kata sandi salah";
         }
-        
-
+    
         return response()->json($data);
     }
 
@@ -74,6 +79,16 @@ class UserController extends Controller
 
         $otp = mt_rand(1000,9999);
 
+        $cek = true;
+        while ($cek) {
+            # code...
+            $userid = mt_rand(100000,999999);
+            $cek_id = User::where('userid',$userid)->first();
+            if(empty($cek_id)){
+                $cek = false;
+            }
+        }
+
         try {
             //code...
 
@@ -86,7 +101,7 @@ class UserController extends Controller
                 "phone"             => $request->get('phone'),
                 "address"           => $request->get('address'),
                 "id_card_number"    => $request->get('id_card_number'),
-                'userid'            => Str::random(6),
+                'userid'            => $userid,
                 'password'          => Hash::make($request->get('password')),
             ]);
 
@@ -159,6 +174,7 @@ class UserController extends Controller
             
             if($user->code_otp===$code_otp){
                 $message = 'konfirmasi kode otp berhasil';
+                $user->email_verified_at = date('Y-m-d H:i:s');
                 $user->engineer->is_varified_email = true;
                 $user->engineer->varified_email_at = date('Y-m-d H:i:s');
                 $user->engineer->save();
@@ -179,7 +195,7 @@ class UserController extends Controller
             return response()->json(["message"=>$validator->errors()], 422);
         }   
 
-        $user = User::where('email',$email)->first();
+        $user = User::where('email',$request->get('email'))->first();
 
         if(is_null($user)){
             $message = 'Email tidak ditemukan';
@@ -191,6 +207,7 @@ class UserController extends Controller
 
             \Mail::to($request->get('email'))
             ->send(new \App\Mail\OtpMail($newotp));
+
             $message = "Kode Otp sudah dikirim ke email anda";
             return response()->json(["message"=>$message], 200);
         }
@@ -258,7 +275,7 @@ class UserController extends Controller
         }
     }
 
-    public function request_otp()
+    public function request_otp(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -268,7 +285,7 @@ class UserController extends Controller
             return response()->json(["message"=>$validator->errors()], 422);
         }   
 
-        $user = User::where('email',$email)->first();
+        $user = User::where('email',$request->get('email'))->first();
 
         if(is_null($user)){
             $message = 'Email tidak ditemukan';
@@ -307,7 +324,38 @@ class UserController extends Controller
 
         }
 
-        return response()->json(compact('user'));
+        $response = [
+            "id_card_number" => $user->engineer->id_card_number,
+            "name" => $user->name,
+            "phone" => $user->phone,
+            "email" => $user->email,
+            "address" => $user->address,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function userEngineer()
+    {
+        $user = auth()->user();
+
+        $response = [
+            "id_card_number" => $user->engineer->id_card_number,
+            "name" => $user->name,
+            "phone" => $user->phone,
+            "email" => $user->email,
+            "address" => $user->address,
+            "userid" => $user->userid,
+            "email_verified_at" => $user->email_verified_at,
+            "profile_photo" => $user->profile_photo_path,
+            "is_active" => $user->is_active,
+            "lat" => $user->lat,
+            "lng" => $user->lng,
+            "verified" => $user->verified,
+            "last_login" => $user->last_login,
+        ];
+        
+        return response()->json($response);
     }
 
 }

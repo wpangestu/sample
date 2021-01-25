@@ -78,6 +78,7 @@ class EnginnerController extends Controller
                                 $btn = ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
                             }else{
                                 $btn = ' <a href="'.route('engineer.confirm.detail',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-info btn-sm">Detail</a>';
+                                $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
                             }
                             return $btn;
                     })
@@ -371,11 +372,26 @@ class EnginnerController extends Controller
     {
         //
         $user = User::Role('teknisi')->where('userid',$id)->first();
+
+        try {
+            //code...
+            DB::beginTransaction();
+
+            $user->removeRole('teknisi');
+
+            $user->engineer->delete();
+            $delete = $user->delete();
+
+            DB::commit();
+            return Response()->json($delete);
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            return Response()->json($th->getMessage());
+        }
         
-        $user->removeRole('teknisi');
 
-        $delete = $user->delete();
 
-        return Response()->json($delete);
     }
 }
