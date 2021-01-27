@@ -33,6 +33,12 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
+        
+        if(is_null($user)){
+            return response()->json(['message' => 'Email belum terdaftar'], 423);
+        }
+
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
@@ -41,7 +47,7 @@ class UserController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
+        // $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
             // dd($user);
