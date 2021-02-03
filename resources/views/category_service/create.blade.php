@@ -46,8 +46,7 @@
                             </ul>
                         </div>
                     @endif
-
-                        <form action="{{route('service_category.store')}}" method="post">
+                        <form action="{{route('service_category.store')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row">
                                 <label for="inputName" class="col-sm-2 col-form-label">Nama *</label>
@@ -58,7 +57,9 @@
                             <div class="form-group row">
                                 <label for="inputIcon" class="col-sm-2 col-form-label">Ikon</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="icon" class="form-control" id="inputIcon" placeholder="Ikon">
+                                    <!-- <input type="text" name="icon" class="form-control" id="inputIcon" placeholder="Ikon"> -->
+                                    <input type="file" name="icon" id="icon" class="form-control">
+                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
                                 </div>
                             </div>
                             <div class="form-group row">

@@ -47,7 +47,7 @@
                         </div>
                     @endif
 
-                        <form action="{{route('service_category.update',$data->id)}}" method="post">
+                        <form action="{{route('service_category.update',$data->id)}}" method="post" enctype="multipart/form-data">
                             @method('put')
                             @csrf
                             <div class="form-group row">
@@ -56,10 +56,19 @@
                                     <input type="text" name="name" class="form-control" id="inputName" value="{{$data->name}}" placeholder="Nama">
                                 </div>
                             </div>
+                            @if(!(is_null($data->icon)))
+                            <div class="form-group row">
+                                <label for="inputName" class="col-sm-2 col-form-label">Ikon Sebelum</label>
+                                <div class="col-sm-10">
+                                  <img src="{{ $data->icon }}" alt="" height="50px">
+                                </div>
+                            </div>
+                            @endif
                             <div class="form-group row">
                                 <label for="inputIcon" class="col-sm-2 col-form-label">Ikon</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="icon" class="form-control" id="inputIcon" placeholder="Ikon" value="{{ $data->icon }}">
+                                    <input type="file" name="icon" id="icon" class="form-control">
+                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -78,6 +87,9 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                    <div class="col-md-6">
+
                     </div>
                 </div>
               </div>

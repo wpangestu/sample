@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CategoryService;
 use DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryServiceController extends Controller
 {
@@ -22,11 +23,14 @@ class CategoryServiceController extends Controller
                     ->addIndexColumn()
                     ->addColumn('status', function($row){
                         if($row->status==1){
-                            $status = 'aktif';
+                            $status = '<span class="badge badge-success">aktif</span>';
                         }else{
-                            $status = 'non aktif';
+                            $status = '<span class="badge badge-secondary">non aktif</span>';
                         }
                         return $status;
+                    })
+                    ->addColumn('icon', function($row){
+                        return '<img src="'.$row->icon.'" height="120px">';
                     })
                     ->addColumn('action', function($row){
    
@@ -37,7 +41,7 @@ class CategoryServiceController extends Controller
     
                             return $btn;
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','status','icon'])
                     ->make(true);
         }
 
@@ -66,15 +70,25 @@ class CategoryServiceController extends Controller
         //
         $request->validate([
             'name' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
             "name" => $request->input('name'),
-            "icon" => $request->input('icon'),
             "status" => $request->input('active')??0,
         ];
-
+ 
         $insert = CategoryService::create($data);
+
+        if ($request->hasFile('icon')) {
+
+            $uploadFolder = 'admin/service_category';
+            $photo = $request->file('icon');
+            $photo_path = $photo->store($uploadFolder,'public');
+
+            $insert->icon = Storage::disk('public')->url($photo_path);
+            $insert->save();
+        }
 
         if($insert){
             return redirect()->route('service_category.index')
@@ -123,15 +137,26 @@ class CategoryServiceController extends Controller
         //
         $request->validate([
             'name' => 'required',
+            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
             "name" => $request->input('name'),
-            "icon" => $request->input('icon'),
             "status" => $request->input('active')??0,
         ];
 
-        $update = CategoryService::find($id)->update($data);
+        $service_category = CategoryService::find($id);
+        $update = $service_category->update($data);
+
+        if ($request->hasFile('icon')) {
+
+            $uploadFolder = 'admin/service_category';
+            $photo = $request->file('icon');
+            $photo_path = $photo->store($uploadFolder,'public');
+
+            $service_category->icon = Storage::disk('public')->url($photo_path);
+            $service_category->save();
+        }
 
         if($update){
             return redirect()->route('service_category.index')

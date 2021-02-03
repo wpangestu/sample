@@ -53,7 +53,13 @@
                   <dt class="col-sm-3">Nama</dt>
                   <dd class="col-sm-8">: {{ $categoryService->name??'-' }}</dd>
                   <dt class="col-sm-3">Ikon</dt>
-                  <dd class="col-sm-8">: {{ $categoryService->icon??'-' }}</dd>
+                  <dd class="col-sm-8">: 
+                    @if(!(is_null($categoryService->icon)))
+                    <img src="{{$categoryService->icon}}" height="50px" alt="">
+                    @else
+                      -
+                    @endif
+                  </dd>
                   <dt class="col-sm-3">Status</dt>
                   <dd class="col-sm-8">: <span class="badge badge-{{ $categoryService->status===1?'success':'secondary' }}">{{ $categoryService->status===1?'Aktif':'Tidak Aktif' }}</span>
                   <dt class="col-sm-3">Di buat</dt>
