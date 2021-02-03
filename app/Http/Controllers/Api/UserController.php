@@ -242,6 +242,7 @@ class UserController extends Controller
             if($user->code_otp===$code_otp){
                 $message = 'konfirmasi kode otp berhasil';
                 $user->engineer->is_varified_email = true;
+                $user->email_verified_at = date('Y-m-d H:i:s');
                 $user->engineer->varified_email_at = date('Y-m-d H:i:s');
                 $user->engineer->save();
                 $kode=200;

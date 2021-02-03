@@ -54,5 +54,63 @@
 <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBd-hpKWU00hnmJq9HaEzVbWQwXnbiF0F8",
+    authDomain: "tesfirebase-cf18a.firebaseapp.com",
+    databaseURL: "https://tesfirebase-cf18a.firebaseio.com",
+    projectId: "tesfirebase-cf18a",
+    storageBucket: "tesfirebase-cf18a.appspot.com",
+    messagingSenderId: "285443598816",
+    appId: "1:285443598816:web:7dfa6d01d2bff7ea176385"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+  const messaging = firebase.messaging();
+
+  // Add the public key generated from the console here.
+  messaging.getToken({vapidKey: "BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE"});
+
+  function sendTokenToServer(token){
+    console.log(token)
+  }
+
+  messaging.getToken({vapidKey: 'BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE'}).then((currentToken) => {
+    if (currentToken) {
+      sendTokenToServer(currentToken);
+      // updateUIForPushEnabled(currentToken);
+    } else {
+      // Show permission request.
+      console.log('No registration token available. Request permission to generate one.');
+      // Show permission UI.
+      // updateUIForPushPermissionRequired();
+      // setTokenSentToServer(false);
+    }
+  }).catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
+    // showToken('Error retrieving registration token. ', err);
+    // setTokenSentToServer(false);
+  });
+
+  messaging.onMessage((payload) => {
+    console.log('Message received. ', payload);
+    // ...
+  });
+</script>
+
 @yield('scripts')
 </body>
