@@ -40,22 +40,26 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::resource('service_category', CategoryServiceController::class);
     Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax');
     // Jasa
+    Route::get('services/confirmation', [ServiceController::class,'confirmation'])->name('services.confirmation');
+    Route::get('services/confirmation/{id}/detail', [ServiceController::class,'detail_confirmation'])->name('services.confirmation.detail');
+    Route::get('services/confirmation/{id}/accept', [ServiceController::class,'confirm_accept'])->name('services.confirmation.accept');
+    Route::get('services/confirmation/{id}/danied', [ServiceController::class,'confirm_danied'])->name('services.confirmation.danied');
     Route::resource('services', ServiceController::class);
-    Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');;
+    Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');
     
     // Pelanggan
     Route::get('customer/export', [CustomerController::class,'export'])->name('customer.export');
     Route::get('customer/import', [CustomerController::class,'import'])->name('customer.import');
     Route::post('customer/store_import', [CustomerController::class,'storeImport'])->name('customer.store.import');
     Route::resource('customer', CustomerController::class);
-    Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');;
+    Route::post('customer/{id}/delete', [CustomerController::class,'destroy'])->name('customer.delete.ajax');
     // Teknisi
-    Route::get('engineer/confirm', [EnginnerController::class,'confirmation'])->name('engineer.confirm.index');;
+    Route::get('engineer/confirm', [EnginnerController::class,'confirmation'])->name('engineer.confirm.index');
     Route::get('engineer/confirm/{id}/detail', [EnginnerController::class,'show_confirmation'])->name('engineer.confirm.detail');
     Route::get('engineer/confirm/{id}/accept', [EnginnerController::class,'accept_engineer'])->name('engineer.confirm.accept');
     Route::get('engineer/confirm/{id}/decline', [EnginnerController::class,'decline_engineer'])->name('engineer.confirm.decline');
     Route::resource('engineer', EnginnerController::class);
-    Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');;
+    Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');
 
     // Service Order
     Route::resource('service_order', ServiceOrderController::class);

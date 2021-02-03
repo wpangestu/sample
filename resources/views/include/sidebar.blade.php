@@ -48,9 +48,18 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('services.index') }}" class="nav-link {{ request()->routeIs('services*')?'active':'' }}">
+                <a href="{{ route('services.index') }}" class="nav-link {{ request()->routeIs('services.index')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>List Jasa</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('services.confirmation') }}" class="nav-link {{ request()->routeIs('services.confirmation*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Konfirmasi Jasa</p>
+                  @if(get_confirm_service()>0)
+                    <span class="right badge badge-info">{{ get_confirm_service() }}</span>
+                  @endif
                 </a>
               </li>
             </ul>

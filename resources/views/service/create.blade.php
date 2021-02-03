@@ -47,17 +47,22 @@
                         </div>
                     @endif
 
-                        <form action="{{route('services.store')}}" method="post">
+                        <form action="{{route('services.store')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-2 col-form-label">Nama*</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama">
+                                <label for="inputEngineer" class="col-sm-3 col-form-label">Teknisi*</label>
+                                <div class="col-sm-9">
+                                  <select class="form-control" name="engineer_id" id="inputEngineer">
+                                      <option value="">PILIH</option>
+                                      @foreach($engineers as $engineer)
+                                          <option value="{{ $engineer->id }}">{{ $engineer->name }}</option>
+                                      @endforeach
+                                  </select>
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputCatSer" class="col-sm-2 col-form-label">Kategori*</label>
-                                <div class="col-sm-10">
+                                <label for="inputCatSer" class="col-sm-3 col-form-label">Kategori*</label>
+                                <div class="col-sm-9">
                                     <select class="form-control" name="category_service_id" id="inputCatSer">
                                         <option value="">PILIH</option>
                                         @foreach($categoryServices as $data)
@@ -67,26 +72,47 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputPrice" class="col-sm-2 col-form-label">Harga*</label>
-                                <div class="col-sm-10">
+                                <label for="inputName" class="col-sm-3 col-form-label">Nama Jasa*</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPrice" class="col-sm-3 col-form-label">Harga*</label>
+                                <div class="col-sm-9">
                                     <input type="text" name="price" class="form-control" id="inputPrice" placeholder="">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputImage" class="col-sm-2 col-form-label">Gambar</label>
-                                <div class="col-sm-10">
-                                    <input type="file" name="image" id="inputImage">
+                                <label for="inputImage" class="col-sm-3 col-form-label">Gambar Jasa</label>
+                                <div class="col-sm-9">
+                                    <input type="file" name="image" id="inputImage"><br>
+                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputDesc" class="col-sm-2 col-form-label">Deskripsi</label>
-                                <div class="col-sm-10">
+                                <label for="inputImageSertificate" class="col-sm-3 col-form-label">Gambar Sertifikat Jasa*</label>
+                                <div class="col-sm-9">
+                                    <input type="file" name="sertification_image" id="inputImageSertificate"><br>
+                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputSkill" class="col-sm-3 col-form-label">Skill Teknisi*</label>
+                                <div class="col-sm-9">
+                                  <!-- <input type="text" name="skill" id="inputSkill" class="form-control"> -->
+                                  <select name="skill[]" id="inputSkill" class="form-control" multiple></select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
+                                <div class="col-sm-9">
                                     <textarea class="form-control" name="description" id="inputDesc" cols="30" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputStatus" class="col-sm-2 col-form-label"></label>
-                                <div class="col-sm-10">
+                                <label for="inputStatus" class="col-sm-3 col-form-label"></label>
+                                <div class="col-sm-9">
                                     <button class="btn btn-primary">Simpan</button>
                                 </div>
                             </div>
@@ -114,6 +140,10 @@
   <script>
     $(document).ready(function(){
       $('#inputCatSer').select2();
+      $('#inputEngineer').select2();
+      $('#inputSkill').select2({
+        tags : true
+      })
     })
   </script>
 

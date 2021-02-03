@@ -30,11 +30,11 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Daftar Service</h3>
+                <h3 class="card-title">Konfirmasi Jasa/Service</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('services.create')}}" class="btn btn-primary mb-3">Tambah</a>
+                <!-- <a href="{{route('services.create')}}" class="btn btn-primary mb-3">Tambah</a> -->
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
@@ -57,7 +57,6 @@
                     <th>No</th>
                     <th>Nama</th>
                     <th>Kategori</th>
-                    <th>Teknisi</th>
                     <th>Harga</th>
                     <th>Status</th>
                     <th>Aksi</th>
@@ -95,14 +94,13 @@
         let table = $('#table-datatables').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('services.index') }}",
+            ajax: "{{ route('services.confirmation') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'name', name: 'name'},
                 {data: 'service_category_id', name: 'service_category_id'},
-                {data: 'engineer_id', name: 'engineer_id'},
                 {data: 'price', name: 'price'},
-                {data: 'status', name: 'status'},
+                {data: 'status', name: 'status', orderable: false, searchable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

@@ -9,9 +9,21 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','category_service_id','image','description','price'];
+    protected $casts = [
+        'skill' => 'array'
+    ];
+
+    protected $fillable = ['name','category_service_id','image','description','price','engineer_id','skill','sertification_image'];
 
     public function service_category(){
         return $this->belongsTo('App\Models\CategoryService','category_service_id','id');
+    }
+    
+    public function engineer(){
+        return $this->belongsTo('App\Models\User','engineer_id','id');
+    }
+
+    public function admin(){
+        return $this->belongsTo('App\Models\User','verified_by','id');
     }
 }

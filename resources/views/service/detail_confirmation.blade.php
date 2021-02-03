@@ -30,7 +30,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Detail Service</h3>
+                <h3 class="card-title">Detail Konfirmasi Service</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -50,23 +50,22 @@
                 @endif
 
                 <dl class="row">
-                <dt class="col-sm-3">Status</dt>
+                  <dt class="col-sm-3">Status</dt>
                   <dd class="col-sm-8">: 
-                    @if($service->status==="active")
-                        <span class="badge badge-success">Akif</span>
+                    @if($service->status==="review")
+                        <span class="badge badge-warning">Menunggu Kofirmasi</span>
                     @else
-                        <span class='badge badge-secondary'>Non Aktif</span>
+                        <span class='badge badge-danger'>Ditolak</span>
                     @endif
                   </dd>
                   <dt class="col-sm-3">Nama Teknisi</dt>
                   <dd class="col-sm-8">: <a href="{{ route('engineer.show',$service->engineer->userid) }}" target="_blank">{{ $service->engineer->name??'-' }}</a></dd>
+                  <dt class="col-sm-3">Kategori Jasa</dt>
+                  <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Nama Jasa</dt>
                   <dd class="col-sm-8">: {{ $service->name??'-' }}</dd>
-                  <dt class="col-sm-3">Kategori</dt>
-                  <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Harga (IDR)</dt>
                   <dd class="col-sm-8">: {{ $service->price }}</dd>
-
                   <dt class="col-sm-3">Deskripsi</dt>
                   <dd class="col-sm-8"><textarea class="form-control" readonly rows="4">{{ $service->description }}</textarea></dd>
                   <dt class="col-sm-3">Skill</dt>
@@ -89,18 +88,13 @@
                   <dt class="col-sm-3">Di Update</dt>
                   <dd class="col-sm-8">: {{ $service->updated_at }}
                   <dt class="col-sm-3"></dt>
-                  <dd class="col-sm-8"></dd>
+                  <dd class="col-sm-8">
+                    <a href="{{ route('services.confirmation.accept', $service->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Diterima</a>
+                    <a href="{{ route('services.confirmation.danied', $service->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Ditolak</a>
+                    <a href="{{ route('services.confirmation') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a>
+                  </dd>
                 </dl>
-                  <hr>
-                  <dl class="row">
-                    <dt class="col-sm-3">Verified By</dt>
-                    <dd class="col-sm-8">: {{ $service->admin->name??'-' }}</dd>
-                    <dt class="col-sm-3">Verified At</dt>
-                    <dd class="col-sm-8">: {{ $service->verified_at??'-' }}</dd>
-                  </dl>
-                  <div class="pull-right">
-                    <a href="{{ route('services.index') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a>
-                  </div>
+
               </div>
               <!-- /.card-body -->
             </div>
@@ -122,7 +116,7 @@
 <script>
 
     $(document).ready(function(){
-
+        $('#skill').select2('readonly', true);
     });
 </script>
 
