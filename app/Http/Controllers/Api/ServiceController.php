@@ -15,21 +15,39 @@ class ServiceController extends Controller
 
     public function index(Request $request)
     {
-        $data = Service::latest();
+
+        // $validator = Validator::make($request->all(), [
+        //     'size' => 'required|integer',
+        //     'page' => 'required|integer',
+        // ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()], 400);
+        }
+
+        $data = Service::where('engineer_id',auth()->user()->id)->latest();
         
         if($request->has('query')){
             $query = $request->get('query');
-            // $data->wherelike
-
+            $data->where('name', 'like', '%'.$query.'%');
         }
-        // $data->
-        // ->with('service_category')->paginate(10);
+        if($request->has('service_category')){
+            $service_category = $request->get('service_category');
+            $data->where('category_service_id', $service_category);
+        }
         
-        // $response['success'] = true;
-        // $response['message'] = count($data)." Data Ditemukan";
-        // $response['data'] = $data;
-        // dd($data->toArray()['total']);
-        return response()->json($data);           
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        $service = $data->limit($limit)->offset(($page - 1) * $limit);
+        $data = $service->get();
+        $total = $service->count();
+        
+        $response['page'] = $page;
+        $response['size'] = $limit;
+        $response['total'] = $total;
+        $response['data'] = $data;
+
+        return response()->json($response);           
 
     }
 
