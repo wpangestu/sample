@@ -37,6 +37,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('category_service',[CategoryServiceController::class,'index']);
     Route::get('teknisi/service',[ServiceController::class,'index']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
+    Route::put('teknisi/service',[ServiceController::class,'update']);
     Route::get('service/category_service/{id}',[ServiceController::class,'getServiceByCategoryId']);
     Route::get('service/{id}',[ServiceController::class,'show']);
     Route::get('customer/{id}',[CustomerController::class,'show']);
