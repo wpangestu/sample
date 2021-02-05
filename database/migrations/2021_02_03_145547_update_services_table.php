@@ -36,6 +36,9 @@ class UpdateServicesTable extends Migration
     {
         Schema::table('services', function (Blueprint $table) {
             //
+            $table->dropForeign('services_engineer_id_foreign');
+            $table->dropForeign('services_verified_by_foreign');
+
             $table->dropColumn([
                 'engineer_id',
                 'skill',
