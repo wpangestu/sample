@@ -17,15 +17,6 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
 
-        // $validator = Validator::make($request->all(), [
-        //     'size' => 'required|integer',
-        //     'page' => 'required|integer',
-        // ]);
-
-        // if($validator->fails()){
-        //     return response()->json(["message" => $validator->errors()], 400);
-        // }
-
         $data = Service::where('engineer_id',auth()->user()->id)->latest();
         
         if($request->has('query')){
@@ -195,11 +186,14 @@ class ServiceController extends Controller
 
     public function show($id)
     {
-        $data = Service::find($id);
-        $response['success'] = true;
-        $response['message'] = "Data Ditemukan";
-        $response['data'] = $data;
-        return response()->json($response);
+        try {
+            //code...
+            $data = Service::with('service_category')->find($id);
+            return response()->json($data);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>$th->getMessage()],422);
+        }
     }
 
 }
