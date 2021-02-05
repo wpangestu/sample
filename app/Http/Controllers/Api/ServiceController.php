@@ -111,13 +111,13 @@ class ServiceController extends Controller
             'service_id' => 'required|integer'
         ]);
 
-        if ($request->hasFile('certificate')) {
+        if ($request->has('certificate')) {
             $validator = Validator::make($request->all(), [
                 'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
             ]);        
         }
 
-        if ($request->hasFile('image')) {
+        if ($request->has('image')) {
             $validator = Validator::make($request->all(), [
                 'image' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
             ]);        
@@ -134,7 +134,7 @@ class ServiceController extends Controller
             DB::beginTransaction();
 
             $service = Service::find($service_id);
-
+            
             $data = [
                 "name" => $request->get('name'),
                 "category_service_id" => $request->get('service_category'),
