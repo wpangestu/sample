@@ -34,10 +34,17 @@ Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
 
 
 Route::middleware(['jwt.verify'])->group(function () {
+
+    # TEKNISI
+    //Service
     Route::get('teknisi/service',[ServiceController::class,'index']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
     Route::put('teknisi/service',[ServiceController::class,'update']);
     Route::get('teknisi/service/{id}',[ServiceController::class,'show']);
+    // User
+    Route::get('teknisi/user', [UserController::class,'userEngineer']);
+    Route::post('teknisi​/user​/token', [UserController::class,'store_fcm_token']);
+    Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
     
     Route::get('customer/{id}',[CustomerController::class,'show']);
     Route::put('customer/{id}/update',[CustomerController::class,'update']);
@@ -48,8 +55,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('engineer/{id}',[EngineerController::class,'show']);
 
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
-    Route::get('teknisi/user', [UserController::class,'userEngineer']);
-    Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
+    
+
 
 });
 

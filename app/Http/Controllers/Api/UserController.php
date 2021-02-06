@@ -331,19 +331,41 @@ class UserController extends Controller
 
         }
 
-        $response = [
-            "id_card_number" => $user->engineer->id_card_number,
-            "name" => $user->name,
-            "phone" => $user->phone,
-            "email" => $user->email,
-            "address" => $user->address,
-        ];
+    }
 
-        return response()->json($response);
+    public function store_fcm_token(Request $request)
+    {
+        $this->getAuthenticatedUser();
+        
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()], 422);
+        }
+        
+        try {
+            //code...
+            $user = User::find(auth()->user()->id);
+
+            $user->fcm_token = $request->get('token');
+            $user->save();
+
+            return response()->json(["message" => "fcm token successfully updated"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi Kesalahan : ".$th->getMessage()], 422);
+        }
+        
     }
 
     public function userEngineer()
     {
+
+        $this->getAuthenticatedUser();
+
         $user = auth()->user();
 
         $response = [
@@ -367,6 +389,9 @@ class UserController extends Controller
 
     public function EngineerBalance()
     {
+
+        $this->getAuthenticatedUser();
+
         $user = auth()->user();
 
         $balance = $user->balance;
