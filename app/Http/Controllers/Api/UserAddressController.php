@@ -11,8 +11,22 @@ class UserAddressController extends Controller
 {
     //
 
-    public function index(){
+    public function index(Request $request){
 
+        $data = UserAddress::where('user_id',auth()->user()->id)->latest();
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        $user_address = $data->limit($limit)->offset(($page - 1) * $limit);
+        $data = $user_address->get();
+        $total = $user_address->count();
+
+        $response['page'] = $page;
+        $response['size'] = $limit;
+        $response['total'] = $total;
+        $response['data'] = $data;
+
+        return response()->json($response);           
     }
 
     function store(Request $request){
