@@ -54,6 +54,7 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     Route::get('/teknisi​/address', [UserAddressController::class, 'index']);
     Route::post('/teknisi​/address', [UserAddressController::class, 'store']);
+    Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);
     
     Route::get('customer/{id}',[CustomerController::class,'show']);
     Route::put('customer/{id}/update',[CustomerController::class,'update']);

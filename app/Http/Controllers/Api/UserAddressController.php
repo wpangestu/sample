@@ -64,4 +64,18 @@ class UserAddressController extends Controller
 
     }
 
+    public function destroy($id)
+    {
+        try {
+            //code...
+            $useraddress = UserAddress::find($id);
+            $useraddress->delete();
+
+            return response()->json(["message"=>"Data berhasil dihapus"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi Kesalahan ".$th->getMessage()]);
+        }
+    }
 }
