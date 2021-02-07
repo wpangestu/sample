@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoryServiceController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\EngineerController;
+use App\Http\Controllers\Api\BankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
     Route::post('teknisi​/user​/token', [UserController::class,'store_fcm_token']);
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
+
+    Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
     
     Route::get('customer/{id}',[CustomerController::class,'show']);
     Route::put('customer/{id}/update',[CustomerController::class,'update']);

@@ -58,6 +58,8 @@ class UserController extends Controller
             $data['message'] = "Login successfully";
             $data['data'] = $user;
             $data['token'] = $token;
+            $data['token_type'] = "Bearer";
+              
         }else{
             $data['message'] = "Opps... email atau kata sandi salah";
         }
