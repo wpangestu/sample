@@ -48,7 +48,24 @@ class BankController extends Controller
             //throw $th;
             return response()->json(["message" => "Terjadi Kesalahan ".$th->getMessage()]);
         }
+    }
 
+    public function get_user_bank_account(Request $request)
+    {
 
-    }    
+        $data = UserBankAccount::with('bank')->where('user_id',auth()->user()->id)->latest();
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        $banks = $data->limit($limit)->offset(($page - 1) * $limit);
+        $data = $banks->get();
+        $total = $banks->count();
+        
+        $response['page'] = $page;
+        $response['size'] = $limit;
+        $response['total'] = $total;
+        $response['data'] = $data;
+
+        return response()->json($response);           
+    }
 }

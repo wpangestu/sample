@@ -15,4 +15,9 @@ class UserBankAccount extends Model
         'bank_id',
         'user_id'
     ];
+
+    public function bank(){
+        return $this->belongsTo('App\Models\Bank','bank_id','id');
+    }
+
 }

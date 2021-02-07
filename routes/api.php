@@ -48,6 +48,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
 
     Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
+    Route::get('teknisi​/bank-account​', [BankController::class,'get_user_bank_account']);
     Route::post('teknisi​/bank-account​', [BankController::class,'store_user_bank_account']);
     
     Route::get('customer/{id}',[CustomerController::class,'show']);
