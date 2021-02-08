@@ -13,6 +13,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -90,5 +91,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('setting/help', [SettingController::class,'help'])->name('setting.help');
     Route::post('setting/help', [SettingController::class,'storeHelp'])->name('setting.help.store');
     Route::post('setting/help/{id}/update', [SettingController::class,'updateHelp'])->name('setting.help.update');
-     
+    
+    Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
 });

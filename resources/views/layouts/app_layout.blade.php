@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
       <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.css') }}">
+     <!-- Toastr -->
+    <link rel="stylesheet" href="{{ asset('plugins/toastr/toastr.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{asset('plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
@@ -52,6 +54,8 @@
 <script src="{{asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
 <!-- Summernote -->
 <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+<!-- Toastr -->
+<script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
@@ -65,6 +69,7 @@
      https://firebase.google.com/docs/web/setup#available-libraries -->
 
 <script>
+  console.log('{{ asset("logo_app.png") }}')
   // Your web app's Firebase configuration
   var firebaseConfig = {
     apiKey: "AIzaSyBd-hpKWU00hnmJq9HaEzVbWQwXnbiF0F8",
@@ -89,25 +94,35 @@
     console.log(token)
   }
 
-  messaging.getToken({vapidKey: 'BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE'}).then((currentToken) => {
-    if (currentToken) {
-      sendTokenToServer(currentToken);
-      // updateUIForPushEnabled(currentToken);
-    } else {
-      // Show permission request.
-      console.log('No registration token available. Request permission to generate one.');
-      // Show permission UI.
-      // updateUIForPushPermissionRequired();
-      // setTokenSentToServer(false);
-    }
-  }).catch((err) => {
-    console.log('An error occurred while retrieving token. ', err);
-    // showToken('Error retrieving registration token. ', err);
-    // setTokenSentToServer(false);
+  function retreiveToken(){
+
+      messaging.getToken({vapidKey: 'BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE'}).then((currentToken) => {
+          if (currentToken) {
+            sendTokenToServer(currentToken);
+            // updateUIForPushEnabled(currentToken);
+          } else {
+            // Show permission request.
+            alert('You should allow notification!');
+            // console.log('No registration token available. Request permission to generate one.');
+            // Show permission UI.
+            // updateUIForPushPermissionRequired();
+            // setTokenSentToServer(false);
+          }
+      }).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+            // showToken('Error retrieving registration token. ', err);
+            // setTokenSentToServer(false);
+      });
+  }
+
+  retreiveToken();
+  messaging.onTokenRefresh(()=>{
+      retreiveToken();
   });
 
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
+    toastr.info('Notifikasi baru')
     // ...
   });
 </script>
