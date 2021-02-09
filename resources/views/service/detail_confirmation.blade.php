@@ -89,8 +89,10 @@
                   <dd class="col-sm-8">: {{ $service->updated_at }}
                   <dt class="col-sm-3"></dt>
                   <dd class="col-sm-8">
+                  @if($service->status==="review")
                     <a href="{{ route('services.confirmation.accept', $service->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Diterima</a>
                     <a href="{{ route('services.confirmation.danied', $service->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Ditolak</a>
+                  @endif
                     <a href="{{ route('services.confirmation') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a>
                   </dd>
                 </dl>

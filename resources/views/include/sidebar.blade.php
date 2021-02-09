@@ -94,18 +94,18 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
+                <a href="{{ route('engineer.index') }}" class="nav-link {{ request()->routeIs('engineer.index')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>List Teknisi</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="{{ route('engineer.confirm.index') }}" class="nav-link {{ request()->routeIs('engineer.confirm.index')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Konfirmasi Teknisi</p>
                   @if(get_confirm_engineer()>0)
                     <span class="right badge badge-info">{{ get_confirm_engineer() }}</span>
                   @endif
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ route('engineer.index') }}" class="nav-link {{ request()->routeIs('engineer.index')?'active':'' }}">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>List Teknisi</p>
                 </a>
               </li>
             </ul>
