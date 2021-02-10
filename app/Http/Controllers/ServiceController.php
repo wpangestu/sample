@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\CategoryService;
+use App\Models\Notification;
 use DataTables;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -162,26 +164,65 @@ class ServiceController extends Controller
 
     public function confirm_accept($id){
 
-        $service = Service::find($id);
-        $service->status = 'active';
-        $service->verified_by = auth()->user()->id;
-        $service->verified_at = date("Y-m-d H:i:s");
-        $service->save();
+        try {
+            //code...
+            DB::beginTransaction();
 
-        return redirect()->route('services.index')
+            $service = Service::find($id);
+            $service->status = 'active';
+            $service->verified_by = auth()->user()->id;
+            $service->verified_at = date("Y-m-d H:i:s");
+            $service->save();
+
+            Notification::create([
+                "title" => "Jasa: ".$service->name,
+                "type" => "service_info",
+                "user_id" => $service->engineer_id,
+                "service_id" => $service->id
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('services.index')
             ->with('success','Jasa Teknisi berhasil dikonfirmasi');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            dd($th->getMessage());
+        }
     }
 
     public function confirm_danied($id){
 
-        $service = Service::find($id);
-        $service->status = 'danied';
-        $service->verified_by = auth()->user()->id;
-        $service->verified_at = date("Y-m-d H:i:s");
-        $service->save();
+        try {
+            //code...
+            DB::beginTransaction();
 
-        return redirect()->route('services.confirmation')
-            ->with('success','Jasa Teknisi berhasil ditolak');
+            $service = Service::find($id);
+            $service->status = 'danied';
+            $service->verified_by = auth()->user()->id;
+            $service->verified_at = date("Y-m-d H:i:s");
+            $service->save();
+
+            Notification::create([
+                "title" => "Jasa: ".$service->name,
+                "type" => "service_info",
+                "user_id" => $service->engineer_id,
+                "service_id" => $service->id
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('services.confirmation')
+                ->with('success','Jasa Teknisi berhasil ditolak');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            return dd($th->getMessage());
+        }
+
     }
 
     public function confirmation(Request $request){

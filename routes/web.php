@@ -14,6 +14,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ChatController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -93,4 +94,5 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('setting/help/{id}/update', [SettingController::class,'updateHelp'])->name('setting.help.update');
     
     Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
+    Route::get('chat', [ChatController::class,'index'])->name('chat.index');
 });
