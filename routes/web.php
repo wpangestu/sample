@@ -95,4 +95,5 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     
     Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
     Route::get('chat', [ChatController::class,'index'])->name('chat.index');
+    Route::post('chat_user', [ChatController::class,'get_user_chat'])->name('chat.user');
 });

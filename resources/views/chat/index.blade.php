@@ -26,13 +26,36 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-md-3"></div>
-          <div class="col-md-6">
-
-            <div class="card card-danger direct-chat direct-chat-danger">
+          <div class="col-md-3">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Teknisi</h3>
+            </div>
+            <div class="card-body p-0 overflow-auto" style="height:400px">
+              <ul class="nav nav-pills flex-column">
+              @foreach($engineers as $engineer)
+                <li class="nav-item active">
+                  <a href="#" data-user_id="{{ $engineer->id }}" class="nav-link engineer_list">
+                    <i class="fas fa-user"></i> {{$engineer->name}}
+                    <!-- <span class="badge bg-primary float-right">12</span> -->
+                  </a>
+                </li>
+              @endforeach
+                <!-- <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="far fa-envelope"></i> Sent
+                  </a>
+                </li> -->
+              </ul>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          </div>
+          <div class="col-md-9">
+            <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Direct Chat</h3>
-                    <div class="card-tools">
+                    <h3 class="card-title">Chat Messages</h3>
+                    <!-- <div class="card-tools">
                     <span data-toggle="tooltip" title="3 New Messages" class="badge badge-light">3</span>
                     <button type="button" class="btn btn-tool" data-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -41,97 +64,45 @@
                         <i class="fas fa-comments"></i>
                     </button>
                     <button type="button" class="btn btn-tool" data-widget="remove"><i class="fas fa-times"></i>
-                    </button>
-                    </div>
+                    </button> -->
+                    <!-- </div> -->
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                     <!-- Conversations are loaded here -->
-                    <div class="direct-chat-messages">
-                    <!-- Message. Default to the left -->
-                    <div class="direct-chat-msg">
-                        <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-left">Alexander Pierce</span>
-                        <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <!-- <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg" alt="message user image"> -->
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                        Is this template really for free? That's unbelievable!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
-                    <!-- Message to the right -->
-                    <div class="direct-chat-msg right">
-                        <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                        <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <!-- <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg" alt="message user image"> -->
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                        You better believe it!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
-                    <!-- Message. Default to the left -->
-                    <div class="direct-chat-msg">
-                        <div class="direct-chat-infos clearfix">
+                    <div class="direct-chat-messages" id="message_user" style="height:300px">
+
+                      <!-- <div class="direct-chat-msg">
+                          <div class="direct-chat-infos clearfix">
                             <span class="direct-chat-name float-left">Alexander Pierce</span>
-                            <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <!-- <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg" alt="message user image"> -->
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                        Working with AdminLTE on a great new app! Wanna join?
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
-                    <!-- Message to the right -->
-                    <div class="direct-chat-msg right">
-                        <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                        <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <!-- <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg" alt="message user image"> -->
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                        I would love to.
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <div class="direct-chat-msg right">
-                        <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-right">Sarah Bullock</span>
-                        <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                        </div>
-                        <!-- /.direct-chat-infos -->
-                        <!-- <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg" alt="message user image"> -->
-                        <!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                        I would love to.
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
+                            <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                          </div>
+                          <div class="direct-chat-text">
+                          Is this template really for free? That's unbelievable!
+                          </div>
+                      </div>
+
+                      <div class="direct-chat-msg right">
+                          <div class="direct-chat-infos clearfix">
+                          <span class="direct-chat-name float-right">Sarah Bullock</span>
+                          <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+                          </div>
+
+                          <div class="direct-chat-text">
+                          You better believe it!
+                          </div>
+                      </div> -->
                     </div>
                 </div>
                 <!-- /.card-body -->
                 <div class="card-footer">
                     <form action="#" method="post">
-                    <div class="input-group">
-                        <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                        <span class="input-group-append">
-                        <button type="button" class="btn btn-primary">Send</button>
-                        </span>
-                    </div>
+                        <div class="input-group">
+                            <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+                            <span class="input-group-append">
+                            <button type="button" class="btn btn-primary">Send</button>
+                            </span>
+                        </div>
                     </form>
                 </div>
                 <!-- /.card-footer-->
@@ -156,8 +127,46 @@
 <script>
 
     $(document).ready(function(){
+      $('.engineer_list').click(function () {
+        let user_id = $(this).data('user_id');
 
+        $.ajax({
+            url: "{{ route('chat.user') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                "user_id" : user_id
+            },
+            success: function(response) {
+              chat = template_message_user(response);
+              $('#message_user').html(chat)
+              console.log(chat);
+            }
+        });
+
+      })
+
+      function template_message_user(data)
+      {
+        let template = '';
+        
+        data.chat.forEach(d => {
+          template += `
+                <div class="direct-chat-msg ${ d.from.toString() === "{{ auth()->user()->id }}" ?'':'right'}" data-chat_id="${d.id}">
+                    <div class="direct-chat-infos clearfix">
+                      <span class="direct-chat-name float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'left':'right'}">Alexander Pierce</span>
+                      <span class="direct-chat-timestamp float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}">23 Jan 2:00 pm</span>
+                    </div>
+                    <div style="width:50%;margin:0px" class="direct-chat-text float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'left':'right'}">
+                      ${ d.message }
+                    </div>
+                </div>
+          `
+        });
+        return template;
+      }
     });
 </script>
 
 @endsection
+
