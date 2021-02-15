@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\EngineerController;
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,9 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);
     
     Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
+
+    Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
+    Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
 
     Route::get('customer/{id}',[CustomerController::class,'show']);
     Route::put('customer/{id}/update',[CustomerController::class,'update']);

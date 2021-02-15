@@ -13,4 +13,12 @@ class Chatroom extends Model
         'user_1',
         'user_2',
     ];
+
+    public function user_1_data(){
+        return $this->belongsTo('App\Models\User','user_1','id');
+    }    
+
+    public function user_2_data(){
+        return $this->belongsTo('App\Models\User','user_2','id');
+    }    
 }

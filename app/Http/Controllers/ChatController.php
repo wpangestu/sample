@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Chatroom;
 use App\Models\Chat;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -77,6 +78,9 @@ class ChatController extends Controller
             $new = false;
             try {
                 //code...
+
+                DB::beginTransaction();
+
                 $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',$user_admin);
                 $chat = [];
                 if($chatroom->count() == 0){
@@ -107,6 +111,8 @@ class ChatController extends Controller
                     ]);
                 }
 
+                DB::commit();
+
                 $response['success'] = true;
                 $response['chat']['id'] = $chat->id;
                 $response['chat']['name'] = $chat->user_from->name;
@@ -118,9 +124,14 @@ class ChatController extends Controller
 
             } catch (\Throwable $th) {
                 //throw $th;
+                DB::rollback();
                 return response()->json($th->getMessage());
             }
         }
 
+    }
+
+    public function show($id){
+        
     }
 }

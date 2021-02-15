@@ -94,6 +94,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('setting/help/{id}/update', [SettingController::class,'updateHelp'])->name('setting.help.update');
     
     Route::get('chat/engineer', [ChatController::class,'index'])->name('chat.index.engineer');
+    Route::get('chat/engineer/{id?}', [ChatController::class,'show'])->name('chat.engineer.show');
     Route::get('chat/customer', [ChatController::class,'index_customer'])->name('chat.index.customer');
     Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
     Route::post('chat_user', [ChatController::class,'get_user_chat'])->name('chat.user');

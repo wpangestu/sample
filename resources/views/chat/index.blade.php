@@ -129,8 +129,13 @@
 
     $(document).ready(function(){
       $('.engineer_list').click(function () {
+
         let user_id = $(this).data('user_id');
 
+        // For change URL
+        // history.pushState({}, "", "{{ route('chat.engineer.show') }}/"+user_id)
+
+        // location.replace("/"+user_id);
         $.ajax({
             url: "{{ route('chat.user') }}",
             type: "POST",
