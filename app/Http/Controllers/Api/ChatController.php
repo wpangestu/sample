@@ -217,7 +217,41 @@ class ChatController extends Controller
             DB::rollback();
             return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage()]);
         }
+    }
 
+    public function pinned_chat(Request $request){
+        $validator = Validator::make($request->all(), [
+            'chatroom_id' => 'required|',
+        ]);
+
+        
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()], 400);
+        }
+        
+        $user_id = auth()->user()->id;
+        $chatroom_id = $request->get('chatroom_id');
+        
+        try {
+            //code...
+            foreach ($chatroom_id as $key => $value) {
+                # code...
+                $chatroom = Chatroom::find($value);
+                if($chatroom->user_1 == $user_id){
+                    $chatroom->pinned_user_1 = true;
+                    $chatroom->save();
+                }else{
+                    $chatroom->pinned_user_2 = true;
+                    $chatroom->save();
+                }
+            }
+
+            return response()->json(["message" => "Chat berhasil dipin"]);                        
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage()]);                        
+        }
 
     }
 }
