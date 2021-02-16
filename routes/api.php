@@ -60,8 +60,9 @@ Route::middleware(['jwt.verify'])->group(function () {
     
     Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
 
-    Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
     Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
+    Route::get('/​teknisi​/chat/{id}', [ChatController::class, 'get_message_by_chatroom_id']);
+    Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
 
     Route::get('customer/{id}',[CustomerController::class,'show']);
     Route::put('customer/{id}/update',[CustomerController::class,'update']);

@@ -142,5 +142,48 @@ class ChatController extends Controller
         return response()->json($response);
 
     }
+
+    public function get_message_by_chatroom_id($id,Request $request)
+    {
+        $user_id = auth()->user()->id;
+
+        $chatroom_id = $id;
+
+        $chatroom = Chatroom::find($id);
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        
+        if(!empty($chatroom)){
+            // dd('in');
+            $chat = Chat::where('chatroom_id',$chatroom->id);
+            $chat_data = $chat->limit($limit)->offset(($page - 1) * $limit)->latest();
+
+            $data = $chat_data->get();
+            $total = $chat_data->count();
+
+            $new_data = [];
+            foreach ($data as $key => $value) {
+                # code...
+                $t_data = [
+                    "id" => $value->id,
+                    "message" => $value->message,
+                    "media" => "",
+                    "from" => $value->from,
+                    "is_me" => $value->from==$user_id?true:false,
+                    "created_at" => $value->created_at
+                ];
+                $new_data[] = $t_data;
+            }
+
+            $response['page'] = $page;
+            $response['size'] = $limit;
+            $response['total'] = $total;
+            $response['data'] = $new_data;
+    
+            return response()->json($response);
+                
+        }
+    }
 }
  
