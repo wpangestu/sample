@@ -185,5 +185,40 @@ class ChatController extends Controller
                 
         }
     }
+
+    public function delete_chat(Request $request){
+        $validator = Validator::make($request->all(), [
+            'chatroom_id' => 'required|',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()], 400);
+        }
+
+        $chatroom_id = $request->get('chatroom_id');
+        // dd($chatroom_id);
+        try {
+            //code...
+            DB::beginTransaction();
+
+            foreach ($chatroom_id as $key => $value) {
+                # code...
+                $chat = Chat::where('chatroom_id',$value)->delete();
+
+                $chatroom = Chatroom::find($value)->delete();
+            }
+
+            DB::commit();
+
+            return response()->json(["message" => "Chat berhasil dihapus"]);            
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage()]);
+        }
+
+
+    }
 }
  
