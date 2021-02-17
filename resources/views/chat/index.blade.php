@@ -37,10 +37,24 @@
                 <li class="nav-item active">
                   <a href="#" data-user_id="{{ $engineer->id }}" class="nav-link engineer_list">
                     <i class="fas fa-user"></i> {{$engineer->name}}
-                    <!-- <span class="badge bg-primary float-right">12</span> -->
+                    <!-- <span class="badge bg-primary float-right">1</span> -->
+                    <!-- <div class="text-muted pl-3">tes</div> -->
                   </a>
                 </li>
               @endforeach
+              <!-- <li>
+                <a href="#" class="media border-0">
+                  <div class="media-left pr-1">
+                      <span class="avatar avatar-md avatar-online"><img class="media-object rounded-circle" src="../../../app-assets/images/portrait/small/avatar-s-3.png" alt="Generic placeholder image">
+                      <i></i>
+                      </span>
+                  </div>
+                  <div class="media-body w-100">
+                      <h6 class="list-group-item-heading">Elizabeth Elliott <span class="font-small-3 float-right info">4:14 AM</span></h6>
+                      <p class="list-group-item-text text-muted mb-0"><i class="ft-check primary font-small-2"></i> Okay <span class="float-right primary"><i class="font-medium-1 icon-pin blue-grey lighten-3"></i></span></p>
+                  </div>
+                </a>
+              </li> -->
                 <!-- <li class="nav-item">
                   <a href="#" class="nav-link">
                     <i class="far fa-envelope"></i> Sent
