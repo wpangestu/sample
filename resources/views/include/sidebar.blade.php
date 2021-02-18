@@ -24,6 +24,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+          @hasrole('admin')
           <li class="nav-item">
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard')?'active':'' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -32,6 +33,7 @@
               </p>
             </a>
           </li>
+
           <li class="nav-item has-treeview {{ request()->routeIs('service_category*')||request()->routeIs('services*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
@@ -119,6 +121,8 @@
               </p>
             </a>
           </li>
+          @endrole
+          @hasanyrole('admin|cs')
           <li class="nav-item has-treeview {{ request()->routeIs('chat*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-comments"></i>
@@ -142,6 +146,8 @@
               </li>
             </ul>
           </li>
+          @endhasanyrole
+          @role('admin')
           <li class="nav-item">
             <a href="{{ route('review_service.index') }}" class="nav-link {{ request()->routeIs('review_service*')?'active':'' }}">
               <i class="nav-icon fas fa-smile"></i>
@@ -191,6 +197,12 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
+                <a href="{{ route('manajement_account.index') }}" class="nav-link {{ request()->routeIs('setting.privacy_policy')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manajemen Akun</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="{{ route('setting.privacy_policy') }}" class="nav-link {{ request()->routeIs('setting.privacy_policy')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Privacy Policy</p>
@@ -208,6 +220,7 @@
                   <p>Help</p>
                 </a>
               </li>
+              @endrole
             </ul>
           </li>
         </ul>

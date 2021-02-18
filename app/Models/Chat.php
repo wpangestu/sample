@@ -20,4 +20,8 @@ class Chat extends Model
     public function user_from(){
         return $this->belongsTo('App\Models\User','from','id');
     }
+    
+    public function user_to(){
+        return $this->belongsTo('App\Models\User','to','id');
+    }
 }

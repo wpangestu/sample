@@ -63,6 +63,17 @@ class ChatController extends Controller
                     "chatroom_id" => $chatroom->id,
                 ]);
             }
+            $to = [];
+            $to[] = $chat->user_to->fcm_token;
+
+            fcm()->to($to)
+                    ->priority('high')
+                    ->timeToLive(0)
+                    ->data([
+                        'title' => 'Notifikasi',
+                        'body' => 'Anda mendapat pesan baru',
+                    ])
+                    ->send();
 
             DB::commit();
 

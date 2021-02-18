@@ -15,6 +15,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ManajemenController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -99,4 +100,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
     Route::post('chat_user', [ChatController::class,'get_user_chat'])->name('chat.user');
     Route::post('post_chat_user', [ChatController::class,'store_chat'])->name('post.chat.user');
+
+    Route::get('account',[ManajemenController::class,'index'])->name('manajement_account.index');
+    Route::get('account/create',[ManajemenController::class,'create'])->name('manajement_account.create');
+    Route::post('account',[ManajemenController::class,'store'])->name('manajement_account.store');
+    Route::put('account/{id}',[ManajemenController::class,'update'])->name('manajement_account.update');
+    Route::get('account/{id}/edit',[ManajemenController::class,'edit'])->name('manajement_account.edit');
+    Route::get('account/{id}/detail',[ManajemenController::class,'show'])->name('manajement_account.show');
+    Route::post('account/{id}/delete',[ManajemenController::class,'destroy'])->name('manajement_account.delete');
 });

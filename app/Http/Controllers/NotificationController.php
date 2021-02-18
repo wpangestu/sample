@@ -19,7 +19,7 @@ class NotificationController extends Controller
                     ->priority('high')
                     ->timeToLive(0)
                     ->data([
-                        'title' => 'ini judul',
+                        'title' => 'New Message',
                         'body' => 'ini body',
                     ])
                     ->send();
