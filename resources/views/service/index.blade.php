@@ -50,20 +50,21 @@
                     {{ $message }}
                 </div>
                 @endif
-
-                <table id="table-datatables" class="table table-bordered table-hover">
-                  <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Kategori</th>
-                    <th>Teknisi</th>
-                    <th>Harga</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                  </thead>
-                </table>
+                <div class="table-responsive">
+                  <table id="table-datatables" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama</th>
+                      <th>Kategori</th>
+                      <th>Teknisi</th>
+                      <th>Harga</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                    </thead>
+                  </table>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -102,7 +103,7 @@
                 {data: 'service_category_id', name: 'service_category_id'},
                 {data: 'engineer_id', name: 'engineer_id'},
                 {data: 'price', name: 'price'},
-                {data: 'status', name: 'status'},
+                {data: 'status', name: 'status',class:'text-center'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

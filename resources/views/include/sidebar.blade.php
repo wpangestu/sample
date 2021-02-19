@@ -40,6 +40,9 @@
               <p>
                 Master Jasa
                 <i class="fas fa-angle-left right"></i>
+                @if(get_confirm_service()>0)
+                <i class="fas text-info fa-circle right"></i>
+                @endif
               </p>
             </a>
             <ul class="nav nav-treeview">

@@ -40,12 +40,23 @@ class ServiceController extends Controller
                         return $status;
                     })
                     ->addColumn('action', function($row){
-   
-                            $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+                    
+                    $btn = '
+                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown">
+                        Aksi
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item"><a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
+                        <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                    </ul>
+                    ';
 
-                            $btn .= ' <a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
+                            // $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+
+                            // $btn .= ' <a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
    
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
                     })
@@ -121,10 +132,10 @@ class ServiceController extends Controller
         }
 
         if($service){
-            return redirect()->route('services.index')
+            return redirect()->route('services.confirmation')
                         ->with('success','Data berhasil ditambahkan');
         }else{
-            return redirect()->route('services.index')
+            return redirect()->route('services.confirmation')
                         ->with('error','Opps, Terjadi kesalahan.');
         }
     }
