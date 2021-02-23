@@ -13,14 +13,86 @@ class ChatController extends Controller
     //
     public function index()
     {
-        $engineers = User::Role('teknisi')->where('verified',true)->get();
-        return view('chat.index',compact('engineers'));
+        $user_id = auth()->user()->id;
+        if(auth()->user()->hasRole('cs')){
+            $user_id = 1;
+        }
+        $new_chatroom_data = $this->getChatroomNew($user_id,'teknisi');
+
+        $new_user_id = [];
+        foreach ($new_chatroom_data as $key => $value) {
+            $new_user_id[] = $value['user_id'];
+        }
+        $engineers = User::Role('teknisi')
+                            ->where('verified',true)
+                            ->whereNotIn('id',$new_user_id)
+                            ->get();
+
+        return view('chat.index',compact('engineers','new_chatroom_data'));
+    }
+
+    public function getChatroomNew($user_id,$role){
+        // dd($role);
+        $new_chatroom_data = [];
+        $chatroom = Chatroom::where('user_1',$user_id)->orWhere('user_2',$user_id)->orderBy('updated_at','desc')->get();
+        foreach ($chatroom as $key => $value) {
+            
+            if($value->user_1 === $user_id){
+                $user = $value->user_2_data;
+            }else{
+                $user = $value->user_1_data;
+            }
+            // dd($user);
+            // dd($user->hasRole('teknisi'));
+            if($user->hasRole($role)){
+                
+                $chat = Chat::where('chatroom_id',$value->id)->latest()->first();
+                $unread_message = Chat::where('chatroom_id',$value->id)
+                                        ->where('to',$user_id)
+                                        ->where('read',false)
+                                        ->count();
+                $chat_data = [
+                    "message" => $chat->message,
+                    "media" => $chat->media,
+                    "from" => $chat->from,
+                    "is_me" => $user_id==$chat->from?true:false,
+                    "created_at" => $chat->created_at
+                ];
+                $chatroom_t = [
+                    "user_id" => $user->id,
+                    "user_name" => $user->name,
+                    "userid" => $user->userid,
+                    "unread_count" => $unread_message,
+                    "last_message" => $chat_data
+                ];
+                $new_chatroom_data[] = $chatroom_t;
+
+            }
+        }
+        return $new_chatroom_data;
     }
 
     public function index_customer()
     {
-        $engineers = User::Role('user')->where('is_active',true)->get();
-        return view('chat.index_customer',compact('engineers'));
+
+        $user_id = auth()->user()->id;
+        if(auth()->user()->hasRole('cs')){
+            $user_id = 1;
+        }
+        $new_chatroom_data = $this->getChatroomNew($user_id,'user');
+
+        $new_user_id = [];
+        foreach ($new_chatroom_data as $key => $value) {
+            $new_user_id[] = $value['user_id'];
+        }
+        $engineers = User::Role('user')
+                            ->where('is_active',true)
+                            ->whereNotIn('id',$new_user_id)
+                            ->get();
+        
+        return view('chat.index_customer',compact('engineers','new_chatroom_data'));
+
+        // $engineers = User::Role('user')->where('is_active',true)->get();
     }
 
     public function get_user_chat(Request $request){
@@ -29,14 +101,24 @@ class ChatController extends Controller
             //code...
             $user_id = $request->input('user_id');
             $user_admin = auth()->user()->id;
+            if(auth()->user()->hasRole('cs')){
+                $user_admin = 1;
+            }
             $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',$user_admin);
             $chat = [];
             if($chatroom->count() == 0){
                 $chatroom = Chatroom::where('user_1',$user_admin)->where('user_2',$user_id);
             }
 
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+
             if($chatroom->count() > 0){
-                $chat = Chat::where('chatroom_id',$chatroom->first()->id)->orderBy('created_at','desc')->get();
+                $chat = Chat::where('chatroom_id',$chatroom->first()->id)
+                            ->offset(($page - 1) * $limit)
+                            ->limit($limit)
+                            ->orderBy('created_at','desc')
+                            ->get();
             }
 
             $response['chatroom'] = $chatroom->get();
@@ -74,6 +156,11 @@ class ChatController extends Controller
 
             $user_id = $request->input('user_id');
             $user_admin = auth()->user()->id;
+            
+            if(auth()->user()->hasRole('cs')){
+                $user_admin = 1;
+            }
+
             $message = $request->input('message');
             $new = false;
             try {
@@ -89,12 +176,17 @@ class ChatController extends Controller
     
                 if($chatroom->count() > 0){
 
+                    // $chatroom->first();
+                    $chatroom = $chatroom->first();
                     $chat = Chat::create([
                         "to" => $user_id,
                         "from" => $user_admin,
                         "message" => $message,
-                        "chatroom_id" => $chatroom->first()->id,
+                        "chatroom_id" => $chatroom->id,
                     ]);
+
+                    $chatroom->updated_at = date("Y-m-d H:i:s");
+                    $chatroom->save();
 
                 }else{
                     $new = true;
@@ -131,7 +223,66 @@ class ChatController extends Controller
 
     }
 
-    public function show($id){
+    public function show($id,Request $request){
+
+        $user = User::where('userid',$id)->first();
         
+        if(is_null($user)){
+            dd('User Not Found');
+        }
+
+        $user_admin = auth()->user()->id;
+        if(auth()->user()->hasRole('cs')){
+            $user_admin = 1;
+        }
+        $chatroom = Chatroom::where('user_1',$user->id)->where('user_2',$user_admin);
+        $chat = [];
+        if($chatroom->count() == 0){
+            $chatroom = Chatroom::where('user_1',$user_admin)->where('user_2',$user->id);
+        }
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+
+        if($chatroom->count() > 0){
+            $chat = Chat::where('chatroom_id',$chatroom->first()->id)
+                        ->offset(($page - 1) * $limit)
+                        ->limit($limit)
+                        ->orderBy('created_at','desc')
+                        ->get();
+        }
+
+        
+        if($user->roles[0]->name ==="teknisi"){
+
+            $new_chatroom_data = $this->getChatroomNew($user_admin,'teknisi');
+
+            $new_user_id = [];
+            foreach ($new_chatroom_data as $key => $value) {
+                $new_user_id[] = $value['user_id'];
+            }
+            $engineers = User::Role('teknisi')
+                                ->where('verified',true)
+                                ->whereNotIn('id',$new_user_id)
+                                ->get();
+            return view('chat.index',compact('engineers','chat','user','new_chatroom_data'));
+        }else{
+
+            $new_chatroom_data = $this->getChatroomNew($user_admin,'user');
+            
+            $new_user_id = [];
+            foreach ($new_chatroom_data as $key => $value) {
+                $new_user_id[] = $value['user_id'];
+            }
+            $engineers = User::Role('user')
+                                ->where('is_active',true)
+                                ->whereNotIn('id',$new_user_id)
+                                ->get();
+
+            // $engineers = User::Role('user')->where('verified',true)->get();
+            return view('chat.index_customer',compact('engineers','chat','user','new_chatroom_data'));
+        }
+
+        // return view('chat.index_customer',compact('engineers','chat'));
     }
 }

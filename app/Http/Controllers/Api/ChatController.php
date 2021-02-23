@@ -41,13 +41,16 @@ class ChatController extends Controller
             }
 
             if($chatroom->count() > 0){
-
+                $chatroom = $chatroom->first();
                 $chat = Chat::create([
                     "to" => $to,
                     "from" => $from,
                     "message" => $message,
-                    "chatroom_id" => $chatroom->first()->id,
+                    "chatroom_id" => $chatroom->id,
                 ]);
+
+                $chatroom->updated_at = date('Y-m-d H:i:s');
+                $chatroom->save();
 
             }else{
                 $new = true;

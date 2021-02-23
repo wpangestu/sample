@@ -33,33 +33,23 @@
             </div>
             <div class="card-body p-0 overflow-auto" style="height:400px">
               <ul class="nav nav-pills flex-column">
-              @foreach($engineers as $engineer)
+              @foreach($new_chatroom_data as $value)
                 <li class="nav-item active">
-                  <a href="#" data-user_id="{{ $engineer->id }}" class="nav-link engineer_list">
-                    <i class="fas fa-user"></i> {{$engineer->name}}
-                    <!-- <span class="badge bg-primary float-right">1</span> -->
-                    <!-- <div class="text-muted pl-3">tes</div> -->
+                  <a href="#" data-user_id="{{ $value['user_id'] }}" data-userid="{{ $value['userid'] }}" class="nav-link engineer_list">
+                    <i class="fas fa-user"></i> {{$value['user_name']}}
+                    @if($value['unread_count'] > 0 )
+                      <span class="badge bg-primary float-right">{{ $value['unread_count'] }}</span>
+                    @endif
                   </a>
                 </li>
               @endforeach
-              <!-- <li>
-                <a href="#" class="media border-0">
-                  <div class="media-left pr-1">
-                      <span class="avatar avatar-md avatar-online"><img class="media-object rounded-circle" src="../../../app-assets/images/portrait/small/avatar-s-3.png" alt="Generic placeholder image">
-                      <i></i>
-                      </span>
-                  </div>
-                  <div class="media-body w-100">
-                      <h6 class="list-group-item-heading">Elizabeth Elliott <span class="font-small-3 float-right info">4:14 AM</span></h6>
-                      <p class="list-group-item-text text-muted mb-0"><i class="ft-check primary font-small-2"></i> Okay <span class="float-right primary"><i class="font-medium-1 icon-pin blue-grey lighten-3"></i></span></p>
-                  </div>
-                </a>
-              </li> -->
-                <!-- <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-envelope"></i> Sent
+              @foreach($engineers as $engineer)
+                <li class="nav-item active">
+                  <a href="#" data-user_id="{{ $engineer->id }}" data-userid="{{ $engineer->userid }}" class="nav-link engineer_list">
+                    <i class="fas fa-user"></i> {{$engineer->name}}
                   </a>
-                </li> -->
+                </li>
+              @endforeach
               </ul>
             </div>
             <!-- /.card-body -->
@@ -68,52 +58,40 @@
           <div class="col-md-9">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Chat Messages  <span id="user_name"></span></h3>
-                    <!-- <div class="card-tools">
-                    <span data-toggle="tooltip" title="3 New Messages" class="badge badge-light">3</span>
-                    <button type="button" class="btn btn-tool" data-widget="collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
-                        <i class="fas fa-comments"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-widget="remove"><i class="fas fa-times"></i>
-                    </button> -->
-                    <!-- </div> -->
+                    <h3 class="card-title">Chat Messages <span id="user_name">{{ isset($user->name)?' - '.$user->name:'' }}</span></h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                     <!-- Conversations are loaded here -->
                     <div class="direct-chat-messages" id="message_user" style="height:300px">
+                      @if(!(isset($user)))
                       <p>Silahkan pilih user untuk memulai chat</p>
-                      <!-- <div class="direct-chat-msg">
-                          <div class="direct-chat-infos clearfix">
-                            <span class="direct-chat-name float-left">Alexander Pierce</span>
-                            <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                          </div>
-                          <div class="direct-chat-text">
-                          Is this template really for free? That's unbelievable!
-                          </div>
-                      </div>
-
-                      <div class="direct-chat-msg right">
-                          <div class="direct-chat-infos clearfix">
-                          <span class="direct-chat-name float-right">Sarah Bullock</span>
-                          <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+                      @else
+                        @if(!empty($chat))
+                          @foreach($chat->reverse() as $value)
+                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->from === auth()->user()->id ?'right':''}}" data-chat_id="{{$value->id}}">
+                              <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-{{ $value->from ===  auth()->user()->id ?'right':'left'}}"> {{ $value->user_from->name }} </span>
+                                <span class="direct-chat-timestamp float-{{ $value->from ===  auth()->user()->id  ?'right':'left'}}"> [{{$value->created_at}}] </span>
+                              </div>
+                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->from === auth()->user()->id ?'right':'left'}}">
+                                {{ $value->message }}
+                              </div>
                           </div>
 
-                          <div class="direct-chat-text">
-                          You better believe it!
-                          </div>
-                      </div> -->
+                          @endforeach
+                        @else
+                          <p>Tidak ada riwayat chat</p>
+                        @endif
+                      @endif
                     </div>
                 </div>
                 <!-- /.card-body -->
-                <div class="card-footer">
+                <div id="form-send-message-layout" class="card-footer" {{ isset($user)?'':'hidden' }}>
                     <form action="{{ route('post.chat.user') }}" method="post" id="form_post_message">
                         <div class="input-group">
                             <input required type="text" name="message" id="input_message" placeholder="Type Message ..." class="form-control">
-                            <input type="hidden" name="user_id" value="" id="input_hidden_user_id">
+                            <input type="hidden" name="user_id" value="{{ isset($user)?$user->id:'' }}" id="input_hidden_user_id">
                             <span class="input-group-append">
                             <button type="submit" class="btn btn-primary">Send</button>
                             </span>
@@ -121,8 +99,10 @@
                     </form>
                 </div>
                 <!-- /.card-footer-->
+                <div id="card-refresh-layout" class="overlay" hidden>
+                  <i class="fas fa-2x fa-sync-alt fa-spin"></i>
                 </div>
-
+            </div>
           </div>
           <!-- /.col-md-6 -->
         </div>
@@ -142,12 +122,29 @@
 <script>
 
     $(document).ready(function(){
+
+
+      var contend = document.getElementById('message_user');
+      contend.addEventListener('scroll', function(event) {
+          if (event.target.scrollTop === 0) {
+            const first = $('.direct-chat-msg.first').data('chat_id');
+            // alert(first);
+          }
+      }, false);
+
+
+      var objDiv = document.getElementById("message_user");
+      objDiv.scrollTop = objDiv.scrollHeight;
+
       $('.engineer_list').click(function () {
 
         let user_id = $(this).data('user_id');
+        let userid = $(this).data('userid');
+
+        $('#card-refresh-layout').attr('hidden',false);
 
         // For change URL
-        // history.pushState({}, "", "{{ route('chat.engineer.show') }}/"+user_id)
+        history.pushState({}, "", "{{ route('chat.engineer.show') }}/"+userid)
 
         // location.replace("/"+user_id);
         $.ajax({
@@ -164,7 +161,8 @@
 
               $('#message_user').html(chat)
               $('#input_hidden_user_id').val(user_id);
-
+              $("#form-send-message-layout").attr('hidden',false);
+              $('#card-refresh-layout').attr('hidden',true);
               var objDiv = document.getElementById("message_user");
               objDiv.scrollTop = objDiv.scrollHeight;
 
@@ -181,9 +179,9 @@
         console.log(data.chat.length)
 
         if(data.chat.length > 0){
-          data.chat.slice().reverse().forEach(d => {
+          data.chat.slice().reverse().forEach((d,i) => {
             template += `
-                  <div class="direct-chat-msg ${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':''}" data-chat_id="${d.id}">
+                  <div class="direct-chat-msg ${ i===0?'first ':'' } ${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':''}" data-chat_id="${d.id}">
                       <div class="direct-chat-infos clearfix">
                         <span class="direct-chat-name float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}"> ${d.name} </span>
                         <span class="direct-chat-timestamp float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}"> [${d.created_at}] </span>
