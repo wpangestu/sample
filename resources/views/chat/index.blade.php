@@ -69,12 +69,12 @@
                       @else
                         @if(!empty($chat))
                           @foreach($chat->reverse() as $value)
-                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->from === auth()->user()->id ?'right':''}}" data-chat_id="{{$value->id}}">
+                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->from === $user_admin ?'right':''}}" data-chat_id="{{$value->id}}">
                               <div class="direct-chat-infos clearfix">
-                                <span class="direct-chat-name float-{{ $value->from ===  auth()->user()->id ?'right':'left'}}"> {{ $value->user_from->name }} </span>
-                                <span class="direct-chat-timestamp float-{{ $value->from ===  auth()->user()->id  ?'right':'left'}}"> [{{$value->created_at}}] </span>
+                                <span class="direct-chat-name float-{{ $value->from ===  $user_admin ?'right':'left'}}"> {{ $value->user_from->name }} </span>
+                                <span class="direct-chat-timestamp float-{{ $value->from ===  $user_admin  ?'right':'left'}}"> [{{$value->created_at}}] </span>
                               </div>
-                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->from === auth()->user()->id ?'right':'left'}}">
+                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->from === $user_admin ?'right':'left'}}">
                                 {{ $value->message }}
                               </div>
                           </div>

@@ -133,7 +133,8 @@ class ChatController extends Controller
                     "chatroom_id" => $value->chatromm_id,
                     "media" => $value->media,
                     "name" => $value->user_from->name,
-                    "created_at" => $value->created_at->format('d/m/Y H:i')
+                    "created_at" => $value->created_at->format('d/m/Y H:i'),
+                    "user_admin" => $user_admin
                 ];
             }            
 
@@ -265,7 +266,7 @@ class ChatController extends Controller
                                 ->where('verified',true)
                                 ->whereNotIn('id',$new_user_id)
                                 ->get();
-            return view('chat.index',compact('engineers','chat','user','new_chatroom_data'));
+            return view('chat.index',compact('engineers','chat','user','new_chatroom_data','user_admin'));
         }else{
 
             $new_chatroom_data = $this->getChatroomNew($user_admin,'user');
