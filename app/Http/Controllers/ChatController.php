@@ -31,6 +31,29 @@ class ChatController extends Controller
         return view('chat.index',compact('engineers','new_chatroom_data'));
     }
 
+    public function index_customer()
+    {
+
+        $user_id = auth()->user()->id;
+        if(auth()->user()->hasRole('cs')){
+            $user_id = 1;
+        }
+        $new_chatroom_data = $this->getChatroomNew($user_id,'user');
+
+        $new_user_id = [];
+        foreach ($new_chatroom_data as $key => $value) {
+            $new_user_id[] = $value['user_id'];
+        }
+        $engineers = User::Role('user')
+                            ->where('is_active',true)
+                            ->whereNotIn('id',$new_user_id)
+                            ->get();
+        
+        return view('chat.index_customer',compact('engineers','new_chatroom_data'));
+
+    }
+
+
     public function getChatroomNew($user_id,$role){
         // dd($role);
         $new_chatroom_data = [];
@@ -72,28 +95,6 @@ class ChatController extends Controller
         return $new_chatroom_data;
     }
 
-    public function index_customer()
-    {
-
-        $user_id = auth()->user()->id;
-        if(auth()->user()->hasRole('cs')){
-            $user_id = 1;
-        }
-        $new_chatroom_data = $this->getChatroomNew($user_id,'user');
-
-        $new_user_id = [];
-        foreach ($new_chatroom_data as $key => $value) {
-            $new_user_id[] = $value['user_id'];
-        }
-        $engineers = User::Role('user')
-                            ->where('is_active',true)
-                            ->whereNotIn('id',$new_user_id)
-                            ->get();
-        
-        return view('chat.index_customer',compact('engineers','new_chatroom_data'));
-
-        // $engineers = User::Role('user')->where('is_active',true)->get();
-    }
 
     public function get_user_chat(Request $request){
 

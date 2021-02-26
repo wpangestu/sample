@@ -22,7 +22,7 @@
     </div>
     <!-- /.content-header -->
 
-    <!-- Main content -->
+    <!-- Main content -->  
     <div class="content">
       <div class="container-fluid">
         <div class="row">
@@ -181,12 +181,12 @@
         if(data.chat.length > 0){
           data.chat.slice().reverse().forEach((d,i) => {
             template += `
-                  <div class="direct-chat-msg ${ i===0?'first ':'' } ${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':''}" data-chat_id="${d.id}">
+                  <div class="direct-chat-msg ${ i===0?'first ':'' } ${ d.from.toString() === d.user_admin.toString() ?'right':''}" data-chat_id="${d.id}">
                       <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}"> ${d.name} </span>
-                        <span class="direct-chat-timestamp float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}"> [${d.created_at}] </span>
+                        <span class="direct-chat-name float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}"> ${d.name} </span>
+                        <span class="direct-chat-timestamp float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}"> [${d.created_at}] </span>
                       </div>
-                      <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.from.toString() === "{{ auth()->user()->id }}" ?'right':'left'}">
+                      <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}">
                         ${ d.message }
                       </div>
                   </div>
