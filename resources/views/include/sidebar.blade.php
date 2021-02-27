@@ -136,13 +136,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('chat.index.customer') }}" class="nav-link {{ request()->routeIs('chat.index.customer')?'active':'' }}">
+                <a href="{{ route('chat.index.customer') }}" class="nav-link {{ request()->routeIs('chat.index.customer*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Chat Pelanggan</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('chat.index.engineer') }}" class="nav-link {{ request()->routeIs('chat.index.engineer')?'active':'' }}">
+                <a href="{{ route('chat.index.engineer') }}" class="nav-link {{ request()->routeIs('chat.index.engineer*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Chat Teknisi</p>
                 </a>

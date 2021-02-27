@@ -25,6 +25,13 @@ class ChatController extends Controller
 
         $to = $request->get('to');
         $from = auth()->user()->id;
+
+        if(auth()->user()->hasRole('teknisi')){
+            $role = 'teknisi';
+        }else{
+            $role = 'user';
+        }
+
         $message = $request->get('message');
         $new = false;
 
@@ -73,8 +80,14 @@ class ChatController extends Controller
                     ->priority('high')
                     ->timeToLive(0)
                     ->data([
-                        'title' => 'Notifikasi',
-                        'body' => 'Anda mendapat pesan baru',
+                        'title' => 'ini judul data',
+                        'userid' => auth()->user()->userid,
+                        'message' => $message,
+                        'role' => $role
+                    ])
+                    ->notification([
+                        'title' => 'Test FCM',
+                        'body' => 'This is a test of FCM',
                     ])
                     ->send();
 

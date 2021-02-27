@@ -45,7 +45,7 @@
               @endforeach
               @foreach($engineers as $engineer)
                 <li class="nav-item active">
-                  <a href="#" data-user_id="{{ $engineer->id }}" class="nav-link engineer_list">
+                  <a href="#" data-user_id="{{ $engineer->id }}" data-userid="{{ $engineer->userid }}" class="nav-link engineer_list">
                     <i class="fas fa-user"></i> {{$engineer->name}}
                   </a>
                 </li>
@@ -65,7 +65,6 @@
                 <div class="card-body">
                     <!-- Conversations are loaded here -->
                     <div class="direct-chat-messages" id="message_user" style="height:300px">
-                      <p>Silahkan pilih user untuk memulai chat</p>
                       @if(!(isset($user)))
                       <p>Silahkan pilih user untuk memulai chat</p>
                       @else
@@ -146,7 +145,7 @@
         $('#card-refresh-layout').attr('hidden',false);
 
         // For change URL
-        history.pushState({}, "", "{{ route('chat.engineer.show') }}/"+userid)
+        history.pushState({}, "", "{{ route('chat.customer.show') }}/"+userid)
 
         // location.replace("/"+user_id);
         $.ajax({

@@ -53,6 +53,35 @@ class ChatController extends Controller
 
     }
 
+    public function update_list_user_chat(Request $request)
+    {
+        $type = $request->input('type');
+        $user_id = auth()->user()->id;
+        if(auth()->user()->hasRole('cs')){
+            $user_id = 1;
+        }
+
+        if($type==="teknisi"){
+
+            $new_chatroom_data = $this->getChatroomNew($user_id,'teknisi');        
+            $new_user_id = [];
+            foreach ($new_chatroom_data as $key => $value) {
+                $new_user_id[] = $value['user_id'];
+            }
+            $engineers = User::Role('teknisi')
+                                ->where('verified',true)
+                                ->whereNotIn('id',$new_user_id)
+                                ->get();
+            $response = [
+                "user_with_new_message" => $new_chatroom_data,
+                "user_with_no_message" => $engineers
+            ];
+
+            return response()->json($response);
+        }
+
+    }
+
 
     public function getChatroomNew($user_id,$role){
         // dd($role);
@@ -126,6 +155,16 @@ class ChatController extends Controller
             $chat_response = [];
             foreach ($chat as $key => $value) {
                 # code...
+                $admin_cs = false;
+                $role = "";
+                if($value->user_from->hasRole(['admin','cs'])){
+                    $admin_cs = true; 
+                    if($value->user_from->hasRole(['cs'])){
+                        $role = "cs";
+                    }else{
+                        $role = "admin";
+                    }
+                }
                 $chat_response[] = [
                     "id" => $value->id,
                     "to" => $value->id,
@@ -135,7 +174,8 @@ class ChatController extends Controller
                     "media" => $value->media,
                     "name" => $value->user_from->name,
                     "created_at" => $value->created_at->format('d/m/Y H:i'),
-                    "user_admin" => $user_admin
+                    "admin_cs" => $admin_cs,
+                    "role" => $role
                 ];
             }            
 
@@ -182,7 +222,7 @@ class ChatController extends Controller
                     $chatroom = $chatroom->first();
                     $chat = Chat::create([
                         "to" => $user_id,
-                        "from" => $user_admin,
+                        "from" => auth()->user()->id,
                         "message" => $message,
                         "chatroom_id" => $chatroom->id,
                     ]);
@@ -282,7 +322,7 @@ class ChatController extends Controller
                                 ->get();
 
             // $engineers = User::Role('user')->where('verified',true)->get();
-            return view('chat.index_customer',compact('engineers','chat','user','new_chatroom_data'));
+            return view('chat.index_customer',compact('engineers','chat','user','new_chatroom_data','user_admin'));
         }
 
         // return view('chat.index_customer',compact('engineers','chat'));

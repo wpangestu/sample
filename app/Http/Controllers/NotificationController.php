@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class NotificationController extends Controller
 {
@@ -28,6 +29,30 @@ class NotificationController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             dd($th->getMessage());
+        }
+    }
+
+    public function saveTokenToServer(Request $request)
+    {
+        $token = $request->input('token');
+
+        try {
+            //code...
+            $user = User::find(auth()->user()->id);
+
+            $user->fcm_token = $token;
+            $user->save();
+
+            $response = [
+                "success" => true,
+                "message" => "token updated"
+            ];
+
+            return response()->json($response);
+            
+        } catch (\Throwable $th) {
+            return response()->json($th->getMessage());
+            //throw $th;
         }
 
     }

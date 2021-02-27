@@ -59,6 +59,7 @@
 <!-- Select2 -->
 <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
 
+<script src="{{ asset('js/fcm.js') }}"></script>
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
@@ -91,7 +92,22 @@
   messaging.getToken({vapidKey: "BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE"});
 
   function sendTokenToServer(token){
-    console.log(token)
+    console.log(token);
+    $.ajax({
+        url: "{{ route('notofication.update.token') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            "token" : token,
+        },
+        success: function(response) {
+          if(response.success){
+            console.log(response.message);
+          }else{
+            console.log(response);
+          }
+        }
+    });
   }
 
   function retreiveToken(){
@@ -122,6 +138,26 @@
 
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
+    const type = payload.data.role;
+    const url = window.location.href;
+    if(url.includes("{{ route('chat.index.engineer') }}")){
+
+      $.ajax({
+            url: "{{ route('ajax.chat.update.list_user') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                "type" : type
+            },
+            success: function(response) {
+              const list_user_chat = update_list_user_chat(response);
+              $('#list_user_chat').html(list_user_chat);
+            }
+        });
+
+    }else{
+      console.log('its not match');
+    }
     toastr.info('Notifikasi baru')
     // ...
   });
