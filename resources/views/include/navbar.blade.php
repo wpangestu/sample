@@ -12,6 +12,25 @@
       
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-comments"></i>
+          @if(get_all_notif_chat()>0)
+            <span class="badge badge-danger navbar-badge">{{ get_all_notif_chat() }}</span>
+          @endif
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <!-- <span class="dropdown-item dropdown-header">15 Notifications</span> -->
+          <div class="dropdown-divider"></div>
+          <a href="{{ route('chat.index.engineer') }}" class="dropdown-item">
+            <i class="fas fa-tools mr-2"></i> {{ get_new_chat_engineer() }} Pesan Teknisi
+          </a>
+          <a href="{{ route('chat.index.customer') }}" class="dropdown-item">
+            <i class="fas fa-user mr-2"></i> {{ get_new_chat_customer() }} Pesan Customer
+          </a>
+        </div>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
           @if(get_all_notification()>0)
             <span class="badge badge-danger navbar-badge">{{ get_all_notification() }}</span>
@@ -26,18 +45,6 @@
           <a href="{{ route('services.confirmation') }}" class="dropdown-item">
             <i class="fas fa-tag mr-2"></i> {{ get_confirm_service() }} Konfirmasi Jasa
           </a>
-          <!-- <div class="dropdown-divider"></div> -->
-          <!-- <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> 8 Konfirmasi Top Up -->
-            <!-- <span class="float-right text-muted text-sm">12 hours</span> -->
-          <!-- </a> -->
-          <!-- <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>
-          </a> -->
-          <!-- <div class="dropdown-divider"></div> -->
-          <!-- <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a> -->
         </div>
       </li>
 

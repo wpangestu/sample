@@ -136,7 +136,7 @@
       var objDiv = document.getElementById("message_user");
       objDiv.scrollTop = objDiv.scrollHeight;
 
-      $('.engineer_list').click(function () {
+      $(document).on("click",".engineer_list",function() {
 
         let user_id = $(this).data('user_id');
         let userid = $(this).data('userid');
@@ -231,8 +231,8 @@
         template = `
                 <div class="direct-chat-msg right" data-chat_id="${params.id}">
                     <div class="direct-chat-infos clearfix">
-                      <span class="direct-chat-name float-right"> ${params.name} </span>
-                      <span class="direct-chat-timestamp float-right"> [${params.created_at}] </span>
+                      <span class="direct-chat-name float-right"> ${params.name} (${params.role})</span>
+                      <span class="direct-chat-timestamp pr-1 pl-1 float-right"> [${params.created_at}] </span>
                     </div>
                     <div style="width:50%;margin:5px" class="direct-chat-text float-right">
                       ${ params.message }

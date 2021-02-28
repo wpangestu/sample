@@ -27,3 +27,18 @@ function update_list_user_chat(data){
       template += `</ul>`;
     return template;
 }
+
+function append_message(params){
+  template = `
+          <div class="direct-chat-msg left" data-chat_id="${params.id}">
+              <div class="direct-chat-infos clearfix">
+                <span class="direct-chat-name float-left"> ${params.name} </span>
+                <span class="direct-chat-timestamp float-left"> [${params.created_at}] </span>
+              </div>
+              <div style="width:50%;margin:5px" class="direct-chat-text float-left">
+                ${ params.message }
+              </div>
+          </div>
+    `
+  return template;
+}

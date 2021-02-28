@@ -78,8 +78,25 @@ class ChatController extends Controller
             ];
 
             return response()->json($response);
-        }
 
+        }else{
+
+            $new_chatroom_data = $this->getChatroomNew($user_id,'user');
+            $new_user_id = [];
+            foreach ($new_chatroom_data as $key => $value) {
+                $new_user_id[] = $value['user_id'];
+            }
+            $engineers = User::Role('user')
+                                ->where('is_active',true)
+                                ->whereNotIn('id',$new_user_id)
+                                ->get();
+            $response = [
+                "user_with_new_message" => $new_chatroom_data,
+                "user_with_no_message" => $engineers
+            ];
+
+            return response()->json($response);
+        }
     }
 
 
@@ -252,6 +269,12 @@ class ChatController extends Controller
                 $response['chat']['name'] = $chat->user_from->name;
                 $response['chat']['message'] = $chat->message;
                 $response['chat']['created_at'] = $chat->created_at->format('d/m/Y H:i');
+                if(auth()->user()->hasRole('admin')){
+                    $role = "admin";
+                }else{
+                    $role = "cs";
+                }
+                $response['chat']['role'] = $role;
                 $response['chat']['new'] = $new;
 
                 return response()->json($response);

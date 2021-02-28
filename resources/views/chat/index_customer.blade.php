@@ -31,7 +31,7 @@
             <div class="card-header">
               <h3 class="card-title">List Pelanggan</h3>
             </div>
-            <div class="card-body p-0 overflow-auto" style="height:400px">
+            <div class="card-body p-0 overflow-auto" id="list_user_chat" style="height:400px">
               <ul class="nav nav-pills flex-column">
               @foreach($new_chatroom_data as $value)
                 <li class="nav-item active">
@@ -70,12 +70,12 @@
                       @else
                         @if(!empty($chat))
                           @foreach($chat->reverse() as $value)
-                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->from === $user_admin ?'right':''}}" data-chat_id="{{$value->id}}">
+                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->user_from->hasRole(['admin', 'cs']) ?'right':''}}" data-chat_id="{{$value->id}}">
                               <div class="direct-chat-infos clearfix">
-                                <span class="direct-chat-name float-{{ $value->from ===  $user_admin ?'right':'left'}}"> {{ $value->user_from->name }} </span>
-                                <span class="direct-chat-timestamp float-{{ $value->from ===  $user_admin  ?'right':'left'}}"> [{{$value->created_at}}] </span>
+                                <span class="direct-chat-name float-{{ $value->user_from->hasRole(['admin', 'cs']) ?'right':'left'}}"> {{ $value->user_from->name }} @if($value->user_from->hasRole('admin')) (admin) @elseif($value->user_from->hasRole('cs')) (cs) @else (user) @endif</span>
+                                <span class="pl-1 pr-1 direct-chat-timestamp float-{{ $value->user_from->hasRole(['admin', 'cs']) ? 'right':'left'}}"> [{{$value->created_at->format('d/m/Y H:i')}}] </span>
                               </div>
-                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->from === $user_admin ?'right':'left'}}">
+                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->user_from->hasRole(['admin', 'cs']) ?'right':'left'}}">
                                 {{ $value->message }}
                               </div>
                           </div>
@@ -137,7 +137,8 @@
       var objDiv = document.getElementById("message_user");
       objDiv.scrollTop = objDiv.scrollHeight;
 
-      $('.engineer_list').click(function () {
+      // $('.engineer_list').click(function () {
+      $(document).on("click",".engineer_list",function() {
 
         let user_id = $(this).data('user_id');
         let userid = $(this).data('userid');
@@ -177,17 +178,17 @@
       {
         let template = '';
 
-        console.log(data.chat.length)
+        // console.log(data.chat)
 
         if(data.chat.length > 0){
           data.chat.slice().reverse().forEach((d,i) => {
             template += `
-                  <div class="direct-chat-msg ${ i===0?'first ':'' } ${ d.from.toString() === d.user_admin.toString() ?'right':''}" data-chat_id="${d.id}">
+                  <div class="direct-chat-msg ${ i===0?'first ':'' } ${ d.admin_cs ?'right':''}" data-chat_id="${d.id}">
                       <div class="direct-chat-infos clearfix">
-                        <span class="direct-chat-name float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}"> ${d.name} </span>
-                        <span class="direct-chat-timestamp float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}"> [${d.created_at}] </span>
+                        <span class="direct-chat-name float-${ d.admin_cs ?'right':'left'}"> ${d.name} ${d.role!==""?"("+d.role+")":""}</span>
+                        <span class="pl-1 pr-1 direct-chat-timestamp float-${ d.admin_cs ?'right':'left'}"> [${d.created_at}] </span>
                       </div>
-                      <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.from.toString() === d.user_admin.toString() ?'right':'left'}">
+                      <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.admin_cs ?'right':'left'}">
                         ${ d.message }
                       </div>
                   </div>
@@ -232,8 +233,8 @@
         template = `
                 <div class="direct-chat-msg right" data-chat_id="${params.id}">
                     <div class="direct-chat-infos clearfix">
-                      <span class="direct-chat-name float-right"> ${params.name} </span>
-                      <span class="direct-chat-timestamp float-right"> [${params.created_at}] </span>
+                      <span class="direct-chat-name float-right"> ${params.name} (${params.role})</span>
+                      <span class="direct-chat-timestamp pl-1 pr-1 float-right"> [${params.created_at}] </span>
                     </div>
                     <div style="width:50%;margin:5px" class="direct-chat-text float-right">
                       ${ params.message }

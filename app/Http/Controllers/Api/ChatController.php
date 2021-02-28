@@ -76,18 +76,24 @@ class ChatController extends Controller
             $to = [];
             $to[] = $chat->user_to->fcm_token;
 
+            $chat_data = [
+                "id" => $chat->id,
+                "name" => $chat->user_from->name,
+                "message" => $chat->message,
+                "created_at" => $chat->created_at->format('d/m/Y H:i')
+            ];
+
             fcm()->to($to)
                     ->priority('high')
                     ->timeToLive(0)
                     ->data([
-                        'title' => 'ini judul data',
                         'userid' => auth()->user()->userid,
-                        'message' => $message,
+                        'chat' => $chat_data,
                         'role' => $role
                     ])
                     ->notification([
-                        'title' => 'Test FCM',
-                        'body' => 'This is a test of FCM',
+                        'title' => 'Notifikasi',
+                        'body' => 'Pesan Baru',
                     ])
                     ->send();
 

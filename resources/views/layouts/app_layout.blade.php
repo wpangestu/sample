@@ -140,25 +140,65 @@
     console.log('Message received. ', payload);
     const type = payload.data.role;
     const url = window.location.href;
+
     if(url.includes("{{ route('chat.index.engineer') }}")){
 
       $.ajax({
-            url: "{{ route('ajax.chat.update.list_user') }}",
-            type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                "type" : type
-            },
-            success: function(response) {
-              const list_user_chat = update_list_user_chat(response);
-              $('#list_user_chat').html(list_user_chat);
-            }
-        });
+          url: "{{ route('ajax.chat.update.list_user') }}",
+          type: "POST",
+          data: {
+              _token: "{{ csrf_token() }}",
+              "type" : type
+          },
+          success: function(response) {
+            const list_user_chat = update_list_user_chat(response);
+            $('#list_user_chat').html(list_user_chat);
+          }
+      });
 
-    }else{
-      console.log('its not match');
+      const url_array = url.split("/");
+      const lastItem = url_array[url_array.length - 1];
+
+      if(lastItem == payload.data.userid+"#"){
+        const chat = JSON.parse(payload.data.chat);
+        let get_new_chat = append_message(chat);
+
+        $('#message_user').append(get_new_chat);
+        var objDiv = document.getElementById("message_user");
+        objDiv.scrollTop = objDiv.scrollHeight;
+      }
     }
-    toastr.info('Notifikasi baru')
+    else if(url.includes("{{ route('chat.index.customer') }}")){
+      $.ajax({
+        url: "{{ route('ajax.chat.update.list_user') }}",
+        type: "POST",
+        data: {
+            _token: "{{ csrf_token() }}",
+            "type" : type
+        },
+        success: function(response) {
+          const list_user_chat = update_list_user_chat(response);
+          $('#list_user_chat').html(list_user_chat);
+        }
+      });
+      const url_array = url.split("/");
+      const lastItem = url_array[url_array.length - 1];
+
+      if(lastItem == payload.data.userid+"#"){
+        const chat = JSON.parse(payload.data.chat);
+        let get_new_chat = append_message(chat);
+
+        $('#message_user').append(get_new_chat);
+        var objDiv = document.getElementById("message_user");
+        objDiv.scrollTop = objDiv.scrollHeight;
+      }
+    }
+    $(document).Toasts('create', {
+      body: payload.notification.body,
+      title: payload.notification.title,
+      subtitle: '',
+      icon: 'fas fa-envelope fa-lg',
+    })
     // ...
   });
 </script>

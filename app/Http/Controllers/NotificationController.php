@@ -45,7 +45,8 @@ class NotificationController extends Controller
 
             $response = [
                 "success" => true,
-                "message" => "token updated"
+                "message" => "token updated",
+                "user_id" => $user->id
             ];
 
             return response()->json($response);
