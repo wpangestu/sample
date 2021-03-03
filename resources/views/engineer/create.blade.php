@@ -100,20 +100,30 @@
                           <span class="text-muted rext-sm">format:jpeg,png,jpg|max:2048kb</span>
                       </div>
                       <div class="form-group">
-                          <label for="inputAddress" class="col-form-label">Provinsi</label>
-                          <input type="text" class="form-control" name="provinsi_id">
+                          <label for="inputProvince" class="col-form-label">Provinsi</label>
+                          <select name="provinsi_id" class="form-control" id="inputProvince">
+                              <option value="">== PILIH ==</option>
+                            @foreach($provinces as $data)
+                              <option value="{{ $data->id }}">{{ $data->name }}</option>
+                            @endforeach
+                          </select>
+                          <!-- <input type="text" class="form-control" name="provinsi_id"> -->
                       </div>
                       <div class="form-group">
-                          <label for="inputAddress" class="col-form-label">Kabupaten</label>
-                          <input type="text" class="form-control" name="provinsi_id">
+                          <label for="inputRegency" class="col-form-label">Kabupaten</label>
+                          <select name="regency_id" class="form-control" id="inputRegency">
+                          </select>
                       </div>
                       <div class="form-group">
-                          <label for="inputAddress" class="col-form-label">Kecamatan</label>
-                          <input type="text" class="form-control" name="provinsi_id">
+                          <label for="inputDistrict" class="col-form-label">Kecamatan</label>
+                          <!-- <input type="text" class="form-control" name="provinsi_id" id="inputDistrict"> -->
+                          <select name="district_id" class="form-control" id="inputDistrict">
+                          </select>
                       </div>
                       <div class="form-group">
-                          <label for="inputAddress" class="col-form-label">Desa</label>
-                          <input type="text" class="form-control" name="provinsi_id">
+                          <label for="inputVillage" class="col-form-label">Desa</label>
+                          <select name="village_id" class="form-control" id="inputVillage">
+                          </select>
                       </div>
                       <div class="form-group">
                           <label for="inputAddress" class="col-form-label">Alamat Lengkap</label>
@@ -304,13 +314,95 @@
 </script>
 
 <script type="text/javascript">
-    function updateLatlang(lat,lng)
-    {
-      $('#inputLatitude').val(lat)
-      $('#inpuLongitude').val(lng)
-    }
-    // $(document).ready(function () {
-    //   bsCustomFileInput.init();
-    // });
+  $(document).ready(function(){
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#inputProvince').change(function(){
+      const province_id = $(this).val();
+      $.ajax({
+          type: 'post',
+          url: '{{ route("regency.index") }}',
+          data: {
+            province_id : province_id
+          },
+          dataType: 'json',
+          success: function (data) {
+            let option = '';
+            option += `
+              <option value="">== Pilih ==</option>
+            `
+            data.forEach(function(d,index){
+              option += `
+              <option value="${d.id}">${d.name}</option>
+              `
+            });
+            $('#inputRegency').html(option);
+          },
+          error: function (data) {
+              console.log(data);
+          }
+      });
+    })
+
+    $('#inputRegency').change(function(){
+      const regency_id = $(this).val();
+      console.log(regency_id);
+      $.ajax({
+          type: 'post',
+          url: '{{ route("district.index") }}',
+          data: {
+            regency_id : regency_id
+          },
+          dataType: 'json',
+          success: function (data) {
+            let option = '';
+            option += `
+              <option value="">== Pilih ==</option>
+            `
+            data.forEach(function(d,index){
+              option += `
+              <option value="${d.id}">${d.name}</option>
+              `
+            });
+            $('#inputDistrict').html(option);
+          },
+          error: function (data) {
+              console.log(data);
+          }
+      });
+    })
+
+    $('#inputDistrict').change(function(){
+      const district_id = $(this).val();
+      $.ajax({
+          type: 'post',
+          url: '{{ route("village.index") }}',
+          data: {
+            district_id : district_id
+          },
+          dataType: 'json',
+          success: function (data) {
+            let option = '';
+            option += `
+              <option value="">== Pilih ==</option>
+            `
+            data.forEach(function(d,index){
+              option += `
+              <option value="${d.id}">${d.name}</option>
+              `
+            });
+            $('#inputVillage').html(option);
+          },
+          error: function (data) {
+              console.log(data);
+          }
+      });
+    })
+  })
 </script>
 @endsection

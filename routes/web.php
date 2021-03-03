@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('services/confirmation/{id}/danied', [ServiceController::class,'confirm_danied'])->name('services.confirmation.danied');
     Route::resource('services', ServiceController::class);
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');
-    
+
     // Pelanggan
     Route::get('customer/export', [CustomerController::class,'export'])->name('customer.export');
     Route::get('customer/import', [CustomerController::class,'import'])->name('customer.import');
@@ -63,6 +63,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('engineer/confirm/{id}/decline', [EnginnerController::class,'decline_engineer'])->name('engineer.confirm.decline');
     Route::resource('engineer', EnginnerController::class);
     Route::post('engineer/{id}/delete', [EnginnerController::class,'destroy'])->name('engineer.delete.ajax');
+
+    Route::post('regency',[EnginnerController::class,'getListRegency'])->name('regency.index');
+    Route::post('district',[EnginnerController::class,'getListDistict'])->name('district.index');
+    Route::post('village',[EnginnerController::class,'getListVillage'])->name('village.index');
 
     // Service Order
     Route::resource('service_order', ServiceOrderController::class);
