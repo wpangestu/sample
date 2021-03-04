@@ -126,6 +126,14 @@
                                             <dd class="col-sm-8">: {{ $data->email??'-' }}</dd>
                                             <dt class="col-sm-3">Phone</dt>
                                             <dd class="col-sm-8">: {{ $data->phone??'-' }}</dd>
+                                            <dt class="col-sm-3">Porvinsi</dt>
+                                            <dd class="col-sm-8">: {{ $data->province->name??'-' }}</dd>
+                                            <dt class="col-sm-3">Kabupaten</dt>
+                                            <dd class="col-sm-8">: {{ $data->regency->name??'-' }}</dd>
+                                            <dt class="col-sm-3">Kecamatan</dt>
+                                            <dd class="col-sm-8">: {{ $data->district->name??'-' }}</dd>
+                                            <dt class="col-sm-3">Desa</dt>
+                                            <dd class="col-sm-8">: {{ $data->village->name??'-' }}</dd>
                                             <dt class="col-sm-3">Alamat</dt>
                                             <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
                                             <!-- <dt class="col-sm-3">Status</dt>

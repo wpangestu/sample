@@ -93,53 +93,105 @@
                             <span class="text-muted text-sm">format:jpeg,png,jpg|max:2048kb</span>
                         </div>
                         <div class="form-group">
-                            <label for="inputAddress" class="col-form-label">Alamat</label>
+                          <label for="inputProvince" class="col-form-label">Provinsi</label>
+                          <select name="province_id" class="form-control" id="inputProvince">
+                              <option value="">== PILIH ==</option>
+                            @foreach($provinces as $data_p)
+                              <option value="{{ $data_p->id }}" {{ $data_p->id === $data->province_id?'selected':'' }}>{{ $data_p->name }}</option>
+                            @endforeach
+                          </select>
+                          <!-- <input type="text" class="form-control" name="provinsi_id"> -->
+                      </div>
+                      <div class="form-group">
+                          <label for="inputRegency" class="col-form-label">Kabupaten</label>
+                          <select name="regency_id" class="form-control" id="inputRegency">
+                            @if(!is_null($regency))
+                              @foreach($regency as $data_r)
+                              <option value="{{ $data_r->id }}" {{ $data_r->id === $data->regency_id?'selected':'' }}>{{ $data_r->name }}</option>
+                              @endforeach
+                            @endif
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label for="inputDistrict" class="col-form-label">Kecamatan</label>
+                          <!-- <input type="text" class="form-control" name="provinsi_id" id="inputDistrict"> -->
+                          <select name="district_id" class="form-control" id="inputDistrict">
+                            @if(!is_null($district))
+                              @foreach($district as $data_d)
+                              <option value="{{ $data_d->id }}" {{ $data_d->id === $data->district_id?'selected':'' }}>{{ $data_d->name }}</option>
+                              @endforeach
+                            @endif
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label for="inputVillage" class="col-form-label">Desa</label>
+                          <select name="village_id" class="form-control" id="inputVillage">
+                          @if(!is_null($village))
+                              @foreach($village as $data_v)
+                              <option value="{{ $data_v->id }}" {{ $data_v->id === $data->village_id?'selected':'' }}>{{ $data_v->name }}</option>
+                              @endforeach
+                            @endif
+                          </select>
+                      </div>
+                        <div class="form-group">
+                            <label for="inputAddress" class="col-form-label">Alamat Lengkap</label>
                             <textarea name="address" class="form-control" id="inputAddress" rows="4">{{ old('address',$data->address) }}</textarea>
                         </div>
+
                         <div class="form-group">
-                            <label for="inputLatitude" class="col-form-label">Latitude</label>
-                            <input type="text" name="lat" value="{{ $data->lat }}" class="form-control" readonly id="inputLatitude">
-                          </div>
-                          <div class="form-group">
-                              <label for="inpuLongitude" class="col-form-label">Longitude</label>
-                              <input type="text" name="lng" class="form-control" value="{{ $data->lng }}" readonly id="inpuLongitude">
-                          </div>
-                    </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-12">
-                    <div id="accordion">
-                    <!-- we are adding the .class so bootstrap.js collapse plugin detects it -->
-                    <div class="card card-primary">
-                      <div class="card-header">
-                        <h4 class="card-title">
-                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                            Pilih Lokasi Maps
-                          </a>
-                        </h4>
-                      </div>
-                      <div id="collapseOne" class="panel-collapse collapse in">
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-md-12">
-                              <div id="map" style="width:100%;height:300px;">
-                                {!! Mapper::render() !!}
-                              </div>                            
+                            <div id="accordion">
+                              <!-- we are adding the .class so bootstrap.js collapse plugin detects it -->
+                            <div class="card card-primary">
+                              <div class="card-header">
+                                <h4 class="card-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    Pilih Lokasi Maps
+                                  </a>
+                                </h4>
+                              </div>
+                              <div id="collapseOne" class="panel-collapse collapse in">
+                                <div class="card-body">
+                                  <div class="row">
+                                    <div class="col-md-12">
+                                      <div id="map" style="width:100%;height:300px;">
+                                        <!-- {!! Mapper::render() !!} -->
+                                        <div class="form-group row">
+                                          <div class="input-group">
+                                            <div class="input-group-prepend">
+                                              <span class="input-group-text">Cari Alamat</span>
+                                            </div>
+                                            <input type="text" id="address-input" name="map_address" class="form-control map-input">
+                                            <input type="hidden" name="address_latitude" id="address-latitude" value="0" />
+                                            <input type="hidden" name="address_longitude" id="address-longitude" value="0" />
+                                          </div>
+                                        </div>
+                                        <div id="address-map-container" style="width:100%;height:250px; ">
+                                            <div style="width: 100%; height: 100%" id="address-map"></div>
+                                        </div>
+                                      </div>                            
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
+                        <div class="form-group">
+                          <label for="inputLatitude" class="col-form-label">Latitude</label>
+                          <input type="text" name="lat" value="{{ $data->lat }}" class="form-control" readonly id="inputLatitude">
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="inputStatus" class="col-form-label"></label>
-                        <button class="btn btn-primary">Ubah</button>
+                        <div class="form-group">
+                            <label for="inpuLongitude" class="col-form-label">Longitude</label>
+                            <input type="text" name="lng" class="form-control" value="{{ $data->lng }}" readonly id="inpuLongitude">
+                        </div>
                     </div>
                 </div>
-                </form>
+
               </div>
+              <div class="card-footer">
+                <a href="{{route('engineer.index')}}" class="btn btn-default float-right mr-1">Kembali</a>
+                <button type="submit" class="btn btn-info float-right mr-1">Ubah</button>
+              </div>
+            </form>
               <!-- /.card-body -->
             </div>
 
@@ -156,12 +208,116 @@
 @endsection
 
 @section('scripts')
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB980FhrGUf3mBrp9eRFzpqJaC-g6ExNco&libraries=places&callback=initialize" async defer></script>
+<script type="text/javascript">      
 
-<script type="text/javascript">
-    function updateLatlang(lat,lng)
-    {
-      $('#inputLatitude').val(lat)
-      $('#inpuLongitude').val(lng)
+  function initialize() {
+
+    $('.map-input').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    const locationInputs = document.getElementsByClassName("map-input");
+
+    const autocompletes = [];
+    const geocoder = new google.maps.Geocoder;
+    for (let i = 0; i < locationInputs.length; i++) {
+
+        const input = locationInputs[i];
+        const fieldKey = input.id.replace("-input", "");
+        const isEdit = document.getElementById(fieldKey + "-latitude").value != '' && document.getElementById(fieldKey + "-longitude").value != '';
+
+        const latitude = parseFloat(document.getElementById(fieldKey + "-latitude").value) || -7.4181887466077265;
+        const longitude = parseFloat(document.getElementById(fieldKey + "-longitude").value) || 109.22154831237727;
+
+        const map = new google.maps.Map(document.getElementById(fieldKey + '-map'), {
+            center: {lat: latitude, lng: longitude},
+            zoom: 13
+        });
+        const marker = new google.maps.Marker({
+            map: map,
+            position: {lat: latitude, lng: longitude},
+            draggable:true,
+        });
+
+        marker.setVisible(isEdit);
+
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.key = fieldKey;
+        autocompletes.push({input: input, map: map, marker: marker, autocomplete: autocomplete});
+
+        google.maps.event.addListener(marker, 'dragend', function() {
+            geocodePosition(marker.getPosition());
+        });
+
+        function geocodePosition(pos) 
+        {
+          geocoder.geocode({
+                latLng: pos
+          }, 
+            function(results, status) 
+            {
+                if (status == google.maps.GeocoderStatus.OK) 
+                {
+                    $(".map-input").val(results[0].formatted_address);
+                    const lat = results[0].geometry.location.lat();
+                    const lng = results[0].geometry.location.lng();
+                    $('#inputLatitude').val(lat)
+                    $('#inpuLongitude').val(lng)
+                    // $("#mapErrorMsg").hide(100);
+                } 
+                // else 
+                // {
+                //     $("#mapErrorMsg").html('Cannot determine address at this location.'+status).show(100);
+                // }
+            }
+          );
+        }
     }
+
+    for (let i = 0; i < autocompletes.length; i++) {
+      console.log('cek')
+        const input = autocompletes[i].input;
+        const autocomplete = autocompletes[i].autocomplete;
+        const map = autocompletes[i].map;
+        const marker = autocompletes[i].marker;
+
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            marker.setVisible(false);
+            const place = autocomplete.getPlace();
+
+            geocoder.geocode({'placeId': place.place_id}, function (results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    const lat = results[0].geometry.location.lat();
+                    const lng = results[0].geometry.location.lng();
+                    $('#inputLatitude').val(lat)
+                    $('#inpuLongitude').val(lng)
+                    // setLocationCoordinates(autocomplete.key, lat, lng);
+                }
+            });
+
+            if (!place.geometry) {
+                window.alert("No details available for input: '" + place.name + "'");
+                input.value = "";
+                return;
+            }
+
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+
+        });
+    }
+  }
+
 </script>
+@include('additional.js_region_indo')
 @endsection

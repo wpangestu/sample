@@ -334,12 +334,20 @@ class EnginnerController extends Controller
     {
         //
         $data = User::Role('teknisi')->where('userid',$id)->first();
+        if(is_null($data)){
+            return redirect()->route('engineer.index')
+                                ->with('error','Data Tidak ditemukan.');            
+        }
+        $provinces = Province::all();
+        $regency = Regency::where('province_id',$data->province_id)->get();
+        $district = District::where('regency_id',$data->regency_id)->get();
+        $village = Village::where('district_id',$data->district_id)->get();
         if(!empty($data->lat) && !empty($data->lng)){
             Mapper::map($data->lat, $data->lng,['zoom'=>14,'marker' => true, 'draggable' => true, 'eventDrag' => 'updateLatlang(event.latLng.lat(),event.latLng.lng());']);
         }else{
             Mapper::map(-7.4181887466077265, 109.22154831237727,['zoom'=>14,'marker' => true, 'draggable' => true, 'eventDrag' => 'updateLatlang(event.latLng.lat(),event.latLng.lng());']);
         }
-        return view('engineer.edit',compact('data'));
+        return view('engineer.edit',compact('data','provinces','regency','district','village'));
     }
 
     /**
@@ -366,6 +374,10 @@ class EnginnerController extends Controller
             "phone"     => $request->input('phone'),
             "address"   => $request->input('address'),
             "is_active" => $request->input('active')??0,
+            "province_id" => $request->input('province_id'),
+            "regency_id" => $request->input('regency_id'),
+            "district_id" => $request->input('district_id'),
+            "village_id" => $request->input('village_id'),
             "lat"       => $request->input('lat'),
             "lng"       => $request->input('lng'),
         ];
