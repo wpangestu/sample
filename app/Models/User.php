@@ -38,8 +38,11 @@ class User extends Authenticatable implements JWTSubject
         'lat',
         'lng',
         'id_card_number',
-        'code_otp'
-
+        'code_otp',
+        'province_id',
+        'regency_id',
+        'district_id',
+        'village_id'
     ];
 
     /**
@@ -94,5 +97,25 @@ class User extends Authenticatable implements JWTSubject
     public function chats()
     {
         return $this->hasMany('App\Models\Chat','from','id');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo('App\Models\Province','province_id','id');
+    }
+
+    public function regency()
+    {
+        return $this->belongsTo('App\Models\Regency','regency_id','id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo('App\Models\District','district_id','id');
+    }
+
+    public function village()
+    {
+        return $this->belongsTo('App\Models\Village','village_id','id');
     }
 }

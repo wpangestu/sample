@@ -10,6 +10,7 @@ use App\Models\Province;
 use App\Models\Regency;
 use App\Models\District;
 use App\Models\Village;
+use App\Models\UserAddress;
 use DataTables;
 use Illuminate\Support\Str;
 use Mapper;
@@ -230,11 +231,26 @@ class EnginnerController extends Controller
                 "is_active" => $request->input('active')??0,
                 "lat"       => $request->input('lat'),
                 "lng"       => $request->input('lng'),
-                "otp"       => $otp
+                "otp"       => $otp,
+                'province_id' => $request->input('province_id'),
+                'regency_id' => $request->input('regency_id'),
+                'district_id' => $request->input('district_id'),
+                'village_id' => $request->input('village_id'),
             ];
-    
+            // dd($data);            
             $insert = User::create($data);
             $insert->assignRole('teknisi');
+
+            if(!(is_null($request->input('lat'))) && !(is_null($request->input('lng'))) ){
+                $user_address = [
+                    "lat" => $request->input('lat'),
+                    "lng" => $request->input('lng'),
+                    "user_id" => $insert->id,
+                    "name" => "Alamat Utama",
+                    "address" => $request->input('map_address')
+                ];
+                UserAddress::create($user_address);
+            }
     
             $engineer = Engineer::create([
                 "id_card_number"    => $request->input('id_card_number'),
@@ -284,7 +300,8 @@ class EnginnerController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            dd($th);
+            return redirect()->route('engineer.index')
+                                ->with('error','Opps, Terjadi kesalahan.');            
         }
     }
 

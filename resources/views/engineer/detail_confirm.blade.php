@@ -85,6 +85,14 @@
                         <i class='fa fa-times-circle'></i>
                         @endif
                   </dd>
+                  <dt class="col-sm-3">Provinsi</dt>
+                  <dd class="col-sm-8">: {{ $data->province->name??'-' }}</span>
+                  <dt class="col-sm-3">Kabupaten</dt>
+                  <dd class="col-sm-8">: {{ $data->regency->name??'-' }}</span>
+                  <dt class="col-sm-3">Kecamatan</dt>
+                  <dd class="col-sm-8">: {{ $data->district->name??'-' }}</span>
+                  <dt class="col-sm-3">Desa</dt>
+                  <dd class="col-sm-8">: {{ $data->village->name??'-' }}</span>
                   <dt class="col-sm-3">Alamat</dt>
                   <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
                   <!-- <dt class="col-sm-3">Status</dt>

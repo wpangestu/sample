@@ -101,7 +101,7 @@
                       </div>
                       <div class="form-group">
                           <label for="inputProvince" class="col-form-label">Provinsi</label>
-                          <select name="provinsi_id" class="form-control" id="inputProvince">
+                          <select name="province_id" class="form-control" id="inputProvince">
                               <option value="">== PILIH ==</option>
                             @foreach($provinces as $data)
                               <option value="{{ $data->id }}">{{ $data->name }}</option>
@@ -151,10 +151,8 @@
                                         <div class="input-group-prepend">
                                           <span class="input-group-text">Cari Alamat</span>
                                         </div>
-                                        <input type="text" id="address-input" class="form-control map-input">
+                                        <input type="text" id="address-input" name="map_address" class="form-control map-input">
                                       </div>
-                                        <input type="hidden" name="address_latitude" id="address-latitude" value="0" />
-                                        <input type="hidden" name="address_longitude" id="address-longitude" value="0" />
                                     </div>
                                     <div id="address-map-container" style="width:100%;height:250px; ">
                                         <div style="width: 100%; height: 100%" id="address-map"></div>
@@ -332,6 +330,8 @@
           },
           dataType: 'json',
           success: function (data) {
+            $('#inputDistrict').html('');
+            $('#inputVillage').html('');
             let option = '';
             option += `
               <option value="">== Pilih ==</option>
@@ -360,6 +360,7 @@
           },
           dataType: 'json',
           success: function (data) {
+            $('#inputVillage').html('');
             let option = '';
             option += `
               <option value="">== Pilih ==</option>
