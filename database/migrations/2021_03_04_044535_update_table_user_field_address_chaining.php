@@ -15,10 +15,10 @@ class UpdateTableUserFieldAddressChaining extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->unsignedBigInteger('province_id')->nullable()->default(null);
-            $table->unsignedBigInteger('regency_id')->nullable()->default(null);
-            $table->unsignedBigInteger('district_id')->nullable()->default(null);
-            $table->unsignedBigInteger('village_id')->nullable()->default(null);
+            // $table->unsignedBigInteger('province_id')->nullable()->default(null);
+            // $table->unsignedBigInteger('regency_id')->nullable()->default(null);
+            // $table->unsignedBigInteger('district_id')->nullable()->default(null);
+            // $table->unsignedBigInteger('village_id')->nullable()->default(null);
 
         });
     }

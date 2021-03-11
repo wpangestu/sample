@@ -67,6 +67,26 @@ class ServiceController extends Controller
         return view('service.index');
     }
 
+    public function get_data_bycategory(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required'
+        ]);
+
+        try {
+            //code...
+            $category = $request->input('category_id');
+            $services = Service::where('category_service_id',$category)
+                                ->where('status','active')
+                                ->with('engineer')    
+                                ->get();
+            return response()->json(["success"=>true,"data"=>$services]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["success"=>false,"data"=>[],"message"=>$th->getMessage()]);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

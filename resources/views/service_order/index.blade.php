@@ -50,21 +50,21 @@
                     {{ $message }}
                 </div>
                 @endif
-
-                <table id="table-datatables" class="table table-bordered table-hover">
-                  <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Tanggal</th>
-                    <th>ID</th>
-                    <th>Pelanggan</th>
-                    <th>Teknisi</th>
-                    <th>Service</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                  </thead>
-                </table>
+                <div class="table-responsive">
+                  <table id="table-datatables" class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Tanggal</th>
+                      <th>ID</th>
+                      <th>Pelanggan</th>
+                      <th>Teknisi</th>
+                      <th>Status</th>
+                      <th>Aksi</th>
+                    </tr>
+                    </thead>
+                  </table>
+                </div>
               </div>
               <!-- /.card-body -->
             </div>
@@ -100,11 +100,10 @@
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'created_at', name: 'created_at'},
-                {data: 'serviceorder_id', name: 'serviceorder_id'},
+                {data: 'order_number', name: 'order_number'},
                 {data: 'customer_id', name: 'customer_id'},
                 {data: 'engineer_id', name: 'engineer_id'},
-                {data: 'service_id', name: 'service_id'},
-                {data: 'status', name: 'status'},
+                {data: 'order_status', name: 'order_status'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

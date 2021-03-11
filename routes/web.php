@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('services/confirmation/{id}/danied', [ServiceController::class,'confirm_danied'])->name('services.confirmation.danied');
     Route::resource('services', ServiceController::class);
     Route::post('services/{id}/delete', [ServiceController::class,'destroy'])->name('service.delete.ajax');
+    Route::post('services/get_by_category', [ServiceController::class,'get_data_bycategory'])->name('service.by_category.ajax');
 
     // Pelanggan
     Route::get('customer/export', [CustomerController::class,'export'])->name('customer.export');
