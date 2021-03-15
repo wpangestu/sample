@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Service;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Payment;
 use DataTables;
 use App\Models\CategoryService;
 use Carbon\Carbon;
@@ -29,6 +30,19 @@ class ServiceOrderController extends Controller
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
 
+                        $btn = '
+                        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="#" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
+                            ';
+                            if($row->order_status ==="pending"){
+                                $btn .= '<li class="dropdown-item"><a href="'.route('payment.order.edit',$row->payment_id??'!#').'" data-original-title="Buat Pembayaran"><i class="fa fa-money-bill"></i> Buat Pembayaran</a></li>';
+                            }
+                        $btn .= '</ul>';
+                        // <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        // <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
                         // $btn = '<a href="'.route('service_order.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
    
                         // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_order.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
@@ -43,14 +57,14 @@ class ServiceOrderController extends Controller
                             //                 <a class="dropdown-item btn_delete" data-url="'.route('service_order.delete.ajax',$row->id).'" href="'.route('dashboard').'"><i class="fa fa-times"></i> Hapus</a>
                             //             </div>
                             //         </button>';
-                            // return $btn;
+                            return $btn;
                     })
                     ->addColumn('order_status',function($row){
                         if($row->order_status==null){
                             return "-";
                         }elseif($row->order_status=="pending"){
                             return '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
-                        }elseif ($row->order_status=="waiting_order") {
+                        }elseif ($row->order_status=="waiting-order") {
                             return '<badge class="badge badge-info">Menunggu Konfirmasi Teknisi</badge>';
                         }
                         elseif($row->order_status=="denied") {
@@ -113,13 +127,16 @@ class ServiceOrderController extends Controller
         $request->validate([
             'customer_id' => 'required|integer',
             'service_id' => 'required',
+            'payment_gateway'=>'required'
         ]);
+
+        // dd($request->all());
 
         try {
             //code...
             DB::beginTransaction();
 
-            $service_input = $request->service_id;
+            $service_input = $request->service_id[0];
             $service_input = explode("_",$service_input);
     
             $order_id = uniqid();
@@ -162,6 +179,22 @@ class ServiceOrderController extends Controller
             $order->total_payment = $total_payment;
             $order->total_payment_receive = $total_payment;
             $order->address = $address;
+            $order->save();
+
+            $list_order = [];
+            $list_order[] = $order->id;
+
+            $data_payment = [
+                "customer_id" => $order->customer->id,
+                "amount" => $total_payment,
+                "paymentid" => "P".uniqid(),
+                "type" => $request->input('payment_gateway'),
+                "orders" => $list_order,
+            ];
+
+            $payment = Payment::create($data_payment);
+
+            $order->payment_id = $payment->id;
             $order->save();
 
             DB::commit();

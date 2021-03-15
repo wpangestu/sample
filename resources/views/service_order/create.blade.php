@@ -93,7 +93,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="inputService" class="col-sm-2 col-form-label">Service</label>
-                                <select class="form-control" name="service_id" id="inputService">
+                                <select class="form-control" name="service_id[]" id="inputService">
                                     <option value="">--PILIH--</option>
                                     @foreach($services as $service)
                                         <option value="{{ $service->id."_".$service->price }}">{{ $service->name }}</option>
@@ -115,6 +115,20 @@
                             <div class="form-group">
                                 <label for="inputDescription" class="col-form-label">Deskripsi</label>
                                 <textarea name="description" class="form-control" id="inputDescription" rows="5"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment_method" class="">Metode Pembyaran</label>
+                                <select name="payment_method" class="form-control" id="payment_method">
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="payment_gateway" class="">Pilih Bank</label>
+                                <select name="payment_gateway" class="form-control" id="payment_gateway">
+                                    <option value="BCA">BCA</option>
+                                    <option value="BRI">BRI</option>
+                                    <option value="MANDIRI">MANDIRI</option>
+                                </select>
                             </div>
                     </div>
                     <div class="col-md-6">

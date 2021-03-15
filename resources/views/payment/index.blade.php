@@ -57,27 +57,47 @@
                     <th>No</th>
                     <th>Tanggal</th>
                     <th>ID Pembayaran</th>
-                    <th>ID Service</th>
-                    <th>No Transaksi</th>
                     <th>Metode</th>
-                    <th>Service</th>
+                    <th>Total</th>
                     <th>Customer</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                   </tr>
                   </thead>
                 <!-- for sample data -->
                     <tbody>
+                        @foreach($payment as $val)
                         <tr>
-                            <td>1</td>
-                            <td>09/12/2020 13:21</td>
-                            <td><a href="#">5fce9cb897979</a> </td>
-                            <td><a href="#">5fce9cb329f75</a> </td>
-                            <td>{{ uniqid() }}</td>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $val->created_at }}</td>
+                            <td><a href="#">{{ $val->paymentid }}</a> </td>
                             <td>Transfer Bank</td>
-                            <td>Service Standart</td>
-                            <td>Efendi</td>
-                            <td><button class="btn btn-sm btn-primary">Aksi</button></td>
+                            <td>{{ $val->amount+($val->convenience_fee??0) }}</td>
+                            <td>{{ $val->customer->name }}</td>
+                            <td>
+                              @if($val->status === 'check')
+                                <span class="badge badge-info">Menunggu Konfirmasi</span>
+                              @elseif($val->status === 'pending')
+                                <span class="badge badge-warning">Menunggu Pembayaran</span>
+                              @elseif($val->status === 'decline')
+                                <span class="badge badge-danger">Ditolak</span>
+                              @elseif($val->status === 'success')
+                                <span class="badge badge-success">Sukses</span>
+                              @else
+                                -
+                              @endif
+                            </td>
+                            <td>
+                              <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                  <i class="fa fa-ellipsis-v"></i>
+                              </button>
+                              <ul class="dropdown-menu">
+                                  <li class="dropdown-item"><a href="{{ route('payment.order.detail',$val->id) }}" title="Detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                                  <!-- <li class="dropdown-item"><a href="'.route('payment.order.edit',$row->payment_id??'#').'" data-original-title="Buat Pembayaran"><i class="fa fa-money"></i> Buat Pembayaran</a></li> -->
+                              </ul>
+                            </td>
                         </tr>
+                        @endforeach
                     </tbody>
                 <!-- endsample -->
                 </table>

@@ -84,6 +84,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');
+    Route::get('payment/create/order/{id}', [PaymentController::class,'create'])->name('payment.create');
+    Route::post('payment/store/order/{id}', [PaymentController::class,'store'])->name('payment.order.store');
+    Route::get('payment/{id}/edit/', [PaymentController::class,'edit'])->name('payment.order.edit');
+    Route::post('payment/{id}/update/', [PaymentController::class,'update'])->name('payment.order.update');
+    Route::get('payment/{id}/detail/', [PaymentController::class,'show'])->name('payment.order.detail');
+    Route::get('payment/{id}/confirm_accept/', [PaymentController::class,'confirm_accept'])->name('payment.order.confirm_acc');
     
     // Pengaturan
     //Privacy Policy

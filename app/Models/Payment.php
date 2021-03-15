@@ -8,4 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'orders' => 'array'
+    ];
+
+    protected $fillable = [
+        'customer_id', 
+        'amount', 
+        'paymentid', 
+        'status', 
+        'image',
+        'convenience_fee',
+        'type',
+        'orders'
+    ];
+
+    public function customer(){
+        return $this->belongsTo('App\Models\User','customer_id','id');
+    }
 }
