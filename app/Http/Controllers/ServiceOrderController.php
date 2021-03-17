@@ -35,7 +35,7 @@ class ServiceOrderController extends Controller
                             <i class="fa fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-item"><a href="#" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
+                            <li class="dropdown-item"><a href="'.route('service_order.show',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
                             ';
                             if($row->order_status ==="pending"){
                                 $btn .= '<li class="dropdown-item"><a href="'.route('payment.order.edit',$row->payment_id??'!#').'" data-original-title="Buat Pembayaran"><i class="fa fa-money-bill"></i> Buat Pembayaran</a></li>';
@@ -231,6 +231,34 @@ class ServiceOrderController extends Controller
     public function show($id)
     {
         //
+        $order = Order::find($id);
+        if(is_null($order)){
+            return redirect()->back()->with('error','Data tidak ditemukan');
+        }
+        if($order->order_status==null){
+            $status = "-";
+        }elseif($order->order_status=="pending"){
+            $status = '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
+        }elseif ($order->order_status=="waiting-order") {
+            $status = '<badge class="badge badge-info">Menunggu Konfirmasi Teknisi</badge>';
+        }
+        elseif($order->order_status=="denied") {
+            $status = '<badge class="badge badge-danger">Ditolak</badge>';
+        }
+        elseif($order->order_status=="processed") {
+            $status = '<badge class="badge badge-primary">Diproses</badge>';
+        }
+        elseif($order->order_status=="take_away") {
+            $status = '<badge class="badge badge-info">Take Away</badge>';
+        }
+        elseif($order->order_status=="canceled") {
+            $status = '<badge class="badge badge-secondary">Dibatalkan</badge>';
+        }
+        elseif($order->order_status=="done") {
+            $status = '<badge class="badge badge-success">Selesai</badge>';
+        }
+        // dd($order);
+        return view('service_order.detail',compact('order','status'));
     }
 
     /**
