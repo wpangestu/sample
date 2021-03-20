@@ -90,6 +90,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('payment/{id}/update/', [PaymentController::class,'update'])->name('payment.order.update');
     Route::get('payment/{id}/detail/', [PaymentController::class,'show'])->name('payment.order.detail');
     Route::get('payment/{id}/confirm_accept/', [PaymentController::class,'confirm_accept'])->name('payment.order.confirm_acc');
+    Route::get('payment/{id}/confirm_decline/', [PaymentController::class,'confirm_decline'])->name('payment.order.confirm_dec');
     
     // Pengaturan
     //Privacy Policy

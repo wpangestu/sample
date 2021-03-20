@@ -104,7 +104,7 @@
                   <dd class="col-sm-8">
                   @if($payment->status==="check")
                     <a href="{{ route('payment.order.confirm_acc', $payment->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Diterima</a>
-                    <a href="{{ route('services.confirmation.danied', $payment->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Ditolak</a>
+                    <a href="{{ route('payment.order.confirm_dec', $payment->id) }}" onclick="return confirm('Apakah anda yakin ? ')" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Ditolak</a>
                   @endif
                     <a href="{{ route('payment.index') }}" class="btn btn-sm btn-secondary"><i class="fa fa-arrow-circle-left"></i> Kembali</a>
                   </dd>

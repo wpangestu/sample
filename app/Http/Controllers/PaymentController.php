@@ -165,6 +165,27 @@ class PaymentController extends Controller
 
     }
 
+    public function confirm_decline($id){
+        
+        try {
+            //code...
+            $payment = Payment::find($id);
+
+            $payment->status = 'decline';
+            $payment->verified_by = auth()->user()->id;
+            $payment->verified_at = date('Y-m-d H:i:s');
+            $payment->verified_name = auth()->user()->name;
+            $payment->save();
+
+            return redirect()->route('payment.index')->with('success','Pembayaran berhasil ditolak');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+        }
+
+    }
+
     /**
      * Update the specified resource in storage.
      *
