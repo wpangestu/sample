@@ -1,5 +1,5 @@
 @extends('layouts.app_layout')
-@section('title','Tambah Ulasan Pelanggan')
+@section('title','Ulasan Pelanggan Detail')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -30,7 +30,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tambah Ulasan Pelanggan</h3>
+                <h3 class="card-title">Ulasan Pelanggan Detail</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -46,34 +46,25 @@
                     @endif
                 <div class="row">
                     <div class="col-md-6"> 
-                        <form action="{{route('review_service.store',[$order->id])}}" enctype="multipart/form-data" method="post">
-                            @csrf
                             <div class="form-group">
                                 <label for="inputServiceOrder" class="col-form-label">Service Order</label>
                                 <select class="form-control" name="orderid" id="inputServiceOrder" readonly>
-                                  <option value="{{ $order->id }}">{{ $order->order_number }}</option>
+                                  <option value="{{ $review->order_id }}">{{ $review->order->order_number }}</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="inputRatings" class="col-form-label">Rating/Bintang (1-5)</label>
-                                <input required type="number" class="form-control" name="ratings" min="0" max="5" id="inputRatings">
+                                <input required value="{{ $review->ratings }}" type="number" readonly class="form-control" name="ratings" min="0" max="5" id="inputRatings">
                             </div>
                             <div class="form-group">
                                 <label for="inputDescription" class="col-form-label">Deskripsi</label>
-                                <textarea name="description" class="form-control" id="inputDescription" rows="5"></textarea>
+                                <textarea name="description" readonly class="form-control" id="inputDescription" rows="5">{{ $review->description }}</textarea>
                             </div>
                     </div>
                     <div class="col-md-6">
-
                     </div>
                 </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="inputStatus" class="col-form-label"></label>
-                        <button class="btn btn-primary">Simpan</button>
-                    </div>
-                </div>
-                </form>
+                <a class="btn btn-sm btn-secondary" href="{{ route('review_service.index') }}">Kembali</a>
               </div>
               <!-- /.card-body -->
             </div>

@@ -34,7 +34,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('review_service.create')}}" class="btn btn-primary mb-3">Tambah</a>
+
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
@@ -56,7 +56,7 @@
                   <tr>
                     <th>No</th>
                     <th>Tanggal</th>
-                    <th>ID Service</th>
+                    <th>ID Order</th>
                     <th>Pelanggan</th>
                     <th>Teknisi</th>
                     <th>Bintang</th>
@@ -64,22 +64,7 @@
                     <th>Aksi</th>
                   </tr>
                   </thead>
-                <!-- for sample data -->
-                    <!-- <tbody>
-                      @php $no=1; @endphp
-                      @foreach($reviewServices as $review)
-                        <tr>
-                          <td>{{ $no++ }}</td>
-                          <td>{{ $review->created_at }}</td>
-                          <td>{{ $review->service_order->serviceorder_id }}</td>
-                          <td>{{ $review->service_order->engineer->name }}</td>
-                          <td>{{ $review->ratings }}</td>
-                          <td>{{ $review->description }}</td>
-                          <td>-</td>
-                        </tr>
-                      @endforeach
-                    </tbody> -->
-                <!-- endsample -->
+
                 </table>
               </div>
               <!-- /.card-body -->

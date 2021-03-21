@@ -51,6 +51,16 @@
                 </div>
                 @endif
                 @php $address = json_decode($order->address) @endphp
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="">Tanggal Order</label>
+                      <input type="text" readonly value="{{ $order->created_at }}" class="form-control"> 
+                    </div>                    
+                  </div>                
+                </div>
+
                 <div class="row">
                     <div class="col-md-6">
 
@@ -67,12 +77,39 @@
                         <div class="status">
                           {!! $status !!}
                         </div>
-                      </div>                    
+                      </div>
+                      @if($order->order_status === "waiting-order")
                       <div class="form-group">
-                        <label for="">Take Away</label>
-                        <input type="text" readonly value="{{ $order->is_take_away?'Ya':'Tidak' }}" class="form-control"> 
-                      </div>                    
+                        <label for="">Proses / Tolak Order</label><br>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'processed']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Proses Order</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'decline']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Tolak Order</a>
+                      </div>
+                      @endif
+                      @if($order->order_status === "processed")
+                      <div class="form-group">
+                        <label for="">Aksi</label><br>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'take-away']) }}" class="btn btn-sm btn-info"><i class="fa fa-hands-helping"></i> Take Away</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a>
+                      </div>
+                      @endif
+                      @if($order->order_status === "take-away")
+                      <div class="form-group">
+                        <label for="">Aksi</label><br>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a>
+                      </div>
+                      @endif
+                      @if($order->order_status === "done")
+                        <div class="form-group">
+                          <label for="">Review Customer</label><br>
+                        @if($order->review()->exists())
 
+                          @else
+                          <span>Belum Ada Review</span> [<a href="{{ route('review_service.create',[$order->id]) }}">Tambahkan</a>]
+                        @endif
+                        </div>
+                      @endif
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">

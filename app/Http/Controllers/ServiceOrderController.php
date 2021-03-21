@@ -228,6 +228,36 @@ class ServiceOrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function process_decline_order(Request $request)
+    {
+
+        // dd('dadsa');
+        $orderid = $request->get('orderid');
+        $status = $request->get('status');
+
+        if(empty($orderid) || empty($status)){
+            return redirect()->back()->with('error','Terjadi kesalahan');
+        }
+
+        try {
+            //code...
+            $order = Order::where('order_number',$orderid)->first();
+
+            // dd($status);
+
+            $order->order_status = $status;
+            $order->save();
+            
+            return redirect()->back()->with('success','Order berhasil diupdate');
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan data');
+        }
+    }
+
     public function show($id)
     {
         //
@@ -248,7 +278,7 @@ class ServiceOrderController extends Controller
         elseif($order->order_status=="processed") {
             $status = '<badge class="badge badge-primary">Diproses</badge>';
         }
-        elseif($order->order_status=="take_away") {
+        elseif($order->order_status=="take-away") {
             $status = '<badge class="badge badge-info">Take Away</badge>';
         }
         elseif($order->order_status=="canceled") {

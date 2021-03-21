@@ -32,4 +32,8 @@ class Order extends Model
         return $this->hasMany('App\Models\OrderDetail','order_id','id');
 
     }
+
+    public function review(){
+        return $this->hasOne('App\Models\ReviewService','order_id','id');
+    }
 }

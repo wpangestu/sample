@@ -70,11 +70,18 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::post('village',[EnginnerController::class,'getListVillage'])->name('village.index');
 
     // Service Order
+    Route::get('service_order/status', [ServiceOrderController::class,'process_decline_order'])->name('service_order.process_decline');
     Route::resource('service_order', ServiceOrderController::class);
     Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
 
     // Review Service
-    Route::resource('review_service', ReviewServiceController::class);
+    // Route::resource('review_service', ReviewServiceController::class);
+    Route::get('review_service',[ ReviewServiceController::class,'index'])->name('review_service.index');
+    Route::get('review_service/order/{id}/create',[ ReviewServiceController::class,'create'])->name('review_service.create');
+    Route::get('review_service/{id}/detail',[ ReviewServiceController::class,'show'])->name('review_service.detail');
+    Route::post('review_service/order/{orderid}/store',[ ReviewServiceController::class,'store'])->name('review_service.store');
+    Route::get('review_service/order/{orderid}/edit',[ ReviewServiceController::class,'edit'])->name('review_service.edit');
+    Route::post('review_service/order/{orderid}/update',[ ReviewServiceController::class,'update'])->name('review_service.update');
     // Route::get('review_service', [ReviewServiceController::class,'index'])->name('review_service.index');
 
     // Saldo

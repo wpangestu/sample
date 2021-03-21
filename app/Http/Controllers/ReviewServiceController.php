@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ReviewService;
 use App\Models\ServiceOrder;
+use App\Models\Order;
 use DataTables;
 use Carbon\carbon;
 
@@ -25,13 +26,13 @@ class ReviewServiceController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('service_id',function($row){
-                        return $row->service_order->serviceorder_id??'-';
+                        return $row->order->order_number??'-';
                     })
                     ->addColumn('engineer_id',function($row){
-                        return $row->service_order->engineer->name??'-';
+                        return $row->order->engineer->name??'-';
                     })
                     ->addColumn('user_id',function($row){
-                        return $row->service_order->customer->name??'-';
+                        return $row->order->customer->name??'-';
                     })
                     ->addColumn('date',function($row){
                         return Carbon::parse($row->created_at)->format("d/m/Y H:i");
@@ -39,14 +40,17 @@ class ReviewServiceController extends Controller
                     })
                     ->addColumn('action', function($row){
    
-                            $btn = '-';
-                            // $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+                        $btn = '
+                        <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="'.route('review_service.edit',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Ubah</a></li>
+                            <li class="dropdown-item"><a href="'.route('review_service.detail',$row->id).'" data-original-title="Detail" class="Detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        ';
+                        $btn .= '</ul>';
+                        return $btn;
 
-                            // $btn .= ' <a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
-   
-                            // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
-    
-                            return $btn;
                     })
                     ->rawColumns(['action'])
                     ->make(true);
@@ -60,11 +64,17 @@ class ReviewServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($orderid)
     {
         //
-        $service_orders = ServiceOrder::all();
-        return view('review_service.create',compact('service_orders'));
+        // $service_orders = ServiceOrder::all();
+        $order = Order::find($orderid);
+
+        if(is_null($orderid)){
+            return redirect()->back()->with('error','Terjadi kesalahan');
+        }
+        // dd($order);
+        return view('review_service.create',compact('order'));
     }
 
     /**
@@ -73,16 +83,17 @@ class ReviewServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,$orderid)
     {
         //
+
         $request->validate([
-            'service_order_id' => 'required',
+            'orderid' => 'required',
             'ratings' => 'required|integer|max:5',
         ]);
 
         $review = new ReviewService;
-        $review->service_order_id = $request->input('service_order_id');
+        $review->order_id = $orderid;
         $review->ratings = $request->input('ratings');
         $review->description = $request->input('description');
         $review->save();
@@ -101,6 +112,13 @@ class ReviewServiceController extends Controller
     public function show($id)
     {
         //
+        $review = ReviewService::find($id);
+
+        if(is_null($review)){
+            return redirect()->back()->with('error','Terjadi kesalahan');
+        }
+
+        return view('review_service.detail',compact('review'));
     }
 
     /**
@@ -112,6 +130,13 @@ class ReviewServiceController extends Controller
     public function edit($id)
     {
         //
+        $review = ReviewService::find($id);
+
+        if(is_null($review)){
+            return redirect()->back()->with('error','Maaf terjadi kesalahan');
+        }
+
+        return view('review_service.edit',compact('review'));
     }
 
     /**
@@ -124,6 +149,27 @@ class ReviewServiceController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $request->validate([
+            'orderid' => 'required',
+            'ratings' => 'required|integer|max:5',
+        ]);
+
+
+        try {
+            //code...
+            $review = ReviewService::find($id);
+
+            $review->ratings = $request->input('ratings');
+            $review->description = $request->input('description');
+            $review->save();
+
+            return redirect()->route('review_service.index')->with('success','Data berhasil diubah');
+            
+        } catch (\Throwable $th) {
+            return redirect()->route('review_service.index')->with('error','Maaf terjadi kesalahan');
+            //throw $th;
+        }
+
     }
 
     /**

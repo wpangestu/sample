@@ -13,4 +13,8 @@ class ReviewService extends Model
     public function service_order(){
         return $this->belongsTo('App\Models\ServiceOrder','service_order_id','id');
     }
+
+    public function order(){
+        return $this->belongsTo('App\Models\Order','order_id','id');
+    }
 }
