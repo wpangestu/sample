@@ -7,6 +7,9 @@ use Mapper;
 use App\Models\CategoryService;
 use App\Models\Service;
 use App\Models\User;
+use \DateTime;
+use \DateInterval;
+use \DatePeriod;
 
 class DashboardController extends Controller
 {
@@ -98,5 +101,58 @@ class DashboardController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function get_statistik_engineer_register(Request $request)
+    {
+        $filter = $request->filter;
+
+        if($filter === "day"){
+            $date = new DateTime(date('Y-m-01'));
+            $end_date = new DateTime(date('Y-m-t'));
+
+            $label = [];
+            $data = [];
+            for ($i=$date; $i <= $end_date; $i->modify('+1 day')) { 
+                # code...
+                $user = User::Role('teknisi')
+                                ->whereDate('created_at',$i->format('Y-m-d'))
+                                ->count();
+                $label[] = $i->format('d M Y');
+                $data[] = (int)$user;
+            }
+
+            $reponse = [
+                "success" => true,
+                "label" => $label,
+                "data" => $data
+            ];
+            return response()->json($reponse);
+        }elseif($filter === "month"){
+
+            $date = new DateTime(date('Y-01-01'));
+            $end_date = new DateTime(date('Y-12-t'));
+            $interval = new DateInterval('P1M');
+            $periode = new DatePeriod($date,$interval,$end_date);
+
+            $label = [];
+            $data = [];
+
+            foreach ($periode as $key => $dt) {
+                # code...
+                // echo $dt->format('Y-m')." ";
+                $user = User::Role('teknisi')
+                                ->whereMonth('created_at',$dt->format('m'))
+                                ->count();
+                $label[] = $dt->format('M Y');
+                $data[] = (int)$user;
+            }
+            $reponse = [
+                "success" => true,
+                "label" => $label,
+                "data" => $data
+            ];
+            return response()->json($reponse);
+        }
     }
 }

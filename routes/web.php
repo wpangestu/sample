@@ -36,6 +36,7 @@ Route::get('/cek', function () {
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
+    Route::get('/dashboard/statistik_engineer', [DashboardController::class,'get_statistik_engineer_register'])->name('dashboard.statistik.engineer.register');
 
     // Route::get('/member', Members::class)->name('member'); //Tambahkan routing ini
     
