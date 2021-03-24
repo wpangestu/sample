@@ -13,6 +13,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -47,13 +48,20 @@ class UserController extends Controller
                 return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(['error' => 'could_not_create_token'], 422);
         }
 
         // $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
             // dd($user);
+            // \Carbon\Carbon::setLocale('id');
+            // $currentDateTime = Carbon::now();
+            $newDateTime = Carbon::now()->addHour();
+                
+            // print_r($currentDateTime);
+            // print_r($newDateTime);
+
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
 
@@ -61,13 +69,16 @@ class UserController extends Controller
             $data['message'] = "Login successfully";
             $data['data'] = $user;
             $data['token'] = $token;
+            // $data['time1'] = $currentDateTime->format('Y-m-d H:i:s');
+            $data['valid_until'] = $newDateTime->format('Y-m-d H:i:s');
+
             $data['token_type'] = "Bearer";
-              
+            
+            return response()->json($data);
         }else{
-            $data['message'] = "Opps... email atau kata sandi salah";
+            return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
         }
     
-        return response()->json($data);
     }
 
     public function register(Request $request)
@@ -85,7 +96,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
         $otp = mt_rand(1000,9999);
@@ -149,10 +160,10 @@ class UserController extends Controller
 
             DB::commit();
 
-            \Mail::to($request->get('email'))
-                    ->send(new \App\Mail\OtpMail($otp));
+            // \Mail::to($request->get('email'))
+            //         ->send(new \App\Mail\OtpMail($otp));
 
-            $message = "Register berhasil, silahkan cek email anda untuk memasukan kode otp";
+            $message = "Register berhasil";
 
             return response()->json(compact('message'),200);
 
@@ -163,6 +174,24 @@ class UserController extends Controller
         }
     }
 
+    public function testing(){
+
+        try {
+            //code...
+            $email = 'wa.pangestu16@gmail.com';
+            $otp = rand(1000,9999);
+            \Mail::to($email)
+                ->send(new \App\Mail\OtpMail($otp));
+
+            return response()->json(["success"=>true]);
+        } catch (\Throwable $th) {
+            return response()->json(["message"=>$th->getMessage()]);
+            //throw $th;
+        }
+
+
+    }
+
     public function confirmation_otp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -171,7 +200,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 400);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }
 
         $email = $request->get('email');
@@ -180,20 +209,22 @@ class UserController extends Controller
         $user = User::where('email',$email)->first();
 
         if(is_null($user)){
-            $message = 'Email tidak ditemukan';
+            // $message = 'Email tidak ditemukan';
+            return response()->json(["message"=>"Email Tidak ditemukan"], 422);
         }else{
             
             if($user->code_otp===$code_otp){
-                $message = 'konfirmasi kode otp berhasil';
                 $user->email_verified_at = date('Y-m-d H:i:s');
                 $user->engineer->is_varified_email = true;
                 $user->engineer->varified_email_at = date('Y-m-d H:i:s');
                 $user->engineer->save();
+                $message = 'konfirmasi kode otp berhasil';
+                return response()->json(compact('message'));
             }else{
                 $message = 'kode otp salah';
+                return response()->json(["message"=>$message], 423);
             }
         }
-        return response()->json(compact('message'));
     }
 
     public function forgot_password(Request $request)
@@ -203,7 +234,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 422);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }   
 
         $user = User::where('email',$request->get('email'))->first();
@@ -232,7 +263,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 422);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }
 
         $email = $request->get('email');
@@ -253,7 +284,7 @@ class UserController extends Controller
                 $kode=200;
             }else{
                 $message = 'kode otp salah';
-                $kode=422;
+                $kode=423;
             }
             return response()->json(['message'=>$message],$kode);
         }
@@ -267,7 +298,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 422);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }
 
         $email = $request->get('email');
@@ -294,7 +325,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 422);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }   
 
         $user = User::where('email',$request->get('email'))->first();
@@ -308,7 +339,7 @@ class UserController extends Controller
             $user->save();
 
             \Mail::to($request->get('email'))
-            ->send(new \App\Mail\OtpMail($newotp));
+                ->send(new \App\Mail\OtpMail($newotp));
             $message = "Kode Otp sudah dikirim ke email anda";
             return response()->json(["message"=>$message], 200);
         }        
@@ -347,7 +378,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message"=>$validator->errors()], 422);
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }
         
         try {
@@ -366,30 +397,90 @@ class UserController extends Controller
         
     }
 
+    public function delete_fcm_token(Request $request)
+    {
+        try {
+            //code...
+            $user = User::find(auth()->user()->id);
+
+            $user->fcm_token = null;
+            $user->save();
+
+            return response()->json(["message" => "fcm token successfully deleted"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi Kesalahan : ".$th->getMessage()], 422);
+        }
+
+    }
+
     public function userEngineer()
     {
 
-        $this->getAuthenticatedUser();
+        try {
+            //code...
 
-        $user = auth()->user();
+            $user = auth()->user();
 
-        $response = [
-            "id_card_number" => $user->engineer->id_card_number,
-            "name" => $user->name,
-            "phone" => $user->phone,
-            "email" => $user->email,
-            "address" => $user->address,
-            "userid" => $user->userid,
-            "email_verified_at" => $user->email_verified_at,
-            "profile_photo" => $user->profile_photo_path,
-            "is_active" => $user->is_active,
-            "lat" => $user->lat,
-            "lng" => $user->lng,
-            "verified" => $user->verified,
-            "last_login" => $user->last_login,
-        ];
-        
-        return response()->json($response);
+            $response = [
+                "id_card_number" => $user->engineer->id_card_number,
+                "name" => $user->name,
+                "phone" => $user->phone,
+                "email" => $user->email,
+                "address" => $user->address,
+                "userid" => $user->userid,
+                "email_verified_at" => $user->email_verified_at,
+                "profile_photo" => $user->profile_photo_path,
+                "is_active" => $user->is_active,
+                "lat" => $user->lat,
+                "lng" => $user->lng,
+                "verified" => $user->verified,
+                "last_login" => $user->last_login,
+            ];
+            
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+
+    }
+
+    public function updateEngineer(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|unique:users',
+            'id_card_number' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $user = User::find(auth()->user()->id);
+
+            $user->id_card_number = $request->id_card_number;
+            $user->is_active = $request->status==="active"?1:0;
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+
+            $user->save();
+
+            return response()->json(["message"=>"Data berhasil di update"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+
     }
 
     public function EngineerBalance()

@@ -28,13 +28,14 @@ Route::post('/teknisi/user/register', [UserController::class,'register']);
 Route::post('/teknisi/user/login', [UserController::class,'login']);
 
 Route::post('/teknisi/user/forgot-password', [UserController::class,'forgot_password']);
-Route::post('/teknisi/user/register/request-otp', [UserController::class,'request_otp']);
 Route::post('/teknisi/user/forgot-password/input-otp', [UserController::class,'forgot_password_input_otp']);
-Route::put('/teknisi/user/forgot-password/change_password', [UserController::class,'change_password']);
+Route::put('/teknisi/user/forgot-password/change-password', [UserController::class,'change_password']);
 
-Route::post('/teknisi/user/confirmation-otp', [UserController::class,'confirmation_otp']);
+Route::post('/teknisi/user/register/request-otp', [UserController::class,'request_otp']);
+Route::post('/teknisi/user/register/confirmation-otp', [UserController::class,'confirmation_otp']);
 
 Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
+Route::get('/testing/email', [UserController::class, 'testing']);
 
 
 Route::middleware(['jwt.verify'])->group(function () {
@@ -47,7 +48,9 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('teknisi/service/{id}',[ServiceController::class,'show']);
     // User
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
+    Route::post('teknisi/user', [UserController::class,'updateEngineer']);
     Route::post('teknisi​/user​/token', [UserController::class,'store_fcm_token']);
+    Route::delete('teknisi​/user​/token', [UserController::class,'delete_fcm_token']);
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
 
     Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
