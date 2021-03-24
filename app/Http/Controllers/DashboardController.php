@@ -153,6 +153,27 @@ class DashboardController extends Controller
                 "data" => $data
             ];
             return response()->json($reponse);
+        }else{
+            $year = (int)date('Y');
+            $year_start = $year - 4;
+
+            $label = [];
+            $data = [];
+
+            for ($i=$year_start; $i <= $year ; $i++) { 
+                # code...
+                $user = User::Role('teknisi')
+                            ->whereYear('created_at',$i)
+                            ->count();
+                $label[] = $i;
+                $data[] = (int)$user;
+            }
+            $reponse = [
+                "success" => true,
+                "label" => $label,
+                "data" => $data
+            ];
+            return response()->json($reponse);
         }
     }
 }

@@ -116,7 +116,7 @@
                 <div class="btn-group">
                   <button type="button" onclick="return  get_statistik_engineer('day')" class="btn btn-info">Harian</button>
                   <button type="button" onclick="return  get_statistik_engineer('month')" class="btn btn-info">Bulanan</button>
-                  <button type="button" class="btn btn-info">Tahunan</button>
+                  <button type="button" onclick="return  get_statistik_engineer('year')" class="btn btn-info">Tahunan</button>
                 </div>
                 <div class="mt-3">
                   <canvas class="chart" id="line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>                
