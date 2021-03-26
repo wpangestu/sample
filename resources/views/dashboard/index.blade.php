@@ -105,14 +105,6 @@
               </div>
 
               <div class="card-body">
-                <!-- <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="far fa-calendar-alt"></i>
-                    </span>
-                  </div>
-                  <input type="text" class="form-control float-right daterange">
-                </div> -->
                 <div class="btn-group">
                   <button type="button" onclick="return  get_statistik_engineer('day')" class="btn btn-info">Harian</button>
                   <button type="button" onclick="return  get_statistik_engineer('month')" class="btn btn-info">Bulanan</button>
@@ -126,6 +118,55 @@
           </div>
           <!-- /.col-md-6 -->
         </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+
+              <div class="card-header border-0">
+                <h3 class="card-title">Grafik Pendaftaran Pelanggan</h3>
+                <div class="card-tools">
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="btn-group">
+                  <button type="button" onclick="return  get_statistik_customer('day')" class="btn btn-info">Harian</button>
+                  <button type="button" onclick="return  get_statistik_customer('month')" class="btn btn-info">Bulanan</button>
+                  <button type="button" onclick="return  get_statistik_customer('year')" class="btn btn-info">Tahunan</button>
+                </div>
+                <div class="mt-3">
+                  <canvas class="chart" id="line-register-customer" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>                
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.col-md-6 -->
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+
+              <div class="card-header border-0">
+                <h3 class="card-title">Grafik Jumlah Order</h3>
+                <div class="card-tools">
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="btn-group">
+                  <button type="button" onclick="return  get_statistik_order('day')" class="btn btn-info">Harian</button>
+                  <button type="button" onclick="return  get_statistik_order('month')" class="btn btn-info">Bulanan</button>
+                  <button type="button" onclick="return  get_statistik_order('year')" class="btn btn-info">Tahunan</button>
+                </div>
+                <div class="mt-3">
+                  <canvas class="chart" id="line-order" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>                
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.col-md-6 -->
+        </div>
+
         <div class="row">
           <div class="col-lg-12">
             <div class="card">
@@ -234,6 +275,84 @@
       //   }
       // }   
 
+    function get_statistik_customer(filter){
+      var ticksStyle = {
+        fontColor: '#495057',
+        fontStyle: 'bold'
+      }
+
+      var mode      = 'index'
+      var intersect = true
+      const salesGraphChartCanvas = $('#line-register-customer').get(0).getContext('2d');
+
+      $.ajax({
+          url: "{{ route('dashboard.statistik.customer.register') }}",
+          type: "GET",
+          data: {
+              _token: "{{ csrf_token() }}",
+              "filter" : filter,
+          },
+          success: function(response) {
+            if(response.success){
+
+              var visitorsChart  = new Chart(salesGraphChartCanvas, {
+                data   : {
+                  labels  : response.label,
+                  datasets: [{
+                    type                : 'line',
+                    data                : response.data,
+                    backgroundColor     : 'transparent',
+                    borderColor         : '#007bff',
+                    pointBorderColor    : '#007bff',
+                    pointBackgroundColor: '#007bff',
+                    fill                : false,
+                  }
+                    ]
+                },
+                options: {
+                  maintainAspectRatio: false,
+                  tooltips           : {
+                    mode     : mode,
+                    intersect: intersect
+                  },
+                  hover              : {
+                    mode     : mode,
+                    intersect: intersect
+                  },
+                  legend             : {
+                    display: false
+                  },
+                  scales             : {
+                    yAxes: [{
+                      // display: false,
+                      gridLines: {
+                        display      : true,
+                        lineWidth    : '4px',
+                        color        : 'rgba(0, 0, 0, .2)',
+                        zeroLineColor: 'transparent'
+                      },
+                      ticks    : $.extend({
+                        beginAtZero : true
+                      }, ticksStyle)
+                    }],
+                    xAxes: [{
+                      display  : true,
+                      gridLines: {
+                        display: false
+                      },
+                      ticks    : ticksStyle
+                    }]
+                  }
+                }
+              })
+
+            }else{
+              console.log(response);
+            }
+          }
+      });        
+    }
+
     function get_statistik_engineer(filter){
       var ticksStyle = {
         fontColor: '#495057',
@@ -312,11 +431,92 @@
       });        
     }
 
+    function get_statistik_order(filter){
+      var ticksStyle = {
+        fontColor: '#495057',
+        fontStyle: 'bold'
+      }
+
+      var mode      = 'index'
+      var intersect = true
+      const salesGraphChartCanvas = $('#line-order').get(0).getContext('2d');
+
+      $.ajax({
+          url: "{{ route('dashboard.statistik.order') }}",
+          type: "GET",
+          data: {
+              _token: "{{ csrf_token() }}",
+              "filter" : filter,
+          },
+          success: function(response) {
+            if(response.success){
+
+              var visitorsChart  = new Chart(salesGraphChartCanvas, {
+                data   : {
+                  labels  : response.label,
+                  datasets: [{
+                    type                : 'line',
+                    data                : response.data,
+                    backgroundColor     : 'transparent',
+                    borderColor         : '#007bff',
+                    pointBorderColor    : '#007bff',
+                    pointBackgroundColor: '#007bff',
+                    fill                : false,
+                  }
+                    ]
+                },
+                options: {
+                  maintainAspectRatio: false,
+                  tooltips           : {
+                    mode     : mode,
+                    intersect: intersect
+                  },
+                  hover              : {
+                    mode     : mode,
+                    intersect: intersect
+                  },
+                  legend             : {
+                    display: false
+                  },
+                  scales             : {
+                    yAxes: [{
+                      // display: false,
+                      gridLines: {
+                        display      : true,
+                        lineWidth    : '4px',
+                        color        : 'rgba(0, 0, 0, .2)',
+                        zeroLineColor: 'transparent'
+                      },
+                      ticks    : $.extend({
+                        beginAtZero : true
+                      }, ticksStyle)
+                    }],
+                    xAxes: [{
+                      display  : true,
+                      gridLines: {
+                        display: false
+                      },
+                      ticks    : ticksStyle
+                    }]
+                  }
+                }
+              })
+
+            }else{
+              console.log(response);
+            }
+          }
+      });        
+    }
+
     $(document).ready(function(){
       $('.daterange').daterangepicker();
       
       get_statistik_engineer('day');
 
+      get_statistik_customer('day');
+      
+      get_statistik_order('day');
 
 
     });
