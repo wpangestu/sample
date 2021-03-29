@@ -35,6 +35,11 @@ class SettingController extends Controller
         $insert = PrivacyPolicy::create($request->all());
 
         if($insert){
+            $causer = auth()->user();
+
+            activity('confirm_engineer')->performedOn($insert)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan penambahan privacy police');
             return redirect()->route('setting.privacy_policy')
                         ->with('success','Data berhasil ditambahkan');
         }else{
@@ -53,6 +58,11 @@ class SettingController extends Controller
         $update = PrivacyPolicy::find($id)->update($request->all());
 
         if($update){
+            $causer = auth()->user();
+            activity('confirm_engineer')->performedOn($update)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan pengubahan privacy police');
+
             return redirect()->route('setting.privacy_policy')
                         ->with('success','Data berhasil diubah');
         }else{
@@ -77,6 +87,12 @@ class SettingController extends Controller
         $insert = TermOfService::create($request->all());
 
         if($insert){
+
+            $causer = auth()->user();
+            activity('update_setting')->performedOn($insert)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan penambahan Term of Service');
+
             return redirect()->route('setting.term_of_service')
                         ->with('success','Data berhasil ditambahkan');
         }else{
@@ -95,6 +111,13 @@ class SettingController extends Controller
         $update = TermOfService::find($id)->update($request->all());
 
         if($update){
+
+            $causer = auth()->user();
+            activity('update_setting')->performedOn($update)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan pengubahan Term of Service');
+
+
             return redirect()->route('setting.term_of_service')
                         ->with('success','Data berhasil diubah');
         }else{
@@ -119,6 +142,13 @@ class SettingController extends Controller
         $insert = Help::create($request->all());
 
         if($insert){
+
+            $causer = auth()->user();
+            activity('update_setting')->performedOn($insert)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan penambahan Help');
+
+
             return redirect()->route('setting.help')
                         ->with('success','Data berhasil ditambahkan');
         }else{
@@ -137,6 +167,12 @@ class SettingController extends Controller
         $update = Help::find($id)->update($request->all());
 
         if($update){
+
+            $causer = auth()->user();
+            activity('update_setting')->performedOn($update)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan pengubahan Help');
+
             return redirect()->route('setting.help')
                         ->with('success','Data berhasil diubah');
         }else{

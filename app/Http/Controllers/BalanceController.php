@@ -40,7 +40,7 @@ class BalanceController extends Controller
     public function engineer(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::latest()->Role('teknisi')->get();
+            $data = User::Role('teknisi')->where('verified',true)->latest()->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
@@ -117,9 +117,21 @@ class BalanceController extends Controller
         ]);
 
         $user = User::where('userid',$request->userid)->first();
-        
+        $old_balance_user = $user->balance;
         $user->balance = $request->balance;
         $update = $user->save();
+
+        $causer = auth()->user();
+        $atribut = [
+            "attributes" => ["balance" => $user->balance],
+            "old" => ["balance" => $old_balance_user]
+        ];
+
+        activity('update_balance')->performedOn($user)
+                    ->causedBy($causer)
+                    ->withProperties($atribut)
+                    ->log('Pengguna melakukan pengubahan saldo');
+
         if($update){
             if($user->hasRole('user')){
                 return redirect()->route('balance.customer.index')

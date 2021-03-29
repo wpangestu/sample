@@ -138,10 +138,35 @@ class ManajemenController extends Controller
                 # code...
                 if($value==="cs"){
                     $user->assignRole('cs');
+
+                    $user = User::where('userid',$request->userid)->first();
+            
+                    $causer = auth()->user();
+                    $atribut = [
+
+                    ];
+            
+                    activity('add_role')->performedOn($user)
+                                ->causedBy($causer)
+                                ->withProperties($atribut)
+                                ->log('Pengguna melakukan penambahan user CS');
+
                 }elseif($value==="admin"){
                     $user->assignRole('admin');
+
+                    $causer = auth()->user();
+                    $atribut = [
+
+                    ];
+            
+                    activity('add_role')->performedOn($user)
+                                ->causedBy($causer)
+                                ->withProperties($atribut)
+                                ->log('Pengguna melakukan penambahan user Admin');
                 }
             }
+
+
             DB::commit();
 
             return redirect()->route('manajement_account.index')
@@ -254,7 +279,7 @@ class ManajemenController extends Controller
     {
         //
         $user = User::Role(['admin','cs'])->where('id',$id)->first();
-
+        $user_old = $user->toArray();
         try {
             //code...
             DB::beginTransaction();
@@ -264,6 +289,16 @@ class ManajemenController extends Controller
 
             // $user->engineer->delete();
             $delete = $user->delete();
+
+            $causer = auth()->user();
+            $atribut = [
+                "attributes" => $user_old
+            ];
+    
+            activity('delete_role')
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan penghapusan pengguna');
 
             DB::commit();
             return Response()->json($delete);

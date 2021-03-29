@@ -31,7 +31,7 @@ Route::get('/', function () {
     return redirect('login');
 });
 Route::get('/cek', function () {
-    dd(auth()->user()->isRole);
+    dd(activity());
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {

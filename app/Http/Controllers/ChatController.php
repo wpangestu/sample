@@ -262,6 +262,16 @@ class ChatController extends Controller
                     ]);
                 }
 
+                $causer = auth()->user();
+                $atribut = [
+                    "attributes" => ["chat" => $chat],
+                ];
+    
+                activity('send_chat')->performedOn($chat)
+                            ->causedBy($causer)
+                            ->withProperties($atribut)
+                            ->log('Pengguna membalas Chat');
+
                 DB::commit();
 
                 $response['success'] = true;

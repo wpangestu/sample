@@ -106,6 +106,7 @@ class EnginnerController extends Controller
             DB::beginTransaction();
 
             $user = User::Role('teknisi')->where('userid',$id)->first();
+            $user_old_verified = $user->verified;
             $user->verified = 1;
             $user->save();
             $user->engineer->is_verified_data = 1;
@@ -113,6 +114,17 @@ class EnginnerController extends Controller
             $user->engineer->verified_by = Auth::user()->id;
             $user->engineer->status = 'success';
             $user->engineer->save();
+
+            $causer = auth()->user();
+            $atribut = [
+                "attributes" => ["verified" => $user->verified],
+                "old" => ["verified" => $user_old_verified]
+            ];
+
+            activity('confirm_engineer')->performedOn($user)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan konfirmasi ACC Teknisi');
 
             DB::commit();
 
@@ -122,7 +134,7 @@ class EnginnerController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            dd($th.getMessaage());
+            dd($th->getMessage());
         }
 
     }
@@ -134,6 +146,7 @@ class EnginnerController extends Controller
             DB::beginTransaction();
 
             $user = User::Role('teknisi')->where('userid',$id)->first();
+            $user_old_verified = $user->verified; 
             $user->verified = 0;
             $user->save();
 
@@ -142,6 +155,16 @@ class EnginnerController extends Controller
             $user->engineer->verified_by = Auth::user()->id;
             $user->engineer->status = 'decline';
             $user->engineer->save();
+
+            $causer = auth()->user();
+            $atribut = [
+                "attributes" => ["verified" => $user->verified],
+                "old" => ["verified" => $user_old_verified]
+            ];
+            activity('confirm_engineer')->performedOn($user)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan konfirmasi Tolak Teknisi');
 
             DB::commit();
 
@@ -300,6 +323,7 @@ class EnginnerController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
+            // dd($th->getMessage());
             return redirect()->route('engineer.index')
                                 ->with('error','Opps, Terjadi kesalahan.');            
         }

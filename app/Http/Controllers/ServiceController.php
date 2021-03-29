@@ -211,6 +211,11 @@ class ServiceController extends Controller
                 "user_id" => $service->engineer_id,
                 "service_id" => $service->id
             ]);
+            
+            $causer = auth()->user();
+            activity('confirm_service')->performedOn($service)
+                ->causedBy($causer)
+                ->log('Pengguna melakukan konfirmasi ACC Jasa');
 
             DB::commit();
 
@@ -242,6 +247,11 @@ class ServiceController extends Controller
                 "user_id" => $service->engineer_id,
                 "service_id" => $service->id
             ]);
+
+            $causer = auth()->user();
+            activity('confirm_service')->performedOn($service)
+                ->causedBy($causer)
+                ->log('Pengguna melakukan konfirmasi Tolak Jasa');
 
             DB::commit();
 

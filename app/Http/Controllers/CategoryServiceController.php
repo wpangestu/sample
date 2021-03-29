@@ -91,6 +91,13 @@ class CategoryServiceController extends Controller
         }
 
         if($insert){
+
+            $causer = auth()->user();
+
+            activity('add_category_service')->performedOn($insert)
+                        ->causedBy($causer)
+                        ->log('Pengguna melakukan penambahan kategori jasa');
+
             return redirect()->route('service_category.index')
                         ->with('success','Data berhasil ditambahkan');
         }else{

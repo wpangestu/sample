@@ -91,6 +91,14 @@ class CustomerController extends Controller
             $user->profile_photo_path = $file_name;
             $user->save();
         }
+
+        $causer = auth()->user();
+        $atribut = [];
+
+        activity('add_customer')->performedOn($insert)
+                    ->causedBy($causer)
+                    ->withProperties($atribut)
+                    ->log('Pengguna melakukan penambahan pelanggan');
         
         if($insert){
             return redirect()->route('customer.index')

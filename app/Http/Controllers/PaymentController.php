@@ -156,6 +156,16 @@ class PaymentController extends Controller
                 $order->save();
             }
 
+            $causer = auth()->user();
+            $atribut = [
+
+            ];
+
+            activity('confirm_payment')->performedOn($payment)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan konfirmasi ACC Pembayaran');
+
             return redirect()->route('payment.index')->with('success','Data berhasil diubah');
 
         } catch (\Throwable $th) {
@@ -176,6 +186,16 @@ class PaymentController extends Controller
             $payment->verified_at = date('Y-m-d H:i:s');
             $payment->verified_name = auth()->user()->name;
             $payment->save();
+
+            $causer = auth()->user();
+            $atribut = [
+
+            ];
+
+            activity('confirm_payment')->performedOn($payment)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan konfirmasi Tolak Pembayaran');
 
             return redirect()->route('payment.index')->with('success','Pembayaran berhasil ditolak');
 
