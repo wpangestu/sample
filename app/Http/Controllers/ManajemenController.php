@@ -29,7 +29,7 @@ class ManajemenController extends Controller
                         $btn = '<a href="'.route('manajement_account.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
                         
                         $btn .= ' <a href="'.route('manajement_account.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-warning btn-sm">Detail</a>';
-                        if( !($row->hasRole('superadmin')) || !($row->id==auth()->user()->id) ){
+                        if( !($row->hasRole('superadmin')) || ($row->id==auth()->user()->id) ){
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('manajement_account.delete',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
                         }
 

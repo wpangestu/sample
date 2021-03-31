@@ -205,6 +205,7 @@
                   <p>Manajemen Akun</p>
                 </a>
               </li>
+              @hasanyrole('superadmin')
               <li class="nav-item">
                 <a href="{{ route('setting.privacy_policy') }}" class="nav-link {{ request()->routeIs('setting.privacy_policy')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
@@ -223,19 +224,35 @@
                   <p>Help</p>
                 </a>
               </li>
-              @endrole
-              @hasanyrole('superadmin')
-              <li class="nav-item">
-                <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('review_service*')?'active':'' }}">
-                  <i class="nav-icon fa fa-history"></i>
-                  <p>
-                    History
-                  </p>
-                </a>
-              </li>
               @endhasanyrole
             </ul>
           </li>
+          @endhasanyrole
+          @hasanyrole('superadmin')
+          <li class="nav-item has-treeview {{ request()->routeIs('history*')?'menu-open':'' }}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-history"></i>
+              <p>
+                History
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('history.index*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Manajemen</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('history.engineer.index') }}" class="nav-link {{ request()->routeIs('chat.index.engineer*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Teknisi</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          @endhasanyrole
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

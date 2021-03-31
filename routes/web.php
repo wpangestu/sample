@@ -139,4 +139,5 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('account/superadmin',[ManajemenController::class,'super_admin'])->name('manajement_account.superadmin');
 
     Route::get('history', [HistoryController::class,'index'])->name('history.index');
+    Route::get('history/engineer', [HistoryController::class,'index_teknisi'])->name('history.engineer.index');
 });

@@ -46,12 +46,11 @@
             <i class="fas fa-tag mr-2"></i> {{ get_confirm_service() }} Konfirmasi Jasa
           </a>
         </div>
-      </li>
-
+      </li> 
       <!-- Notifications Dropdown Menu -->
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-user"></i>
+          <i class="far fa-user"></i>  {{ auth()->user()->name }}
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
           <!-- <div class="dropdown-divider"></div>

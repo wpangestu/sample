@@ -30,7 +30,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">History Manajemen</h3>
+                <h3 class="card-title">History Teknisi</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -95,7 +95,7 @@
         let table = $('#table_datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('history.index') }}",
+            ajax: "{{ route('history.engineer.index') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'created_at', name: 'created_at'},
