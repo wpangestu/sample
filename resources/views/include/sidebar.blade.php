@@ -24,7 +24,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          @hasrole('admin')
+          @hasanyrole('admin|superadmin')
           <li class="nav-item">
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard')?'active':'' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -125,7 +125,7 @@
             </a>
           </li>
           @endrole
-          @hasanyrole('admin|cs')
+          @hasanyrole('admin|cs|superadmin')
           <li class="nav-item has-treeview {{ request()->routeIs('chat*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-comments"></i>
@@ -150,7 +150,7 @@
             </ul>
           </li>
           @endhasanyrole
-          @role('admin')
+          @hasanyrole('admin|superadmin')
           <li class="nav-item">
             <a href="{{ route('review_service.index') }}" class="nav-link {{ request()->routeIs('review_service*')?'active':'' }}">
               <i class="nav-icon fas fa-smile"></i>
@@ -224,6 +224,16 @@
                 </a>
               </li>
               @endrole
+              @hasanyrole('superadmin')
+              <li class="nav-item">
+                <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('review_service*')?'active':'' }}">
+                  <i class="nav-icon fa fa-history"></i>
+                  <p>
+                    History
+                  </p>
+                </a>
+              </li>
+              @endhasanyrole
             </ul>
           </li>
         </ul>

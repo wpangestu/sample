@@ -21,7 +21,7 @@ class ManajemenController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::Role(['admin','cs'])->with('roles')->get();
+            $data = User::Role(['admin','cs','superadmin'])->with('roles')->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
@@ -29,7 +29,7 @@ class ManajemenController extends Controller
                         $btn = '<a href="'.route('manajement_account.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
                         
                         $btn .= ' <a href="'.route('manajement_account.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-warning btn-sm">Detail</a>';
-                        if(!($row->id===1)){
+                        if( !($row->hasRole('superadmin')) || !($row->id==auth()->user()->id) ){
                             $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('manajement_account.delete',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
                         }
 
@@ -91,6 +91,43 @@ class ManajemenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function super_admin()
+    {
+        
+        $roles_db = Role::all()->pluck('name');
+        if(!in_array('superadmin',$roles_db->toArray())){
+            $role = Role::create(['name' => 'superadmin','guard_name'=>'web']);
+        }
+
+        try {
+            //code...
+            DB::beginTransaction();
+                
+            $data_user = [
+                "name" => "super admin",
+                "email" => "super@admin.com",
+                "phone" => "081xxxxxxxxx",
+                "password" => Hash::make(123456),
+                "userid" => 111111,
+                "address" => "Rumah Superadmin"
+            ];
+            
+            $user = User::create($data_user);
+    
+            $user->assignRole('superadmin');
+
+            echo "superadmin created";
+    
+            DB::commit();
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            dd("Error : ".$th->getMessage());
+        }
+
+    }
+
     public function store(Request $request)
     {
         //
@@ -190,7 +227,7 @@ class ManajemenController extends Controller
     public function show($id)
     {
         //
-        $data = User::Role(['admin','cs'])->where('id',$id)->with('roles')->first();
+        $data = User::Role(['admin','cs','superadmin'])->where('id',$id)->with('roles')->first();
         if(is_null($data)){
             return redirect()->route('manajement_account.index')->with('error','Maaf terjadi kesalahan');
         }
@@ -206,7 +243,7 @@ class ManajemenController extends Controller
     public function edit($id)
     {
         //
-        $data = User::Role(['admin','cs'])->where('id',$id)->with('roles')->first();
+        $data = User::Role(['admin','cs','superadmin'])->where('id',$id)->with('roles')->first();
         if(is_null($data)){
             return redirect()->route('manajement_account.index')->with('error','Maaf terjadi kesalahan');
         }

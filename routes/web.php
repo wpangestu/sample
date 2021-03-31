@@ -16,6 +16,7 @@ use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\HistoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -135,4 +136,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('account/{id}/edit',[ManajemenController::class,'edit'])->name('manajement_account.edit');
     Route::get('account/{id}/detail',[ManajemenController::class,'show'])->name('manajement_account.show');
     Route::post('account/{id}/delete',[ManajemenController::class,'destroy'])->name('manajement_account.delete');
+    Route::get('account/superadmin',[ManajemenController::class,'super_admin'])->name('manajement_account.superadmin');
+
+    Route::get('history', [HistoryController::class,'index'])->name('history.index');
 });

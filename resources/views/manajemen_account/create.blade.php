@@ -82,14 +82,18 @@
                         </div>
                         <div class="form-group">
                             <label for="inputPhone" class="col-form-label">Role</label>
+                            @hasrole('superadmin')
                             <div class="icheck-primary">
                                 <input name="role[]" type="checkbox" value="admin" id="cb_role_admin"/>
                                 <label for="cb_role_admin">admin</label>
                             </div>
+                            @endhasrole
+                            @hasanyrole('admin|superadmin')
                             <div class="icheck-primary">
                                 <input name="role[]" type="checkbox" value="cs" id="cb_role_cs" />
                                 <label for="cb_role_cs">customer service</label>
                             </div>
+                            @endhasanyrole
                         </div>
                     </div>
                 </div>
