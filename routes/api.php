@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\UserAddressController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     
     Route::get('engineer/{id}',[EngineerController::class,'show']);
 
+    Route::get('/teknisi/transaction-summary',[TransactionController::class,'index']);
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     
 

@@ -424,6 +424,7 @@ class UserController extends Controller
             $user = auth()->user();
 
             $response = [
+                "id" => $user->id,
                 "id_card_number" => $user->engineer->id_card_number,
                 "name" => $user->name,
                 "phone" => $user->phone,
@@ -453,8 +454,8 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'phone' => 'required|unique:users',
+            'email' => 'required|string|email|max:255|unique:users,email,'.auth()->user()->id,
+            'phone' => 'required|unique:users,phone,'.auth()->user()->id,
             'id_card_number' => 'required',
         ]);
 
@@ -486,13 +487,21 @@ class UserController extends Controller
     public function EngineerBalance()
     {
 
-        $this->getAuthenticatedUser();
+        try {
+            //code...
+            $user = auth()->user();
 
-        $user = auth()->user();
-
-        $balance = $user->balance;
-
-        return response()->json(compact('balance'));
+            if($user->verified === 0){
+                return response()->json(["message"=>"Akun sedang diverifikasi"],423);
+            }
+    
+            $balance = $user->balance;
+    
+            return response()->json(compact('balance'));
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
 }
