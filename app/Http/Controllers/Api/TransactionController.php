@@ -195,4 +195,49 @@ class TransactionController extends Controller
     {
         //
     }
+
+    public function review(Request $request)
+    {
+        try {
+            //code...
+            $user = auth()->user();
+            $data = Order::where('engineer_id',$user->id)
+                            ->has('review');
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+            $order = $data->limit($limit)->offset(($page - 1) * $limit);
+            $data = $order->get();
+            $total = $order->count();
+
+            $data_arr = [];
+            foreach($data as $d => $value){
+
+                $count = 0;
+                foreach($value->order_detail as $d => $val){
+                    $count += $val->qty;
+                }
+
+                $data_arr[] = [
+                    "id" => $value->review->id,
+                    "name" => $value->order_detail[0]->name,
+                    "quantity" => $count,
+                    "address" => json_decode($value->address)->name??'-',
+                    "rating" => $value->review->ratings??null,
+                    "created_at" => $value->review->created_at
+                ];
+            }
+
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = $total;
+            $response['data'] = $data_arr;
+    
+            return response()->json($response);   
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
 }
