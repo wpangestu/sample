@@ -16,30 +16,39 @@ class ServiceController extends Controller
 
     public function index(Request $request)
     {
+        try {
+            //code...
 
-        $data = Service::where('engineer_id',auth()->user()->id)->latest();
+            $data = Service::where('engineer_id',auth()->user()->id)->latest();
         
-        if($request->has('query')){
-            $query = $request->get('query');
-            $data->where('name', 'like', '%'.$query.'%');
-        }
-        if($request->has('service_category')){
-            $service_category = $request->get('service_category');
-            $data->where('category_service_id', $service_category);
-        }
-        
-        $page = $request->has('page') ? $request->get('page') : 1;
-        $limit = $request->has('size') ? $request->get('size') : 10;
-        $service = $data->limit($limit)->offset(($page - 1) * $limit);
-        $data = $service->get();
-        $total = $service->count();
-        
-        $response['page'] = $page;
-        $response['size'] = $limit;
-        $response['total'] = $total;
-        $response['data'] = $data;
+            if($request->has('query')){
+                $query = $request->get('query');
+                $data->where('name', 'like', '%'.$query.'%');
+            }
+            if($request->has('service_category')){
+                $service_category = $request->get('service_category');
+                $data->where('category_service_id', $service_category);
+            }
+            
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+            $service = $data->limit($limit)->offset(($page - 1) * $limit);
+            $data = $service->get();
+            $total = $service->count();
+            
+            $response['page'] = $page;
+            $response['size'] = $limit;
+            $response['total'] = $total;
+            $response['data'] = $data;
+    
+            return response()->json($response);           
 
-        return response()->json($response);           
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+
+
 
     }
 
@@ -55,7 +64,7 @@ class ServiceController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
         try {
@@ -96,7 +105,7 @@ class ServiceController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            return response()->json(["message"=>$th->getMessage()],422);
+            return response()->json(["message"=>" Terjadi Kesalahan ".$th->getMessage()],422);
         }
 
     }
@@ -124,7 +133,7 @@ class ServiceController extends Controller
         }
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()], 422);
         }
 
         $service_id = $request->get('service_id');
@@ -171,17 +180,23 @@ class ServiceController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            return response()->json(["message"=>$th->getMessage()],422);
+            return response()->json(["message"=> "Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
-
+    
     public function getServiceByCategoryId($id)
     {
-        $data = Service::where('category_service_id',$id)->latest()->get();
-        $response['success'] = true;
-        $response['message'] = count($data)." Data Ditemukan";
-        $response['data'] = $data;
-        return response()->json($response);
+        try {
+            //code...
+            $data = Service::where('category_service_id',$id)->latest()->get();
+            $response['success'] = true;
+            $response['message'] = count($data)." Data Ditemukan";
+            $response['data'] = $data;
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=> "Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
     public function show($id)
@@ -189,10 +204,22 @@ class ServiceController extends Controller
         try {
             //code...
             $data = Service::with('service_category')->find($id);
-            return response()->json($data);
+
+            $response = [
+                "id" => $data->id,
+                "name" => $data->name,
+                "category" => $data->service_category->name,
+                "skill" => $data->skill,
+                "certificate" => $data->sertification_image,
+                "price" => $data->price,
+                "status" => $data->status
+            ];
+
+            return response()->json($response);
+        
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message"=>$th->getMessage()],422);
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
 
