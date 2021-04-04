@@ -121,6 +121,45 @@ class TransactionController extends Controller
     public function show($id)
     {
         //
+        try {
+            //code...
+
+            $user = auth()->user();
+
+            if(!($user->verified)){
+                return response()->json(["message" => "Akun sedang diverifikasi"], 423);
+            }
+
+            $order = Order::find($id);
+
+            $response = [
+                "id" => $order->id,
+                "order_status" => $order->order_status,
+                "order_type" => $order->order_type,
+                "is_take_away" => $order->is_take_away,
+                "user" => [
+                    "id" => $order->customer->id,
+                    "name" => $order->customer->name,
+                    "avatar" => $order->customer->profile_photo_path
+                ],
+                "review" => [
+                    "value" => $order->review->ratings??null,
+                    "liked" => []
+                ],
+                "address" => [
+                    "latitude" => (float)json_decode($order->address)->lat,
+                    "longitude" => (float)json_decode($order->address)->lng,
+                    "description" => json_decode($order->address)->name,
+                    "note" => ""
+                ],
+            ];
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
     }
 
     /**
