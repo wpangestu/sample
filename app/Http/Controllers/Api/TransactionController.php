@@ -240,4 +240,79 @@ class TransactionController extends Controller
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }
+    
+    public function order_accept($id){
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "waiting-order";
+            $order->save();
+            
+            return response()->json(["message" => "Order Accepted"]);            
+            
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            //throw $th;
+        }
+    }
+
+    public function order_decline($id){
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "denied";
+            $order->save();
+            
+            return response()->json(["message" => "Order Decline"]);            
+            
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            //throw $th;
+        }
+    }
+
+    public function order_process($id){
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "processed";
+            $order->save();
+            
+            return response()->json(["message" => "Order Process"]);            
+            
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            //throw $th;
+        }
+    }
+
+    public function order_complete($id){
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "done";
+            $order->save();
+            
+            return response()->json(["message" => "Order Comlpete"]);            
+            
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            //throw $th;
+        }
+    }
+
+    public function order_take_away($id){
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "take-away";
+            $order->save();
+            
+            return response()->json(["message" => "Order Take Away"]);            
+            
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            //throw $th;
+        }
+    }
 }
