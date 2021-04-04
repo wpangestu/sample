@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\CategoryService;
 use Illuminate\Support\Facades\Validator;
 // use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -217,6 +218,22 @@ class ServiceController extends Controller
 
             return response()->json($response);
         
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
+    public function price_category(Request $request)
+    {
+        try {
+            //code...
+            $category = $request->input('category');
+
+            $service_category = CategoryService::where('name',$category)->first();
+
+            return response()->json(["price" => (int)$service_category->price??0]);
+
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);

@@ -46,6 +46,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('teknisi/service',[ServiceController::class,'index']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
     Route::put('teknisi/service',[ServiceController::class,'update']);
+    Route::get('teknisi/service/price-category',[ServiceController::class,'price_category']);
     Route::get('teknisi/service/{id}',[ServiceController::class,'show']);
     // User
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
@@ -92,7 +93,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/order/process/{id}',[TransactionController::class,'order_process']);
     Route::post('/teknisi/order/complete/{id}',[TransactionController::class,'order_complete']);
     Route::post('/teknisi/order/take-away/{id}',[TransactionController::class,'order_take_away']);
-    
+
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     
 
