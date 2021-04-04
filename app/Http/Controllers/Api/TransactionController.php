@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\client;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
@@ -286,11 +288,24 @@ class TransactionController extends Controller
         }
     }
 
-    public function order_complete($id){
+    public function order_complete(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'photo' => 'required|mimes:img,png,jpeg,jpg|max:2048',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
         try {
             //code...
+            $uploadFolder = 'teknisi/order';
+            $photo = $request->file('photo');
+            $photo_path = $photo->store($uploadFolder,'public');
+
             $order = Order::find($id);
             $order->order_status = "done";
+            $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
             
             return response()->json(["message" => "Order Comlpete"]);            
