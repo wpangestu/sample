@@ -495,7 +495,7 @@ class UserController extends Controller
                 return response()->json(["message"=>"Akun sedang diverifikasi"],423);
             }
     
-            $balance = $user->balance;
+            $balance = (int)$user->balance;
     
             return response()->json(compact('balance'));
         } catch (\Throwable $th) {
