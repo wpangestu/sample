@@ -57,7 +57,7 @@ class UserController extends Controller
             // dd($user);
             // \Carbon\Carbon::setLocale('id');
             // $currentDateTime = Carbon::now();
-            $newDateTime = Carbon::now()->addHour();
+            $newDateTime = Carbon::now()->addDays(30);
                 
             // print_r($currentDateTime);
             // print_r($newDateTime);
