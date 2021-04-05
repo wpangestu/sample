@@ -152,11 +152,33 @@ class TransactionController extends Controller
                     "latitude" => (float)json_decode($order->address)->lat,
                     "longitude" => (float)json_decode($order->address)->lng,
                     "description" => json_decode($order->address)->name,
-                    "note" => ""
+                    "note" => json_decode($order->address)->note??""
                 ],
             ];
 
-            return response()->json($response);
+            $detail=[];
+            if($order->order_type==="reguler"){
+                foreach($order->order_detail as $val){
+
+                    $detail["order"][] = [
+                        "id" => $val->id,
+                        "name" => $val->name,
+                        "quantity" => $val->qty,
+                        "price" => (float)$val->price
+                    ];
+                }
+                $combined = array_merge($response, $detail);
+
+                $extra = [
+                    "convenience_fee" => (int)$order->convenience_fee??0,
+                    "total_payment" => (int)$order->total_payment??0,
+                    "total_payment_receive" => (int)$order->total_payment_receive??0
+                ];
+
+                $combined = array_merge($combined,$extra);
+            }
+
+            return response()->json($combined);
 
         } catch (\Throwable $th) {
             //throw $th;
