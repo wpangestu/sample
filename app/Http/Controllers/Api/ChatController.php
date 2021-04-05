@@ -169,9 +169,9 @@ class ChatController extends Controller
                 }
             }
     
-            $response['page'] = $page;
-            $response['size'] = $limit;
-            $response['total'] = $total;
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
             $response['data'] = $new_chatroom_data;
     
             return response()->json($response);
@@ -236,9 +236,9 @@ class ChatController extends Controller
                 }
             }
     
-            $response['page'] = $page;
-            $response['size'] = $limit;
-            $response['total'] = $total;
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
             $response['data'] = $new_chatroom_data;
     
             return response()->json($response);
@@ -287,9 +287,9 @@ class ChatController extends Controller
                     $new_data[] = $t_data;
                 }
     
-                $response['page'] = $page;
-                $response['size'] = $limit;
-                $response['total'] = $total;
+                $response['page'] = (int)$page;
+                $response['size'] = (int)$limit;
+                $response['total'] = (int)$total;
                 $response['data'] = $new_data;
         
                 return response()->json($response);
@@ -339,9 +339,9 @@ class ChatController extends Controller
                     $new_data[] = $t_data;
                 }
 
-                $response['page'] = $page;
-                $response['size'] = $limit;
-                $response['total'] = $total;
+                $response['page'] = (int)$page;
+                $response['size'] = (int)$limit;
+                $response['total'] = (int)$total;
                 $response['data'] = $new_data;
         
                 return response()->json($response);

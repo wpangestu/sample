@@ -21,9 +21,9 @@ class UserAddressController extends Controller
         $data = $user_address->get();
         $total = $user_address->count();
 
-        $response['page'] = $page;
-        $response['size'] = $limit;
-        $response['total'] = $total;
+        $response['page'] = (int)$page;
+        $response['size'] = (int)$limit;
+        $response['total'] = (int)$total;
         $response['data'] = $data;
 
         return response()->json($response);           

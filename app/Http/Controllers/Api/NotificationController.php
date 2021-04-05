@@ -35,9 +35,9 @@ class NotificationController extends Controller
             $data_new[] = $response_data;
         }
 
-        $response['page'] = $page;
-        $response['size'] = $limit;
-        $response['total'] = $total;
+        $response['page'] = (int)$page;
+        $response['size'] = (int)$limit;
+        $response['total'] = (int)$total;
         $response['data'] = $data_new;
 
         return response()->json($response);           

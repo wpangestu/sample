@@ -81,7 +81,7 @@ class TransactionController extends Controller
 
             $response['page'] = (int)$page;
             $response['size'] = (int)$limit;
-            $response['total'] = $total;
+            $response['total'] = (int)$total;
             $response['data'] = $data_arr;
     
             return response()->json($response);   
@@ -254,7 +254,7 @@ class TransactionController extends Controller
 
             $response['page'] = (int)$page;
             $response['size'] = (int)$limit;
-            $response['total'] = $total;
+            $response['total'] = (int)$total;
             $response['data'] = $data_arr;
     
             return response()->json($response);   

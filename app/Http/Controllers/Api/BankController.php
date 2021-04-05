@@ -61,9 +61,9 @@ class BankController extends Controller
         $data = $banks->get();
         $total = $banks->count();
         
-        $response['page'] = $page;
-        $response['size'] = $limit;
-        $response['total'] = $total;
+        $response['page'] = (int)$page;
+        $response['size'] = (int)$limit;
+        $response['total'] = (int)$total;
         $response['data'] = $data;
 
         return response()->json($response);           

@@ -37,9 +37,9 @@ class ServiceController extends Controller
             $data = $service->get();
             $total = $service->count();
             
-            $response['page'] = $page;
-            $response['size'] = $limit;
-            $response['total'] = $total;
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
             $response['data'] = $data;
     
             return response()->json($response);           
