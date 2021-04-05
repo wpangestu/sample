@@ -134,7 +134,7 @@ class ServiceController extends Controller
         }
 
         if($validator->fails()){
-            return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()], 422);
+            return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()->all()[0]], 422);
         }
 
         $service_id = $request->get('service_id');

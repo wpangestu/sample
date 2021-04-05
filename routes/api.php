@@ -61,6 +61,9 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     Route::get('/teknisi​/address', [UserAddressController::class, 'index']);
     Route::post('/teknisi​/address', [UserAddressController::class, 'store']);
+    Route::get('/teknisi​/address/recommendation', [UserAddressController::class, 'recommendation']);
+    Route::get('/teknisi​/address/cek', [UserAddressController::class, 'cek']);
+    Route::put('/teknisi​/address/{id}', [UserAddressController::class, 'update']);
     Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);
     
     Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
