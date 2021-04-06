@@ -533,8 +533,39 @@ class UserController extends Controller
             //throw $th;
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
+    }
 
+    public function update_user_profile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'image' => 'mimes:img,png,jpeg,jpg|max:2048',
+        ]);
 
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+
+            $user = User::find(auth()->user()->id);
+
+            if($request->hasFile('image')){
+
+                $uploadFolder = 'users/photo';
+                $photo = $request->file('image');
+                $photo_path = $photo->store($uploadFolder,'public');
+            
+                $user->profile_photo_path = Storage::disk('public')->url($photo_path);
+                $user->save();                
+            }
+
+            return response()->json(["message" => "Photo berhasil di ubah"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
 }

@@ -99,10 +99,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
+    Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
     
-    
-
-
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
