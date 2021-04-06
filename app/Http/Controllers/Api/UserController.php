@@ -504,4 +504,37 @@ class UserController extends Controller
         }
     }
 
+    public function change_password_user(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $user = User::find(auth()->user()->id);
+
+            $check = Hash::check($request->old_password,$user->password);
+            if(!($check)){
+                return response()->json(["message"=>"Password lama salah"],422);                
+            }
+
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json(["message"=>"Password berhasil diubah"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+
+
+    }
+
 }

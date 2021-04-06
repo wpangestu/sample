@@ -96,8 +96,10 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/order/process/{id}',[TransactionController::class,'order_process']);
     Route::post('/teknisi/order/complete/{id}',[TransactionController::class,'order_complete']);
     Route::post('/teknisi/order/take-away/{id}',[TransactionController::class,'order_take_away']);
-
+    
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
+    Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
+    
     
 
 
