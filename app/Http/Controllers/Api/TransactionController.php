@@ -149,9 +149,9 @@ class TransactionController extends Controller
                     "liked" => []
                 ],
                 "address" => [
-                    "latitude" => (float)json_decode($order->address)->lat,
-                    "longitude" => (float)json_decode($order->address)->lng,
-                    "description" => json_decode($order->address)->name,
+                    "latitude" => (float)json_decode($order->address)->lat??0,
+                    "longitude" => (float)json_decode($order->address)->lng??0,
+                    "description" => json_decode($order->address)->name??"",
                     "note" => json_decode($order->address)->note??""
                 ],
             ];
@@ -173,6 +173,21 @@ class TransactionController extends Controller
                     "convenience_fee" => (int)$order->convenience_fee??0,
                     "total_payment" => (int)$order->total_payment??0,
                     "total_payment_receive" => (int)$order->total_payment_receive??0
+                ];
+
+                $combined = array_merge($combined,$extra);
+            }elseif($order->order_type==="custom"){
+                $custom["custom_order"] = [
+                    "level" => json_decode($order->custom_order)->level??"",
+                    "brand" => json_decode($order->custom_order)->brand??"",
+                    "information" => json_decode($order->custom_order)->information??"",
+                    "problem_details" => json_decode($order->custom_order)->problem_details??""
+                ];
+
+                $combined = array_merge($response, $custom);
+
+                $extra = [
+                    "deposit" => (int)$order->deposit
                 ];
 
                 $combined = array_merge($combined,$extra);
