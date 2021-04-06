@@ -20,7 +20,7 @@ class ChatController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
         $to = $request->get('to');
@@ -113,7 +113,7 @@ class ChatController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            return response()->json($th->getMessage());
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
 
@@ -361,7 +361,7 @@ class ChatController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
         $chatroom_id = $request->get('chatroom_id');
@@ -394,7 +394,7 @@ class ChatController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
         $chatroom_id = $request->get('chatroom_id');
@@ -428,7 +428,7 @@ class ChatController extends Controller
 
         
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all()[0]], 400);
         }
         
         $user_id = auth()->user()->id;
@@ -464,7 +464,7 @@ class ChatController extends Controller
 
         
         if($validator->fails()){
-            return response()->json(["message" => $validator->errors()], 400);
+            return response()->json(["message" => $validator->errors()->all[0]], 422);
         }
         
         $user_id = auth()->user()->id;
@@ -488,7 +488,7 @@ class ChatController extends Controller
 
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage(),422]);                        
+            return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage(),422]);
         }
 
     }
