@@ -54,6 +54,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('teknisi​/user​/token', [UserController::class,'store_fcm_token']);
     Route::delete('teknisi​/user​/token', [UserController::class,'delete_fcm_token']);
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
+    Route::post('teknisi/wallet/withdraw', [EngineerController::class,'withdraw']);
 
     Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
     Route::get('teknisi​/bank-account​', [BankController::class,'get_user_bank_account']);
