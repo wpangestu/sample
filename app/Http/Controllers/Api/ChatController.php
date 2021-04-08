@@ -280,7 +280,7 @@ class ChatController extends Controller
                     $t_data = [
                         "id" => $value->id,
                         "message" => $value->message,
-                        "media" => "",
+                        "media" => $value->media??"",
                         "from" => $value->from,
                         "is_me" => $value->from==$user_id?true:false,
                         "created_at" => $value->created_at
@@ -492,6 +492,56 @@ class ChatController extends Controller
             return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage(),422]);
         }
 
+    }
+
+    public function get_support_chat(Request $request)
+    {
+        try {
+
+            $user_id = auth()->user()->id;
+
+            $chat_arr = [];
+            $total = 0;
+            $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',1)->first();
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',1)->where('user_2',$$user_id)->first();
+            }
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+
+            if(!is_null($chatroom)){
+
+                $chat = Chat::where('chatroom_id',$chatroom->id);
+                $total = $chat->count();
+                $chat = $chat->limit($limit)->offset(($page - 1) * $limit);
+
+                if($chat->count()>0){
+                    foreach ($chat->get() as $key => $value) {
+                        # code...
+                        $chat_arr[] = [
+                            "id" => $value->id,
+                            "messeage" => $value->message,
+                            "media" => $value->media,
+                            "from" => $value->from,
+                            "is_me" => $value->from === auth()->user()->id ? true:false,
+                            "created_at" => $value->created_at
+                        ];
+                    }
+                }
+                
+            }
+
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $chat_arr;
+            
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
     public function send_chat_support(Request $request)

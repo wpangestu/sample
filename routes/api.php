@@ -79,6 +79,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/​teknisi​/history/chat/delete', [ChatController::class, 'delete_history_chat']);
     Route::post('/​teknisi​/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
     
+    Route::get('/teknisi/chat/support', [ChatController::class, 'get_support_chat']);
     Route::post('/teknisi/chat/support', [ChatController::class, 'send_chat_support']);
     
     Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);

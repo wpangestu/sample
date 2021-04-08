@@ -20,5 +20,9 @@ class Chatroom extends Model
 
     public function user_2_data(){
         return $this->belongsTo('App\Models\User','user_2','id');
-    }    
+    }
+
+    public function chat(){
+        return $this->hasMany('App\Models\Chat','chatroom_id','id');
+    }
 }
