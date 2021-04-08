@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use App\Models\Chatroom;
 use App\Models\Chat;
+use App\Models\Chatroom;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -23,7 +24,7 @@ class ChatController extends Controller
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
-        $to = $request->get('to');
+        $to = 1;
         $from = auth()->user()->id;
 
         if(auth()->user()->hasRole('teknisi')){
@@ -491,6 +492,128 @@ class ChatController extends Controller
             return response()->json(["message" => "Terjadi kesalahan : ".$th->getMessage(),422]);
         }
 
+    }
+
+    public function send_chat_support(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'message' => 'required',
+            'media' => 'image|mimes:img,png,jpeg,jpg|max:2048',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        if(auth()->user()->hasRole('teknisi')){
+            $role = 'teknisi';
+        }else{
+            $role = 'user';
+        }
+
+        $message = $request->get('message');
+        $new = false;
+
+        try {
+            //code...
+            // $user_1 = 1;
+            // $user_2 = auth()->user()->id;
+            $to = 1;
+            $from = auth()->user()->id;
+            $signature = $request->signature;
+
+            DB::beginTransaction();
+
+            $chat = [];
+            $chatroom = Chatroom::where('user_1',$to)->where('user_2',$from);
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',$from)->where('user_2',$to);
+            }
+
+            $media = null;
+            if($request->hasFile('media')){
+                $uploadFolder = 'teknisi/chat/'.$from;
+                $photo = $request->file('media');
+                $photo_path = $photo->store($uploadFolder,'public');
+
+                $media = Storage::disk('public')->url($photo_path);
+            }
+    
+
+            if($chatroom->count() > 0){
+                $chatroom = $chatroom->first();
+                $chat = Chat::create([
+                    "to" => $to,
+                    "from" => $from,
+                    "message" => $message,
+                    "media" => $media,
+                    "chatroom_id" => $chatroom->id,
+                ]);
+
+                $chatroom->updated_at = date('Y-m-d H:i:s');
+                $chatroom->save();
+
+            }else{
+                
+                $new = true;
+                $chatroom = Chatroom::create([
+                    "user_1" => $from,
+                    "user_2" => $to
+                ]);
+
+                $chat = Chat::create([
+                    "to" => $to,
+                    "from" => $from,
+                    "message" => $message,
+                    "media" => $media,
+                    "chatroom_id" => $chatroom->id,
+                ]);
+
+            }
+
+            $to = [];
+            $to[] = $chat->user_to->fcm_token;
+
+            $chat_data = [
+                "id" => $chat->id,
+                "name" => $chat->user_from->name,
+                "message" => $chat->message,
+                "created_at" => $chat->created_at->format('d/m/Y H:i')
+            ];
+
+            fcm()->to($to)
+                    ->priority('high')
+                    ->timeToLive(0)
+                    ->data([
+                        'userid' => auth()->user()->userid,
+                        'chat' => $chat_data,
+                        'role' => $role
+                    ])
+                    ->notification([
+                        'title' => 'Notifikasi',
+                        'body' => 'Pesan Baru',
+                    ])
+                    ->send();
+                                
+            $response['id'] = $chat->id;
+            $response['message'] = $chat->message;
+            $response['signature'] = $signature;
+            $response['media'] = $chat->media??'';
+            $response['from'] = $from;
+            $response['is_me'] = true;
+            $response['created_at'] = $chat->created_at;
+            
+            DB::commit();
+                    
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+        
+        
     }
 }
  
