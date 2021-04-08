@@ -502,14 +502,14 @@ class ChatController extends Controller
 
             $chat_arr = [];
             $total = 0;
-            $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',1)->first();
+            $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',1);
             if($chatroom->count() == 0){
-                $chatroom = Chatroom::where('user_1',1)->where('user_2',$$user_id)->first();
+                $chatroom = Chatroom::where('user_1',1)->where('user_2',$user_id);
             }
 
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
-
+            $chatroom = $chatroom->first();
             if(!is_null($chatroom)){
 
                 $chat = Chat::where('chatroom_id',$chatroom->id);
