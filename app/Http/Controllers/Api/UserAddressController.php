@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\UserAddress;
-use Illuminate\Support\Facades\Validator;
 use Mapper;
+use App\Models\UserAddress;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class UserAddressController extends Controller
 {
     //
+
+    private $api_search_places = "https://maps.googleapis.com/maps/api/place/textsearch/json";
 
     public function index(Request $request){
 
@@ -112,10 +115,48 @@ class UserAddressController extends Controller
     }
     
     public function recommendation(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'query' => 'required',
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        $key = env('GOOGLE_API_KEY','');
+        // dd('lah gimana');
         try {
-            $query = $request->input('query');
-            $map = Mapper::location($query);
-            return response()->json($map);
+            $response = Http::get($this->api_search_places,[
+                "query" => $request->get('query'),
+                "location" => $request->lat.",".$request->lng,
+                "language" => "id",
+                "key" => $key,
+            ]);
+            
+            if($response->successful()){
+                $result_response = [];
+                $result = $response->json()['results'];
+                foreach ($result as $key => $value) {
+                    # code...
+                    $result_response[] = [
+                        "id" => $value['place_id'],
+                        "place_name" => $value['name'],
+                        "description" => $value['formatted_address'],
+                        "geometry" => [
+                            "lat" => $value['geometry']['location']['lat'],
+                            "lng" => $value['geometry']['location']['lng']
+                        ]
+                    ];
+                }
+                return response()->json($result_response);
+            }else{
+                $errors = json_decode($res->getBody()->getContents());
+                return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+            }
+        
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi Kesalahan ".$th->getMessage()],422);
