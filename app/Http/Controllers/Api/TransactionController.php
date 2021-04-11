@@ -138,7 +138,7 @@ class TransactionController extends Controller
                 "id" => $order->id,
                 "order_status" => $order->order_status,
                 "order_type" => $order->order_type,
-                "is_take_away" => $order->is_take_away,
+                "is_extend" => $order->is_extend,
                 "user" => [
                     "id" => $order->customer->id,
                     "name" => $order->customer->name,
@@ -353,14 +353,15 @@ class TransactionController extends Controller
         }
     }
 
-    public function order_take_away($id){
+    public function order_extend($id){
         try {
             //code...
             $order = Order::find($id);
-            $order->order_status = "take-away";
+            $order->order_status = "extend";
+            $order->is_extend = true;
             $order->save();
             
-            return response()->json(["message" => "Order Take Away"]);            
+            return response()->json(["message" => "Order Extend"]);            
             
         } catch (\Throwable $th) {
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
