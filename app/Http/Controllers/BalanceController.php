@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use DataTables;
+use App\Models\User;
+use Illuminate\Http\Request;
+use App\Models\HistoryBalance;
+
 
 class BalanceController extends Controller
 {
@@ -26,9 +28,23 @@ class BalanceController extends Controller
             $data = User::latest()->Role('user')->get();
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('balance', function($row){
+                        return rupiah($row->balance);
+                    }) 
                     ->addColumn('action', function($row){   
-                            $btn = '<a href="#" data-toggle="tooltip" data-balance="'.$row->balance.'" data-name="'.$row->name.'" data-id="'.$row->userid.'" data-original-title="Edit" class="btn btn-primary btn-sm btn_change">Ubah Saldo</a>';    
-                            return $btn;
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown">
+                            Aksi
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-plus-circle"></i> Tambah Saldo</a></li>
+                            <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-minus-circle"></i> Kurangi Saldo</a></li>
+                            <li class="dropdown-item"><a href="'.route('balance.show',$row->id).'" title="Detail" data-toggle="tooltip"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        </ul>
+                        ';
+                        return $btn;
+                            // $btn = '<a href="#" data-toggle="tooltip" data-balance="'.$row->balance.'" data-name="'.$row->name.'" data-id="'.$row->userid.'" data-original-title="Edit" class="btn btn-primary btn-sm btn_change">Ubah Saldo</a>';    
+                            // $btn .= '<a href="#" data-toggle="tooltip" data-balance="'.$row->balance.'" data-name="'.$row->name.'" data-id="'.$row->userid.'" data-original-title="Edit" class="btn btn-primary btn-sm btn_change">Ubah Saldo</a>';
                     })
                     ->rawColumns(['action'])
                     ->make(true);
@@ -86,10 +102,37 @@ class BalanceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id)
     {
         //
+        try {
+            
+            $user = User::Role('user')->find($user_id);
+            $historyBalance = HistoryBalance::where('user_id',$user->id)->get();
+
+            return view('balance.detail',compact('user'));
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
+
+    public function showEngineer($user_id)
+    {
+        //
+        try {
+            
+            $user = User::Role('engineer')->find($user_id);
+            $historyBalance = HistoryBalance::where('user_id',$user->id)->get();
+
+            return view('balance.detail',compact('user'));
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+
 
     /**
      * Show the form for editing the specified resource.

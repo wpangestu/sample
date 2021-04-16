@@ -70,7 +70,7 @@
                   <dt class="col-sm-3">Id Pembayaran</dt>
                   <dd class="col-sm-8">: {{$payment->paymentid}}</dd>
                   <dt class="col-sm-3">Total</dt>
-                  <dd class="col-sm-8">: Rp {{ $payment->amount+($payment->convenience_fee??0) }}</dd>
+                  <dd class="col-sm-8">: {{ rupiah($payment->amount+($payment->convenience_fee??0)) }}</dd>
                   <dt class="col-sm-3">Metode Pembayaran</dt>
                   <dd class="col-sm-8">: Transfer Bank</dd>
                   <dt class="col-sm-3">Pembayaran</dt>

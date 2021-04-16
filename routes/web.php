@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('balance/customer',[BalanceController::class,'customer'])->name('balance.customer.index');
     Route::get('balance/engineer',[BalanceController::class,'engineer'])->name('balance.engineer.index');
     Route::post('balance/update',[BalanceController::class,'update'])->name('balance.update');
+    Route::get('balance/{id}/detail',[BalanceController::class,'show'])->name('balance.show');
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');

@@ -31,6 +31,9 @@ class ServiceController extends Controller
                     ->addColumn('engineer_id',function($row){
                         return $row->engineer->name??'-';
                     })
+                    ->addColumn('price', function($row){
+                        return "Rp ".number_format($row->price,0,',','.');
+                    })
                     ->addColumn('status',function($row){
                         if($row->status==="active"){
                             $status = "<span class='badge badge-success'>Active</span>";
@@ -116,7 +119,7 @@ class ServiceController extends Controller
             'engineer_id' => 'required|integer',
             'skill' => 'required',
             'sertification_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         if ($request->hasFile('sertification_image')) {
@@ -275,6 +278,9 @@ class ServiceController extends Controller
                     ->addColumn('service_category_id',function($row){
                         return $row->service_category->name??'-';
                     })
+                    ->addColumn('price',function($row){
+                        return rupiah($row->price);
+                    })
                     ->addColumn('status',function($row){
                         if($row->status==="review"){
                             $status = "<span class='badge badge-warning'>Menunggu Kofirmasi</span>";
@@ -313,17 +319,50 @@ class ServiceController extends Controller
         $request->validate([
             'name' => 'required',
             'category_service_id' => 'required|integer',
-            'price' => 'required|integer'
+            'price' => 'required|integer',
+            'skill' => 'required',
+            'sertification_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $update = Service::find($id)->update($request->all());
+        try {
 
-        if($update){
+            $service = Service::find($id);
+
+            $service->name = $request->name;
+            $service->category_service_id = $request->category_service_id;
+            $service->price = $request->price;
+            $service->skill = $request->skill;
+            $service->description = $request->description;
+    
+            if ($request->hasFile('sertification_image')) {
+    
+                $uploadFolder = 'teknisi/service/certificate';
+                $photo = $request->file('sertification_image');
+                $photo_path_sertificate = $photo->store($uploadFolder,'public');
+    
+                $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
+            }
+    
+            if ($request->hasFile('image')) {
+    
+                $uploadFolder = 'teknisi/service/images';
+                $photo = $request->file('image');
+                $photo_path = $photo->store($uploadFolder,'public');
+    
+                $service->image = Storage::disk('public')->url($photo_path);
+            }
+    
+            $service->save();
+
             return redirect()->route('services.index')
-                        ->with('success','Data berhasil diubah');
-        }else{
+                                ->with('success','Data berhasil diubah');
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
             return redirect()->route('services.index')
-                        ->with('error','Opps, Terjadi kesalahan.');
+                ->with('error','Opps, Terjadi kesalahan.');
         }
     }
 

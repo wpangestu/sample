@@ -67,3 +67,9 @@ function get_all_notif_chat()
 {
     return get_new_chat_customer() + get_new_chat_engineer();
 }
+
+function rupiah($val)
+{
+    return "Rp ".number_format($val,0,',','.');
+}
+

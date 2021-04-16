@@ -1,5 +1,5 @@
 @extends('layouts.app_layout')
-@section('title','Tambah Service')
+@section('title','Tambah Jasa')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -9,13 +9,14 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Service</h1>
+            <h1 class="m-0 text-dark">Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('services.index') }}">Jasa</a></li>
+              <li class="breadcrumb-item active">Tambah Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -30,7 +31,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Tambah Service</h3>
+                <h3 class="card-title">Tambah Jasa</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -114,6 +115,7 @@
                                 <label for="inputStatus" class="col-sm-3 col-form-label"></label>
                                 <div class="col-sm-9">
                                     <button class="btn btn-primary">Simpan</button>
+                                    <a href="{{ route('services.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
                             </div>
                         </form>

@@ -1,5 +1,5 @@
 @extends('layouts.app_layout')
-@section('title','Detail Service')
+@section('title','Detail Jasa')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -9,13 +9,14 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Service</h1>
+            <h1 class="m-0 text-dark">Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('services.index') }}">Jasa</a></li>
+              <li class="breadcrumb-item active">Detail Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -30,7 +31,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Detail Service</h3>
+                <h3 class="card-title">Detail Jasa</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -65,7 +66,7 @@
                   <dt class="col-sm-3">Kategori</dt>
                   <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Harga (IDR)</dt>
-                  <dd class="col-sm-8">: {{ $service->price }}</dd>
+                  <dd class="col-sm-8">: {{ rupiah($service->price) }}</dd>
 
                   <dt class="col-sm-3">Deskripsi</dt>
                   <dd class="col-sm-8"><textarea class="form-control" readonly rows="4">{{ $service->description }}</textarea></dd>

@@ -332,7 +332,9 @@
                         zeroLineColor: 'transparent'
                       },
                       ticks    : $.extend({
-                        beginAtZero : true
+                        beginAtZero : true,
+                        suggestedMin : 0,
+                        suggestedMax : 10
                       }, ticksStyle)
                     }],
                     xAxes: [{
@@ -410,7 +412,9 @@
                         zeroLineColor: 'transparent'
                       },
                       ticks    : $.extend({
-                        beginAtZero : true
+                        beginAtZero : true,
+                        suggestedMin : 0,
+                        suggestedMax : 10
                       }, ticksStyle)
                     }],
                     xAxes: [{
@@ -488,7 +492,9 @@
                         zeroLineColor: 'transparent'
                       },
                       ticks    : $.extend({
-                        beginAtZero : true
+                        beginAtZero : true,
+                        suggestedMin : 0,
+                        suggestedMax : 10
                       }, ticksStyle)
                     }],
                     xAxes: [{

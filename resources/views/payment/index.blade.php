@@ -72,7 +72,7 @@
                             <td>{{ $val->created_at }}</td>
                             <td><a href="#">{{ $val->paymentid }}</a> </td>
                             <td>Transfer Bank</td>
-                            <td>{{ $val->amount+($val->convenience_fee??0) }}</td>
+                            <td>{{ rupiah($val->amount+($val->convenience_fee??0)) }}</td>
                             <td>{{ $val->customer->name }}</td>
                             <td>
                               @if($val->status === 'check')
