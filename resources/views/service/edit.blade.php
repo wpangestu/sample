@@ -48,7 +48,7 @@
                         </div>
                     @endif
 
-                        <form action="{{route('services.update', $service->id)}}" method="post">
+                        <form action="{{route('services.update', $service->id)}}" method="post" enctype="multipart/form-data">
                             @method('put')
                             @csrf
                             <div class="form-group row">

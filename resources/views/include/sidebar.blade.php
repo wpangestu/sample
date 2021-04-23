@@ -177,13 +177,13 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="{{ route('balance.customer.index') }}" class="nav-link {{ request()->routeIs('balance.customer.index')?'active':'' }}">
+                <a href="{{ route('balance.customer.index') }}" class="nav-link {{ request()->routeIs('balance.customer.*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Saldo Pelanggan</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('balance.engineer.index') }}" class="nav-link {{ request()->routeIs('balance.engineer.index')?'active':'' }}">
+                <a href="{{ route('balance.engineer.index') }}" class="nav-link {{ request()->routeIs('balance.engineer.*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Saldo Teknisi</p>
                 </a>

@@ -45,7 +45,7 @@ class ServiceController extends Controller
                     ->addColumn('action', function($row){
                     
                     $btn = '
-                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
                         Aksi
                     </button>
                     <ul class="dropdown-menu">
@@ -355,14 +355,15 @@ class ServiceController extends Controller
     
             $service->save();
 
-            return redirect()->route('services.index')
-                                ->with('success','Data berhasil diubah');
+            toast('Data berhasil diubah','success');
+
+            return redirect()->route('services.index');
 
         } catch (\Throwable $th) {
             //throw $th;
             dd($th->getMessage());
-            return redirect()->route('services.index')
-                ->with('error','Opps, Terjadi kesalahan.');
+            toast('Opps, Terjadi kesalahan.','error');
+            return redirect()->route('services.index');
         }
     }
 
@@ -372,11 +373,34 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         //
-        $delete = Service::find($id)->delete();
 
-        return Response()->json($delete);        
+        try {
+
+            DB::beginTransaction();
+
+            $notif = Notification::where('service_id',$id)->first();
+            $notif->delete();
+
+            $delete = Service::find($id)->delete();
+
+            DB::commit();
+
+            if($request->ajax()){
+                return Response()->json($delete);        
+            }
+
+            toast('Data berhasil dihapus','success');
+
+            return redirect()->back();
+
+        } catch (\Throwable $th) {
+            DB::rollback();
+            dd($th->getMessage());
+            //throw $th;
+        }
+
     }
 }

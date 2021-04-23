@@ -91,8 +91,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Saldo
     Route::get('balance/customer',[BalanceController::class,'customer'])->name('balance.customer.index');
     Route::get('balance/engineer',[BalanceController::class,'engineer'])->name('balance.engineer.index');
-    Route::post('balance/update',[BalanceController::class,'update'])->name('balance.update');
-    Route::get('balance/{id}/detail',[BalanceController::class,'show'])->name('balance.show');
+    Route::post('balance/add_balance',[BalanceController::class,'storeAddBalance'])->name('balance.add_balance');
+    Route::post('balance/min_balance',[BalanceController::class,'storeMinBalance'])->name('balance.min_balance');
+    Route::get('balance/customer/{id}/detail',[BalanceController::class,'show'])->name('balance.customer.show');
+    Route::get('balance/engineer/{id}/detail',[BalanceController::class,'showEngineer'])->name('balance.engineer.show');
+    Route::post('balance/update_balance_history',[BalanceController::class,'updateHistoryBalance'])->name('balance.update.history_balance');
+    Route::post('balance/{id}/delete_history',[BalanceController::class,'destroy'])->name('balance.delete.history_balance');
+
 
     // Kofirmasi Pembayaran
     Route::get('payment', [PaymentController::class,'index'])->name('payment.index');

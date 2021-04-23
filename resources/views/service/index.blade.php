@@ -79,6 +79,17 @@
   </div>
   <!-- /.content-wrapper -->
 
+  <x-modal id="md_delete" title="Hapus Data Service">
+    <p>Apa anda yakin?</p>
+    <form action="" method="post">
+      @csrf
+      <div class="text-right">
+        <button class="btn btn-primary" type="submit">Ya</button>
+        <button class="btn btn-secondary" data-dismiss="modal" type="button">Batal</button>
+      </div>
+    </form>
+  </x-modal>
+
 @endsection
 
 @section('scripts')
@@ -111,18 +122,45 @@
         $('body').on('click', '.btn_delete', function () {
             const url = $(this).data('url');
 
-            if (confirm("Apakah anda yakin?") == true) {
-                // ajax
-                $.ajax({
-                    type:"POST",
-                    url: url,
-                    dataType: 'json',
-                    success: function(res){
-                        var oTable = $('#table-datatables').dataTable();
-                        oTable.fnDraw(false);
-                    }
-                });
-            }
+            $('#md_delete').modal('show');
+            $('#md_delete').find('form').attr('action',url);
+
+            // Swal.fire(
+            //   'Good job!',
+            //   'You clicked the button!',
+            //   'success'
+            // )
+
+            // Swal.fire({
+            //   title: 'Are you sure?',
+            //   text: "You won't be able to revert this!",
+            //   icon: 'warning',
+            //   showCancelButton: true,
+            //   confirmButtonColor: '#3085d6',
+            //   cancelButtonColor: '#d33',
+            //   confirmButtonText: 'Yes, delete it!'
+            // }).then((result) => {
+            //   if (result.isConfirmed) {
+            //     Swal.fire(
+            //       'Deleted!',
+            //       'Your file has been deleted.',
+            //       'success'
+            //     )
+            //   }
+            // })
+
+            // if (confirm("Apakah anda yakin?") == true) {
+            //     // ajax
+            //     $.ajax({
+            //         type:"POST",
+            //         url: url,
+            //         dataType: 'json',
+            //         success: function(res){
+            //             var oTable = $('#table-datatables').dataTable();
+            //             oTable.fnDraw(false);
+            //         }
+            //     });
+            // }
 
         })
 

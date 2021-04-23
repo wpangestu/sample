@@ -12,10 +12,10 @@
             <h1 class="m-0 text-dark">Saldo</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item active">Saldo Pelanggan</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -30,7 +30,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Saldo <b>Pelanggan</b></h3>
+                <h3 class="card-title">Saldo Pelanggan</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -85,48 +85,105 @@
 
   <!-- Model -->
 
-  <div class="modal fade" id="modal_change_balance">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Ubah Saldo Pelanggan</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="{{ route('balance.update') }}" method="post">
-                @csrf 
-                <div class="modal-body">
-                    <div class="form-group row">
-                        <label for="inputName" class="col-sm-4 col-form-label">Nama</label>
-                        <div class="col-sm-8">
-                            <input type="text" name="name" class="form-control" readonly id="inputName" placeholder="Nama">
-                        </div>
-                    </div>                    
-                    <div class="form-group row">
-                        <label for="inputUserId" class="col-sm-4 col-form-label">ID Customer</label>
-                        <div class="col-sm-8">
-                            <input type="text" name="userid" class="form-control" readonly id="inputUserId" placeholder="Nama">
-                        </div>
-                    </div>                    
-                    <div class="form-group row">
-                        <label for="inputSaldo" class="col-sm-4 col-form-label">Saldo</label>
-                        <div class="col-sm-8">
-                            <input type="number" min="0" name="balance" class="form-control" id="inputSaldo" placeholder="Nama">
-                        </div>
-                    </div>                    
-                </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-   </div>
-    <!-- /.modal -->
+<div class="modal fade" id="modal_add_balance">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Tambah Saldo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <form action="{{ route('balance.add_balance') }}" method="post">
+              @csrf 
+              <div class="modal-body">
+                  <input type="hidden" name="id" id="id_user">
+                  <div class="form-group row">
+                      <label for="inputName" class="col-sm-4 col-form-label">Nama</label>
+                      <div class="col-sm-8">
+                          <input type="text" name="name" class="form-control" readonly id="inputName" placeholder="Nama">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputUserId" class="col-sm-4 col-form-label">ID Customer</label>
+                      <div class="col-sm-8">
+                          <input type="text" name="userid" class="form-control" readonly id="inputUserId" placeholder="Nama">
+                      </div>
+                  </div>                    
+                  <div class="form-group row">
+                      <label for="input_amount" class="col-sm-4 col-form-label">Jumlah *</label>
+                      <div class="col-sm-8">
+                          <input type="number" min="0" name="amount" class="form-control" required id="input_amount">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputSaldo" class="col-sm-4 col-form-label">Keterangan *</label>
+                      <div class="col-sm-8">
+                        <textarea name="description" class="form-control" rows="3" required></textarea>
+                      </div>
+                  </div>                    
+              </div>
+              <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                  <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+          </form>
+      </div>
+      <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal_min_balance">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Kurangi Saldo</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <form action="{{ route('balance.min_balance') }}" method="post">
+              @csrf 
+              <div class="modal-body">
+                  <input type="hidden" name="id" id="id_user">
+                  <div class="form-group row">
+                      <label for="inputName" class="col-sm-4 col-form-label">Nama</label>
+                      <div class="col-sm-8">
+                          <input type="text" name="name" class="form-control" readonly id="inputName" placeholder="Nama">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputUserId" class="col-sm-4 col-form-label">ID Customer</label>
+                      <div class="col-sm-8">
+                          <input type="text" name="userid" class="form-control" readonly id="inputUserId" placeholder="Nama">
+                      </div>
+                  </div>                    
+                  <div class="form-group row">
+                      <label for="input_amount" class="col-sm-4 col-form-label">Jumlah *</label>
+                      <div class="col-sm-8">
+                          <input type="number" min="0" name="amount" class="form-control" required id="input_amount">
+                      </div>
+                  </div>
+                  <div class="form-group row">
+                      <label for="inputSaldo" class="col-sm-4 col-form-label">Keterangan *</label>
+                      <div class="col-sm-8">
+                        <textarea name="description" class="form-control" rows="3" required></textarea>
+                      </div>
+                  </div>                    
+              </div>
+              <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                  <button type="submit" class="btn btn-primary">Simpan</button>
+              </div>
+          </form>
+      </div>
+      <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 
 @endsection
 
@@ -136,14 +193,26 @@
 
     $(document).ready(function(){
 
-        $(document).on('click','.btn_change',function(){
+        $(document).on('click','.btn_add_balance',function(){
             let name = $(this).data('name');
-            let userid = $(this).data('id');
-            let saldo = $(this).data('balance');
-            $('#modal_change_balance #inputName').val(name)
-            $('#modal_change_balance #inputUserId').val(userid)
-            $('#modal_change_balance #inputSaldo').val(saldo)
-            $('#modal_change_balance').modal('show');
+            let userid = $(this).data('userid');
+            let id = $(this).data('id');
+            $('#modal_add_balance #inputName').val(name)
+            $('#modal_add_balance #inputUserId').val(userid)
+            $('#modal_add_balance #id_user').val(id)
+            $('#modal_add_balance').modal('show');
+            $('#modal_add_balance #input_amount').focus();
+        })
+
+        $(document).on('click','.btn_min_balance',function(){
+            let name = $(this).data('name');
+            let userid = $(this).data('userid');
+            let id = $(this).data('id');
+            $('#modal_min_balance #inputName').val(name)
+            $('#modal_min_balance #inputUserId').val(userid)
+            $('#modal_min_balance #id_user').val(id)
+            $('#modal_min_balance').modal('show');
+            $('#modal_min_balance #input_amount').focus();
         })
 
       $.ajaxSetup({
@@ -160,8 +229,8 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'userid', name: 'userid'},
                 {data: 'name', name: 'name'},
-                {data: 'balance', name: 'balance'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'balance', name: 'balance', class:'text-right'},
+                {data: 'action', name: 'action', orderable: false, searchable: false, class:'text-center'},
             ]
         });
 
