@@ -80,4 +80,70 @@ class UserController extends Controller
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
+
+    public function login(Request $request)
+    {
+        if($request->has('id_google')){
+            $userSocial = Socialite::driver('google')->stateless()->user();
+            $users = User::where(['email' => $userSocial->getEmail()])->first();
+            
+            if($users){
+                Auth::login($users);
+                return "";
+            }else{
+                $user = User::create([
+                    'name'          => $userSocial->getName(),
+                    'email'         => $userSocial->getEmail(),
+                    'image'         => $userSocial->getAvatar(),
+                    'provider_id'   => $userSocial->getId(),
+                    'provider'      => $provider,
+                ]);
+                return "";
+            }
+        }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        $credentials = $request->only('email', 'password');
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        if(is_null($user)){
+            return response()->json(['message' => 'Email belum terdaftar'], 423);
+        }
+
+        try {
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'could_not_create_token'], 422);
+        }
+
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+
+            $payload = JWTAuth::setToken($token)->getPayload();
+            $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
+                
+            $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
+
+            $data['message'] = "Login successfully";            
+            // $data['data'] = $user;
+            $data['token'] = $token;
+            $data['valid_until'] = $expires_at;
+            $data['token_type'] = "Bearer";
+            
+            return response()->json($data);
+        }else{
+            return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
+        }        
+    }
 }

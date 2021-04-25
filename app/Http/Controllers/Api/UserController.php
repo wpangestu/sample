@@ -35,9 +35,6 @@ class UserController extends Controller
         $credentials = $request->only('email', 'password');
 
         $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
-        if(is_null($user)){
-            $user = User::Role('user')->where('email', $credentials['email'])->first();
-        }
         
         if(is_null($user)){
             return response()->json(['message' => 'Email belum terdaftar'], 423);

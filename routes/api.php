@@ -42,6 +42,7 @@ Route::get('/testing/email', [UserController::class, 'testing']);
 
 Route::prefix('customer')->group(function () {
     Route::post('/user/register', [CustomerUserController::class,'register']);
+    Route::post('/user/login', [CustomerUserController::class,'login']);
 });
 
 
