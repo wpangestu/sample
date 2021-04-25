@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\TransactionController;
 
+use App\Http\Controllers\Api\Customer\UserController as CustomerUserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,6 +39,10 @@ Route::post('/teknisi/user/register/confirmation-otp', [UserController::class,'c
 
 Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
 Route::get('/testing/email', [UserController::class, 'testing']);
+
+Route::prefix('customer')->group(function () {
+    Route::post('/user/register', [CustomerUserController::class,'register']);
+});
 
 
 Route::middleware(['jwt.verify'])->group(function () {
@@ -104,6 +110,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
     Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
+
+
     
 });
 
