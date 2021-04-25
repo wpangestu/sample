@@ -43,6 +43,7 @@ Route::get('/testing/email', [UserController::class, 'testing']);
 Route::prefix('customer')->group(function () {
     Route::post('/user/register', [CustomerUserController::class,'register']);
     Route::post('/user/login', [CustomerUserController::class,'login']);
+    Route::post('/user/register/request-otp', [CustomerUserController::class,'request_otp']);
 });
 
 

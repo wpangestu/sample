@@ -146,4 +146,40 @@ class UserController extends Controller
             return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
         }        
     }
+
+
+    public function request_otp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message"=>$validator->errors()->all()[0]], 422);
+        }   
+
+        try {
+
+            $user = User::where('email',$request->get('email'))->first();
+
+            if(is_null($user)){
+                $message = 'Email tidak ditemukan';
+                return response()->json(["message"=>$message], 422);
+            }else{
+                $newotp = mt_rand(1000,9999);
+                $user->code_otp = $newotp;
+                $user->save();
+    
+                \Mail::to($request->get('email'))
+                    ->send(new \App\Mail\OtpMail($newotp));
+                $message = "Kode Otp sudah dikirim ke email anda";
+                return response()->json(["message"=>$message], 200);
+            }
+
+        } catch (\Throwable $th) {
+                return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+
+
+    }
 }
