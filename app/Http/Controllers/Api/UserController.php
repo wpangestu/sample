@@ -234,22 +234,27 @@ class UserController extends Controller
             return response()->json(["message"=>$validator->errors()->all()[0]], 422);
         }   
 
-        $user = User::where('email',$request->get('email'))->first();
-
-        if(is_null($user)){
-            $message = 'Email tidak ditemukan';
-            return response()->json(["message"=>$message], 422);
-        }else{
-            $newotp = mt_rand(1000,9999);
-            $user->code_otp = $newotp;
-            $user->save();
-
-            \Mail::to($request->get('email'))
-            ->send(new \App\Mail\OtpMail($newotp));
-
-            $message = "Kode Otp sudah dikirim ke email anda";
-            return response()->json(["message"=>$message], 200);
+        try {
+            $user = User::where('email',$request->get('email'))->first();
+    
+            if(is_null($user)){
+                $message = 'Email tidak ditemukan';
+                return response()->json(["message"=>$message], 422);
+            }else{
+                $newotp = mt_rand(1000,9999);
+                $user->code_otp = $newotp;
+                $user->save();
+    
+                \Mail::to($request->get('email'))
+                ->send(new \App\Mail\OtpMail($newotp));
+    
+                $message = "Kode Otp sudah dikirim ke email anda";
+                return response()->json(["message"=>$message], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json("Terjadi kesalahan ".$th->getMessage());
         }
+
     }
 
     public function forgot_password_input_otp(Request $request)
@@ -301,18 +306,25 @@ class UserController extends Controller
         $email = $request->get('email');
         $password = $request->get('password');
 
-        $user = User::where('email',$email)->first();
-
-        if(is_null($user)){
-            $message = 'Email tidak ditemukan';
-            return response()->json(["message"=>$message], 422);
-        }else{
-            $user->password = Hash::make($password);
-            $user->save();
-            $message = "Password berhasil diubah";
-            $kode = 200;
-            return response()->json(['message'=>$message],$kode);
+        try {
+            //code...
+            $user = User::where('email',$email)->first();
+    
+            if(is_null($user)){
+                $message = 'Email tidak ditemukan';
+                return response()->json(["message"=>$message], 422);
+            }else{
+                $user->password = Hash::make($password);
+                $user->save();
+                $message = "Password berhasil diubah";
+                $kode = 200;
+                return response()->json(['message'=>$message],$kode);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()], 422);
         }
+
     }
 
     public function request_otp(Request $request)
