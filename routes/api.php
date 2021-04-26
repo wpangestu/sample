@@ -96,13 +96,13 @@ Route::middleware(['jwt.verify'])->group(function () {
     
     Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
 
-    Route::get('customer/{id}',[CustomerController::class,'show']);
-    Route::put('customer/{id}/update',[CustomerController::class,'update']);
+    // Route::get('customer/{id}',[CustomerController::class,'show']);
+    // Route::put('customer/{id}/update',[CustomerController::class,'update']);
 
-    Route::get('category_service',[CategoryServiceController::class,'index']);
-    Route::get('service/category_service/{id}',[ServiceController::class,'getServiceByCategoryId']);
+    // Route::get('category_service',[CategoryServiceController::class,'index']);
+    // Route::get('service/category_service/{id}',[ServiceController::class,'getServiceByCategoryId']);
     
-    Route::get('engineer/{id}',[EngineerController::class,'show']);
+    // Route::get('engineer/{id}',[EngineerController::class,'show']);
 
     Route::get('/teknisi/transaction-summary',[TransactionController::class,'index']);
     Route::get('/teknisi/order/review',[TransactionController::class,'review']);
@@ -117,7 +117,14 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
     Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
 
-
+    Route::prefix('customer')->group(function () {
+        Route::post('/user​/token', [UserController::class,'store_fcm_token']);
+        Route::delete('/user​/token', [UserController::class,'delete_fcm_token']);
+        
+        Route::get('/user​', [CustomerUserController::class,'show']);
+        Route::post('/user​', [CustomerUserController::class,'update']);
+        Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
+    });
     
 });
 

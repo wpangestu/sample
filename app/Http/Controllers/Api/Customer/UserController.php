@@ -257,5 +257,73 @@ class UserController extends Controller
             return response()->json(["message"=>"Terjadi kesalahan ".$message], 422);
         }
 
-    }    
+    }
+
+    public function show(){
+        // dd('cek');
+        try {
+            //code...
+            $user = auth()->user();
+
+            $data = [
+                "id" => $user->id,
+                "name" => $user->name,
+                "profil_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
+                "phone" => $user->phone,
+                "email" => $user->email
+            ];
+
+            return response()->json($data);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
+    public function update(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.auth()->user()->id,
+            'phone' => 'required|unique:users,phone,'.auth()->user()->id,
+        ]);
+    
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+    
+        try {
+            //code...
+            $user = auth()->user();
+    
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+            $user->email = $request->email;
+    
+            $user->save();
+    
+            return response()->json(["message"=>"Data berhasil di update"]);
+    
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }    
+    }
+
+    public function balance(Request $request)
+    {
+        try {
+            //code...
+            $user = auth()->user();
+ 
+            $balance = (int)$user->balance;
+    
+            return response()->json(compact('balance'));
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
 }
