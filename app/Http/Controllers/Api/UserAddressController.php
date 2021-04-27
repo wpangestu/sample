@@ -106,7 +106,7 @@ class UserAddressController extends Controller
 
             $user_address->save();
 
-            return response()->json(["message"=>"Data berhasil disimpan"]);
+            return response()->json(["message"=>"Data berhasil diubah"]);
 
         } catch (\Throwable $th) {
             //throw $th;

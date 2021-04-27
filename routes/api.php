@@ -124,6 +124,13 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/user​', [CustomerUserController::class,'show']);
         Route::post('/user​', [CustomerUserController::class,'update']);
         Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
+
+        Route::get('/address', [UserAddressController::class, 'index']);
+        Route::post('/address', [UserAddressController::class, 'store']);
+        Route::get('/address/top-address', [CustomerUserController::class, 'top_address']);
+        Route::get('/address/cek', [UserAddressController::class, 'cek']);
+        Route::put('/address/{id}', [UserAddressController::class, 'update']);
+        Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
     });
     
 });

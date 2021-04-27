@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api\Customer;
 
+use JWTAuth;
 use App\Models\User;
 use App\Mail\OtpMail;
-use JWTAuth;
+use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -326,4 +327,31 @@ class UserController extends Controller
         }
     }
 
+    public function top_address()
+    {
+        try {
+            //code...
+            $data = UserAddress::where('user_id',auth()->user()->id)->latest()->limit(4);
+            
+            $data_arr = [];
+            foreach($data->get() as $val){
+                $data_arr[]=[
+                    "id" => $val->id,
+                    "name" => $val->name,
+                    "address" => $val->address,
+                    "description" => $val->note,
+                    "geometry" => [
+                        "lat" => $val->lat,
+                        "lng" => $val->lng
+                    ]
+                ];
+            }
+
+            return response()->json($data_arr);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
 }

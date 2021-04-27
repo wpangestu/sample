@@ -72,6 +72,12 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <label for="inputSlug" class="col-sm-2 col-form-label">Slug</label>
+                                <div class="col-sm-10">
+                                  <input type="text" name="slug" class="form-control" id="inputSlug" placeholder="Nama">
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="inputStatus" class="col-sm-2 col-form-label"></label>
                                 <div class="col-sm-10">
                                     <button class="btn btn-primary">Simpan</button>
@@ -93,5 +99,21 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
+@endsection
+
+@section('scripts')
+
+<script>
+
+    $(document).ready(function(){
+      $('#inputName').on('keyup',function(){
+        const text = $(this).val().toLowerCase()
+                                  .replace(/ /g,'-')
+                                  .replace(/[^\w-]+/g,'');
+        $('#inputSlug').val(text);
+      })
+    });
+</script>
 
 @endsection
