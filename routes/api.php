@@ -131,6 +131,11 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/address/cek', [UserAddressController::class, 'cek']);
         Route::put('/address/{id}', [UserAddressController::class, 'update']);
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
+        
+        Route::get('/service', [CustomerUserController::class, 'service']);
+        Route::get('/service/category', [CustomerUserController::class, 'service_category']);
+        Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
+        
     });
     
 });
