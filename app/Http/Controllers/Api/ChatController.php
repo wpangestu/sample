@@ -316,11 +316,9 @@ class ChatController extends Controller
     {
         try {
             //code...
-
             $user_id = auth()->user()->id;
     
             $chatroom = Chatroom::find($id);
-    
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
             
@@ -329,9 +327,10 @@ class ChatController extends Controller
                 // dd('in');
                 $chat = Chat::where('chatroom_id',$chatroom->id);
                 $chat_data = $chat->limit($limit)->offset(($page - 1) * $limit)->latest();
-    
+                
                 $data = $chat_data->get();
                 $total = $chat_data->count();
+                
     
                 foreach ($data as $key => $value) {
                     # code...

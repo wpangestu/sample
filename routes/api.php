@@ -95,15 +95,15 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/chat/support', [ChatController::class, 'send_chat_support']);
     
     Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
-
+    
     // Route::get('customer/{id}',[CustomerController::class,'show']);
     // Route::put('customer/{id}/update',[CustomerController::class,'update']);
-
+    
     // Route::get('category_service',[CategoryServiceController::class,'index']);
     // Route::get('service/category_service/{id}',[ServiceController::class,'getServiceByCategoryId']);
     
     // Route::get('engineer/{id}',[EngineerController::class,'show']);
-
+    
     Route::get('/teknisi/transaction-summary',[TransactionController::class,'index']);
     Route::get('/teknisi/order/review',[TransactionController::class,'review']);
     Route::get('/teknisi/order/{id}',[TransactionController::class,'show']);
@@ -116,7 +116,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
     Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
-
+    
     Route::prefix('customer')->group(function () {
         Route::post('/user​/token', [UserController::class,'store_fcm_token']);
         Route::delete('/user​/token', [UserController::class,'delete_fcm_token']);
@@ -124,7 +124,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/user​', [CustomerUserController::class,'show']);
         Route::post('/user​', [CustomerUserController::class,'update']);
         Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
-
+        
         Route::get('/address', [UserAddressController::class, 'index']);
         Route::post('/address', [UserAddressController::class, 'store']);
         Route::get('/address/top-address', [CustomerUserController::class, 'top_address']);
@@ -138,7 +138,18 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
         
         Route::post('/chat/delete', [ChatController::class, 'delete_chat']);
+        Route::post('/chat/pin', [ChatController::class, 'pinned_chat']);
+        Route::get('/chat', [ChatController::class, 'get_message_chat']);
         Route::post('/chat/{id}', [ChatController::class, 'send_new_chat']);
+        Route::get('/chat/{id}', [ChatController::class, 'get_message_by_chatroom_id']);
+
+        Route::get('/history/chat', [ChatController::class, 'get_history_message_chat']);
+        Route::post('/history/chat/delete', [ChatController::class, 'delete_history_chat']);
+        Route::post('/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
+        Route::get('/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
+
+        Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
+        Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
     });
     
 });
