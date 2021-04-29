@@ -137,6 +137,8 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/service/category', [CustomerUserController::class, 'service_category']);
         Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
         
+        Route::post('/chat/delete', [ChatController::class, 'delete_chat']);
+        Route::post('/chat/{id}', [ChatController::class, 'send_new_chat']);
     });
     
 });

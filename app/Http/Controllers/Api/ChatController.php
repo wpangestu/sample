@@ -118,6 +118,66 @@ class ChatController extends Controller
         }
     }
 
+    public function send_new_chat(Request $request,$chatroom_id)
+    {
+        try {
+            //code...
+
+            $chatroom = Chatroom::find($chatroom_id);
+            if(!is_null($chatroom)){
+
+                $user = auth()->user();
+                if($chatroom->user_1 == $user->id){
+                    $from = $chatroom->user_1;
+                    $to = $chatroom->user_2;
+    
+                }else{
+                    $from = $chatroom->user_2;
+                    $to = $chatroom->user_1;
+                }
+    
+                $message = $request->get('message');
+                $signature = $request->get('signature');
+    
+                $media = null;
+                if($request->hasFile('media')){
+    
+                    $uploadFolder = 'chat/'.$from;
+                    $photo = $request->file('media');
+                    $photo_path = $photo->store($uploadFolder,'public');
+    
+                    $media = Storage::disk('public')->url($photo_path);
+                }
+    
+                $chat = Chat::create([
+                    "to" => $to,
+                    "from" => $from,
+                    "message" => $message,
+                    "chatroom_id" => $chatroom->id,
+                    "media" => $media
+                ]);
+
+                $response = [
+                    "id" => $chat->id,
+                    "message" => $chat->message,
+                    "signature" => $signature,
+                    "media" => $chat->media,
+                    "from" => (int)$chat->from,
+                    "is_me" => true,
+                    "created_at" => $chat->created_at
+                ];
+
+                return response()->json($response);
+            }else{
+                return response()->json(["message"=>"chatroom_id tidak ditemukan didatabase"],422);
+            }
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
     public function get_message_chat(Request $request)
     {
         try {
@@ -153,14 +213,14 @@ class ChatController extends Controller
                     $chat_data = [
                         "message" => $chat->message,
                         "media" => $chat->media,
-                        "from" => $chat->from,
+                        "from" => (int)$chat->from,
                         "is_me" => $user_id==$chat->from?true:false,
                         "created_at" => $chat->created_at
                     ];
                     $chatroom_t = [
                         "id" => $value->id,
                         "name" => $name,
-                        "unread_count" => $unread_message,
+                        "unread_count" => (int)$unread_message,
                         "avatar" => "",
                         "pinned" => $pinned,
                         "last_message" => $chat_data
@@ -258,14 +318,13 @@ class ChatController extends Controller
             //code...
 
             $user_id = auth()->user()->id;
-
-            $chatroom_id = $id;
     
             $chatroom = Chatroom::find($id);
     
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
             
+            $new_data = [];
             if(!empty($chatroom)){
                 // dd('in');
                 $chat = Chat::where('chatroom_id',$chatroom->id);
@@ -274,7 +333,6 @@ class ChatController extends Controller
                 $data = $chat_data->get();
                 $total = $chat_data->count();
     
-                $new_data = [];
                 foreach ($data as $key => $value) {
                     # code...
                     $t_data = [
@@ -286,17 +344,16 @@ class ChatController extends Controller
                         "created_at" => $value->created_at
                     ];
                     $new_data[] = $t_data;
-                }
-    
-                $response['page'] = (int)$page;
-                $response['size'] = (int)$limit;
-                $response['total'] = (int)$total;
-                $response['data'] = $new_data;
-        
-                return response()->json($response);
-                    
+                }    
             }
-
+            
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $new_data;
+    
+            return response()->json($response);
+                
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
@@ -318,6 +375,7 @@ class ChatController extends Controller
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
             
+            $new_data = [];
             if(!empty($chatroom)){
                 // dd('in');
                 $chat = Chat::where('chatroom_id',$chatroom->id);
@@ -326,7 +384,6 @@ class ChatController extends Controller
                 $data = $chat_data->get();
                 $total = $chat_data->count();
 
-                $new_data = [];
                 foreach ($data as $key => $value) {
                     # code...
                     $t_data = [
@@ -338,16 +395,14 @@ class ChatController extends Controller
                         "created_at" => $value->created_at
                     ];
                     $new_data[] = $t_data;
-                }
-
-                $response['page'] = (int)$page;
-                $response['size'] = (int)$limit;
-                $response['total'] = (int)$total;
-                $response['data'] = $new_data;
-        
-                return response()->json($response);
-                    
+                }                
             }
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $new_data;
+    
+            return response()->json($response);
 
         } catch (\Throwable $th) {
             //throw $th;
@@ -360,6 +415,7 @@ class ChatController extends Controller
         $validator = Validator::make($request->all(), [
             'chatroom_id' => 'required|',
         ]);
+
 
         if($validator->fails()){
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
