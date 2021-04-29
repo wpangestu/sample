@@ -257,7 +257,7 @@ class UserController extends Controller
             }
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message"=>"Terjadi kesalahan ".$message], 422);
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()], 422);
         }
 
     }
@@ -475,5 +475,35 @@ class UserController extends Controller
             //throw $th;
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }        
+    }
+
+    public function service_detail($id){
+        try {
+            //code...
+            $service = Service::find($id);
+
+            $data = [
+                "id" => (int)$service->id,
+                "name" => $service->name,
+                "media" => $service->image,
+                "price" => (int)$service->price,
+                "guarantee" => 3,
+                "weight" => 450,
+                "condition" => "new",
+                "category" => [
+                    "id" => (int)$service->service_category->id,
+                    "slug" => $service->service_category->slug,
+                    "label" => $service->service_category->name,
+                    "icon" => $service->service_category->icon
+                ],
+                "description" => $service->description
+            ];
+
+            return response()->json($data);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json("Terjadi kesalahan ".$th->getMessage());
+        }
     }
 }

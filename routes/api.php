@@ -133,6 +133,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
         
         Route::get('/service', [CustomerUserController::class, 'service']);
+        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
         Route::get('/service/category', [CustomerUserController::class, 'service_category']);
         Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
         
