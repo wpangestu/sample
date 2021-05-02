@@ -150,6 +150,12 @@ Route::middleware(['jwt.verify'])->group(function () {
 
         Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
         Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
+        
+        Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
+        Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
+        Route::post('order/{id}', [CustomerUserController::class, 'order']);
+
+
     });
     
 });

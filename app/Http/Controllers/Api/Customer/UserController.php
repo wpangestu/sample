@@ -6,11 +6,14 @@ use JWTAuth;
 use App\Models\User;
 use App\Mail\OtpMail;
 use App\Models\Service;
+use App\Models\Payment;
 use App\Models\UserAddress;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\OrderDetail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -504,6 +507,242 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json("Terjadi kesalahan ".$th->getMessage());
+        }
+    }
+
+    public function order_generate_payment(Request $request)
+    {
+        try {
+            //code...
+            DB::beginTransaction();
+
+            $lat = $request->get('lat');
+            $lng = $request->get('lng');
+            $notes = $request->get('notes');
+            $services = $request->get('services');
+            
+            if($request->has('address_id')){
+                $address_id = $request->get('address_id');
+                $user_address = UserAddress::find($address_id);
+
+                $address = [
+                    "name" => $user_address->address,
+                    "lat" => $user_address->lat,
+                    "lng" => $user_address->lng,
+                    "notes" => $user_address->note
+                ];
+            }else{
+                $address = [
+                    "name" => "custom",
+                    "lat" => (float)$lat,
+                    "lng" => (float)$lng,
+                    "notes" => $notes
+                ];
+            }
+
+            $total_service_price = 0;
+            foreach ($services as $key => $value) {
+                $service_id = $value['service_id'];
+                $qty = $value['quantity'];
+                
+                $service = Service::find($service_id);
+                $total_service_price += $service->price * $qty;
+            }
+
+            $shipping = 12000;
+            $unique_code = mt_rand(100,999);
+
+            $total_price = $total_service_price+$shipping+$unique_code;
+
+            if($request->has('promo_code')){
+                $promo_code = $request->get('promo_code');
+                $promo = 12000;
+                $promo_message = [
+                    "message" => "Kodo promo aktif",
+                    "positive" => true
+                ];
+            }else{
+                $promo = 0;
+                $promo_message = [
+                    "message" => "",
+                    "positive" => ""
+                ];
+            }
+
+            Payment::create([
+                "customer_id" => auth()->user()->id,
+                "amount" => $total_price,
+                "type" => "reguler",
+                "paymentid" => "P".uniqid(),
+                "convenience_fee" => $unique_code,
+                "orders" =>[]
+            ]);
+
+            $response = [
+                "total_service_price" => $total_service_price,
+                "price_distance" => $shipping,
+                "unique_code" => $unique_code,
+                "total_price" => $total_price,
+                "promo" => $promo,
+                "promo_message" => $promo_message
+            ];
+            
+            DB::commit();
+
+            return response()->json($response);
+
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
+    public function order_checkout(Request $request){
+        try {
+
+            DB::beginTransaction();
+
+            $lat = $request->get('lat');
+            $lng = $request->get('lng');
+            $notes = $request->get('notes');
+            $services = $request->get('services');
+            
+            if($request->has('address_id')){
+                $address_id = $request->get('address_id');
+                $user_address = UserAddress::find($address_id);
+
+                $address = [
+                    "name" => $user_address->address,
+                    "lat" => $user_address->lat,
+                    "lng" => $user_address->lng,
+                    "notes" => $user_address->note
+                ];
+            }else{
+                $address = [
+                    "name" => "custom",
+                    "lat" => (float)$lat,
+                    "lng" => (float)$lng,
+                    "notes" => $notes
+                ];
+            }
+
+            $total_service_price = 0;
+            $engineer_id = [];
+
+            foreach ($services as $key => $value) {
+                $service_id = $value['service_id'];
+                $qty = $value['quantity'];
+                
+                $service = Service::find($service_id);
+                $total_service_price += $service->price * $qty;
+                $engineer_id[] = $service->engineer_id;
+            }
+
+            $shipping = 12000;
+            $unique_code = mt_rand(100,999);
+
+            $total_price = $total_service_price+$shipping+$unique_code;
+
+            $order = Order::create([
+                "order_number" => uniqid(),
+                "customer_id" => auth()->user()->id,
+                "engineer_id" => $engineer_id[0],
+                "shipping" => $shipping,
+                "convenience_fee" => $unique_code,
+                "total_payment" => $total_price,
+                "total_payment_receive" => $total_price,
+                "address" => json_encode($address)
+            ]);
+
+            if($request->has('promo_code')){
+                $promo_code = $request->get('promo_code');
+                $order->promo_code = $promo_code;
+                $order->save();
+                $promo = 12000;
+                $promo_message = [
+                    "message" => "Kodo promo aktif",
+                    "positive" => true
+                ];
+            }else{
+                $promo = 0;
+                $promo_message = [
+                    "message" => "",
+                    "positive" => ""
+                ];
+            }
+
+            foreach ($services as $key => $value) {
+                $service_id = $value['service_id'];
+                $qty = $value['quantity'];
+
+                $service = Service::find($service_id);
+                OrderDetail::create([
+                    "order_id" => $order->id,
+                    "name" => $service->name,
+                    "qty" => $qty,
+                    "price" => $service->price
+                ]);
+            }
+            
+            $order_detail = OrderDetail::where('order_id',$order->id)->get();
+            $orderdetail_data = [];
+            foreach ($order_detail as $key => $value) {
+                $orderdetail_data[] = [
+                    "service_id" => "",
+                    "name" => $value->name,
+                    "quantity" => (int)$value->qty,
+                    "price" => $value->price
+                ];
+            }
+            
+            $response = [
+                "order_id" => $order->order_number,
+                "expired_date" => $order->created_at->addHour(),
+                "services" => $orderdetail_data,
+                "price_distance" => $shipping,
+                "unique_code" => $unique_code,
+                "total_price" => $total_price,
+            ];
+            DB::commit();
+            
+            return response()->json($response);
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+    
+    public function order($order_id)
+    {
+        try {
+            $order = Order::where('order_number',$order_id)->first();
+            $orderDetail = [];
+            foreach ($order->order_detail as $key => $value) {
+                $orderDetail[] = [
+                    "service_id" => "",
+                    "name" => $value->name,
+                    "quantity" => (int)$value->qty,
+                    "price" => (int)$value->qty * $value->price
+                ];
+            }
+
+            $response = [
+                "order_id" => $order->order_number,
+                "expired_date" => $order->created_at->addHour(),
+                "services" => $orderDetail,
+                "price_distance" => (int)$order->shipping,
+                "unique_code" => (int)$order->convenience_fee,
+                "total_price" => (int)$order->total_payment,
+            ];
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
 }

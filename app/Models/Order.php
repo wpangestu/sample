@@ -17,7 +17,11 @@ class Order extends Model
         'customer_id', 
         'engineer_id',
         'shipping',
-        'note'
+        'note',
+        'convenience_fee',
+        'address',
+        'total_payment',
+        'total_payment_receive',
     ]; 
 
     public function customer(){
