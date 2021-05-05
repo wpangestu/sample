@@ -1,22 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Livewire\Members; //Load class Members 
 use App\Models\User;
-use App\Http\Controllers\CategoryServiceController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnginnerController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BalanceController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\ManajemenController;
-use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\CategoryServiceController;
+use App\Http\Livewire\Members; //Load class Members 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,6 +34,17 @@ Route::get('/', function () {
 });
 Route::get('/cek', function () {
     dd(activity());
+});
+
+Route::get('/migrate', function(){
+    try {
+        //code...
+        Artisan::call('migrate');
+        echo "Migrate successfully";
+    } catch (\Throwable $th) {
+        //throw $th;
+        dd($th->getMessage());
+    }
 });
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {

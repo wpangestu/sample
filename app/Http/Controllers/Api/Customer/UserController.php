@@ -369,10 +369,10 @@ class UserController extends Controller
             $data = [];
             foreach($category_service as $val){
                 $data_temp = [
-                    "id" => $val->id,
+                    "id" => (int)$val->id,
                     "slug" => $val->slug,
                     "label" => $val->name,
-                    "icon" => $val->icon
+                    "icon" => $val->icon??""
                 ];
                 $data[] = $data_temp;
             }
