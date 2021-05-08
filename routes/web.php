@@ -17,6 +17,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\CategoryServiceController;
+use App\Http\Controllers\BaseServiceController;
 use App\Http\Livewire\Members; //Load class Members 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::resource('service_category', CategoryServiceController::class);
     Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax');
     // Jasa
+
+    // Master Jasa
+    Route::resource('base_services', BaseServiceController::class);
+    
+
     Route::get('services/confirmation', [ServiceController::class,'confirmation'])->name('services.confirmation');
     Route::get('services/confirmation/{id}/detail', [ServiceController::class,'detail_confirmation'])->name('services.confirmation.detail');
     Route::get('services/confirmation/{id}/accept', [ServiceController::class,'confirm_accept'])->name('services.confirmation.accept');

@@ -81,9 +81,16 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <label for="inputSlug" class="col-sm-2 col-form-label">Slug</label>
+                                <div class="col-sm-10">
+                                  <input type="text" name="slug" value="{{ $data->slug }}" class="form-control" id="inputSlug" placeholder="Nama">
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="inputStatus" class="col-sm-2 col-form-label"></label>
                                 <div class="col-sm-10">
                                     <button class="btn btn-info">Ubah</button>
+                                    <a href="{{ route('service_category.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
                             </div>
                         </form>

@@ -56,6 +56,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     # TEKNISI
     //Service
     Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
+    Route::get('teknisi/service/list',[ServiceController::class,'get_base_service_by_category']);
+
     Route::get('teknisi/service',[ServiceController::class,'index']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
     Route::put('teknisi/service',[ServiceController::class,'update']);

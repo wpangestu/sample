@@ -146,12 +146,14 @@ class CategoryServiceController extends Controller
         //
         $request->validate([
             'name' => 'required',
+            'slug' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
             "name" => $request->input('name'),
             "status" => $request->input('active')??0,
+            "slug" => $request->input('slug')
         ];
 
         $service_category = CategoryService::find($id);

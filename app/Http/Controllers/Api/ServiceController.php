@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BaseService;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\CategoryService;
@@ -48,9 +49,31 @@ class ServiceController extends Controller
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
+    }
 
+    public function get_base_service_by_category(Request $request){
+        try {
+            //code...
 
+            $slug_category = $request->get('category');
+            $categoryService = CategoryService::where('slug',$slug_category)->first();
 
+            $baseService = BaseService::where('category_service_id',$categoryService->id)->get();
+
+            $data = $baseService->map(function($item,$key){
+                return [
+                    "id" => $item->id,
+                    "name" => $item->name,
+                    "media" => "",
+                    "price" => (int)$item->price
+                ];
+            });
+            $response = $data;
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=> "Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
     public function store(Request $request){
