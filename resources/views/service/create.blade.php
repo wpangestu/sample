@@ -51,17 +51,6 @@
                         <form action="{{route('services.store')}}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group row">
-                                <label for="inputEngineer" class="col-sm-3 col-form-label">Teknisi*</label>
-                                <div class="col-sm-9">
-                                  <select class="form-control" name="engineer_id" id="inputEngineer">
-                                      <option value="">PILIH</option>
-                                      @foreach($engineers as $engineer)
-                                          <option value="{{ $engineer->id }}">{{ $engineer->name }}</option>
-                                      @endforeach
-                                  </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label for="inputCatSer" class="col-sm-3 col-form-label">Kategori*</label>
                                 <div class="col-sm-9">
                                     <select class="form-control" name="category_service_id" id="inputCatSer">
@@ -73,22 +62,35 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-3 col-form-label">Nama Jasa*</label>
+                                <label for="inputName" class="col-sm-3 col-form-label">Base Jasa*</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama">
+                                    <select class="form-control" name="base_service_id" id="select_list">
+                                                                          
+                                    </select>
+                                    <!-- <input type="text" name="name" class="form-control" id="inputName" placeholder="Nama"> -->
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="inputPrice" class="col-sm-3 col-form-label">Harga*</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="price" class="form-control" id="inputPrice" placeholder="">
+                                    <input readonly type="text" name="price" class="form-control" id="inputPrice" placeholder="">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputImage" class="col-sm-3 col-form-label">Gambar Jasa</label>
+                                <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
                                 <div class="col-sm-9">
-                                    <input type="file" name="image" id="inputImage"><br>
-                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
+                                    <textarea readonly class="form-control" name="description" id="inputDesc" cols="30" rows="5"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputEngineer" class="col-sm-3 col-form-label">Teknisi*</label>
+                                <div class="col-sm-9">
+                                  <select class="form-control" name="engineer_id" id="inputEngineer">
+                                      <option value="">PILIH</option>
+                                      @foreach($engineers as $engineer)
+                                          <option value="{{ $engineer->id }}">{{ $engineer->name }}</option>
+                                      @endforeach
+                                  </select>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -103,12 +105,6 @@
                                 <div class="col-sm-9">
                                   <!-- <input type="text" name="skill" id="inputSkill" class="form-control"> -->
                                   <select name="skill[]" id="inputSkill" class="form-control" multiple></select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
-                                <div class="col-sm-9">
-                                    <textarea class="form-control" name="description" id="inputDesc" cols="30" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -141,11 +137,70 @@
 
   <script>
     $(document).ready(function(){
+
+      $.ajaxSetup({
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+
       $('#inputCatSer').select2();
       $('#inputEngineer').select2();
       $('#inputSkill').select2({
         tags : true
-      })
+      });
+
+      $('#inputCatSer').on('change', function(){
+        // alert('cekk');
+        const id = $(this).val();
+
+        $('#inputPrice').val("");
+        $('#inputDesc').val("");    
+
+        $.ajax({
+            type:"POST",
+            url: "{{ route('services.category.ajax') }}",
+            dataType: 'json',
+            data:{id:id},
+            success: function(res){
+              if(res.success){
+                const data = res.data;
+                $('#select_list').html('');
+                  let option = '';
+                  option += `
+                    <option value="">== Pilih ==</option>
+                  `
+                  data.forEach(function(d,index){
+                    option += `
+                    <option value="${d.id}">${d.name}</option>
+                    `
+                  });
+                  $('#select_list').html(option);
+              }
+            }
+        });
+
+      });   
+
+      $('#select_list').on('change',function(){
+
+        const id = $(this).val();
+
+        $.ajax({
+            type:"POST",
+            url: "{{ route('services.detail.ajax') }}",
+            dataType: 'json',
+            data:{id:id},
+            success: function(res){
+              if(res.success){
+                const data = res.data;
+                $('#inputPrice').val(data.price);
+                $('#inputDesc').val(data.description);   
+              }
+            }
+        });        
+      });
+
     })
   </script>
 

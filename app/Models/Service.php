@@ -13,10 +13,14 @@ class Service extends Model
         'skill' => 'array'
     ];
 
-    protected $fillable = ['name','category_service_id','image','description','price','engineer_id','skill','sertification_image','image'];
+    protected $fillable = ['name','category_service_id','image','description','price','engineer_id','skill','sertification_image','image','base_service_id'];
 
     public function service_category(){
         return $this->belongsTo('App\Models\CategoryService','category_service_id','id');
+    }
+
+    public function base_service(){
+        return $this->belongsTo('App\Models\BaseService','base_service_id','id');
     }
     
     public function engineer(){

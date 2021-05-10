@@ -64,6 +64,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Master Jasa
     Route::resource('base_services', BaseServiceController::class);
     
+    Route::post('services/category', [ServiceController::class,'getServiceByCategoryId'])->name('services.category.ajax');
+    Route::post('services/detail', [ServiceController::class,'detail_service'])->name('services.detail.ajax');
 
     Route::get('services/confirmation', [ServiceController::class,'confirmation'])->name('services.confirmation');
     Route::get('services/confirmation/{id}/detail', [ServiceController::class,'detail_confirmation'])->name('services.confirmation.detail');

@@ -34,7 +34,7 @@
             </a>
           </li>
 
-          <li class="nav-item has-treeview {{ request()->routeIs('service_category*')||request()->routeIs('services*')?'menu-open':'' }}">
+          <li class="nav-item has-treeview {{ request()->routeIs('service_category*')||request()->routeIs('services*')||request()->routeIs('base_services*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
