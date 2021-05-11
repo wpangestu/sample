@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\BaseService;
-use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\BaseService;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 use App\Models\CategoryService;
-use Illuminate\Support\Facades\Validator;
-// use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
 {
@@ -20,7 +21,6 @@ class ServiceController extends Controller
     {
         try {
             //code...
-
             $data = Service::where('engineer_id',auth()->user()->id)->latest();
         
             if($request->has('query')){
@@ -29,7 +29,10 @@ class ServiceController extends Controller
             }
             if($request->has('service_category')){
                 $service_category = $request->get('service_category');
-                $data->where('category_service_id', $service_category);
+                $service_category = CategoryService::where('slug',$service_category)->first();
+                if(!is_null($service_category)){
+                    $data->where('category_service_id', $service_category->id);
+                }
             }
             
             $page = $request->has('page') ? $request->get('page') : 1;
@@ -37,11 +40,22 @@ class ServiceController extends Controller
             $service = $data->limit($limit)->offset(($page - 1) * $limit);
             $data = $service->get();
             $total = $service->count();
+
+            $data_map = $data->map(function($item,$key){
+                return [
+                    "id" => $item->id,
+                    "id_base_service" => $item->base_service_id??'',
+                    "name" => $item->base_service->name??'',
+                    'media' => $item->base_service->image??'',
+                    'price' => (int)($item->base_service->price??0),
+                    "status" => $item->status??'-'
+                ];
+            });
             
             $response['page'] = (int)$page;
             $response['size'] = (int)$limit;
             $response['total'] = (int)$total;
-            $response['data'] = $data;
+            $response['data'] = $data_map;
     
             return response()->json($response);           
 
@@ -57,6 +71,10 @@ class ServiceController extends Controller
 
             $slug_category = $request->get('category');
             $categoryService = CategoryService::where('slug',$slug_category)->first();
+
+            if(is_null($categoryService)){
+                return response()->json(["message"=> "Terjadi kesalahan, slug category tidak ditemukan"],422);
+            }
 
             $baseService = BaseService::where('category_service_id',$categoryService->id)->get();
 
@@ -79,48 +97,42 @@ class ServiceController extends Controller
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'service_category' => 'required|integer',
+            'service_id' => 'required|integer',
             'skill' => 'required',
             'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
-            'image' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
-            'price' => 'required|integer',
         ]);
 
         if($validator->fails()){
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
+        if ($request->has('certificate')) {
+            $validator = Validator::make($request->all(), [
+                'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
+            ]);        
+        }
+
         try {
             //code...
             DB::beginTransaction();
 
-            $uploadFolder = 'teknisi/service/certificate';
-            $photo = $request->file('certificate');
-            $photo_path_sertificate = $photo->store($uploadFolder,'public');
-    
-            if ($request->hasFile('image')) {
-    
-                $uploadFolder = 'teknisi/service/images';
-                $photo = $request->file('image');
-                $photo_path_image = $photo->store($uploadFolder,'public');
-    
-                // $service->image = Storage::disk('public')->url($photo_path);
-                // $service->save();
-            }
-    
             $data = [
-                "name" => $request->get('name'),
-                "category_service_id" => $request->get('service_category'),
+                "base_service_id" => $request->get('service_id'),
                 "engineer_id" => auth()->user()->id,
                 "price" => $request->get('price'),
                 "skill" => $request->get('skill'),
-                "description" => $request->get('description'),
-                "sertification_image" => Storage::disk('public')->url($photo_path_sertificate),
-                "image" => Storage::disk('public')->url($photo_path_image)
             ]; 
 
             $service = Service::create($data);
+            if ($request->hasFile('certificate')) {
+    
+                $uploadFolder = 'teknisi/service/certificate';
+                $photo = $request->file('certificate');
+                $photo_path_sertificate = $photo->store($uploadFolder,'public');
+    
+                $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
+                $service->save();
+            }
 
             DB::commit();
     
@@ -134,14 +146,12 @@ class ServiceController extends Controller
 
     }
 
-    public function update(Request $request)
+    public function update(Request $request,$service_id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'service_category' => 'required|integer',
-            'skill' => 'required',
-            'price' => 'required|integer',
-            'service_id' => 'required|integer'
+            'service_base_id' => 'required|integer',
+            'status' => 'required',
+            'skill' => 'null',
         ]);
 
         if ($request->has('certificate')) {
@@ -150,17 +160,9 @@ class ServiceController extends Controller
             ]);        
         }
 
-        if ($request->has('image')) {
-            $validator = Validator::make($request->all(), [
-                'image' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
-            ]);        
-        }
-
         if($validator->fails()){
             return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()->all()[0]], 422);
         }
-
-        $service_id = $request->get('service_id');
 
         try {
             //code...
@@ -169,11 +171,8 @@ class ServiceController extends Controller
             $service = Service::find($service_id);
             
             $data = [
-                "name" => $request->get('name'),
-                "category_service_id" => $request->get('service_category'),
-                "price" => $request->get('price'),
+                "status" => $request->get('status'),
                 "skill" => $request->get('skill'),
-                "description" => $request->get('description'),
             ]; 
     
             $service->update($data);
@@ -185,15 +184,6 @@ class ServiceController extends Controller
                 $photo_path_sertificate = $photo->store($uploadFolder,'public');
     
                 $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
-                $service->save();
-            }
-            if ($request->hasFile('image')) {
-    
-                $uploadFolder = 'teknisi/service/images';
-                $photo = $request->file('image');
-                $photo_path_image = $photo->store($uploadFolder,'public');
-    
-                $service->image = Storage::disk('public')->url($photo_path_image);
                 $service->save();
             }
 
@@ -229,13 +219,21 @@ class ServiceController extends Controller
             //code...
             $data = Service::with('service_category')->find($id);
 
+            $skill = [];
+            foreach($data->skill as $val){
+                $skill[] = [
+                    "name" => $val
+                ];
+            }
+
             $response = [
                 "id" => $data->id,
-                "name" => $data->name,
-                "category" => $data->service_category->name,
-                "skill" => $data->skill,
-                "certificate" => $data->sertification_image,
-                "price" => $data->price,
+                "id_base_service" => $data->base_service->id??'-',
+                "name" => $data->base_service->name??'-',
+                "category" => $data->base_service->service_category->name??'-',
+                "skill" => $skill,
+                "certificate" => $data->sertification_image??'-',
+                "price" => $data->base_service->price??0,
                 "status" => $data->status
             ];
 
@@ -260,6 +258,23 @@ class ServiceController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
+    public function destroy($id){
+        try {
+            //code...
+            $notif = Notification::where('service_id', $id)->first();
+            $notif->delete();
+
+            $service = Service::find($id);
+            $service->delete();
+
+            return response()->json(['message'=>'delete success']);
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
         }
     }
 

@@ -27,7 +27,7 @@ class ServiceController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('service_category_id', function ($row) {
-                    return $row->service_category->name ?? '-';
+                    return $row->base_service->service_category->name ?? '-';
                 })
                 ->addColumn('name', function ($row) {
                     return $row->base_service->name ?? '-';
@@ -272,13 +272,16 @@ class ServiceController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('service_category_id', function ($row) {
-                    return $row->service_category->name ?? '-';
+                    return $row->base_service->service_category->name ?? '-';
                 })
                 ->addColumn('name', function ($row) {
                     return $row->base_service->name ?? '-';
                 })
                 ->addColumn('price', function ($row) {
                     return rupiah($row->base_service->price??0);
+                })
+                ->addColumn('engineer', function ($row) {
+                    return $row->engineer->name??'-';
                 })
                 ->addColumn('status', function ($row) {
                     if ($row->status === "review") {

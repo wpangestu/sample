@@ -124,4 +124,29 @@ class NotificationController extends Controller
 
    
     }
+
+    public function read(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'notification_id' => 'required|integer',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $id = $request->notification_id;
+            $notif = Notification::find($id);
+            $notif->read = true;
+            $notif->save();
+
+            return response()->json(["message" => "Update success"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
 }

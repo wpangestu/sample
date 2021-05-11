@@ -66,7 +66,7 @@
                   <dt class="col-sm-3">Kategori</dt>
                   <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Harga (IDR)</dt>
-                  <dd class="col-sm-8">: {{ rupiah($service->price) }}</dd>
+                  <dd class="col-sm-8">: {{ rupiah($service->price??0) }}</dd>
 
                   <dt class="col-sm-3">Deskripsi</dt>
                   <dd class="col-sm-8"><textarea class="form-control" readonly rows="4">{{ $service->description }}</textarea></dd>
