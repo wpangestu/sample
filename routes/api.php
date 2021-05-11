@@ -87,6 +87,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);
     
     Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
+    Route::post('/​teknisi​/notification/read', [NotificationController::class, 'read']);
+
 
     Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
     Route::post('/​teknisi​/chat/pin', [ChatController::class, 'pinned_chat']);
