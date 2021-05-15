@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\BaseService;
-use App\Models\CategoryService;
 use DataTables;
+use App\Models\BaseService;
+use Illuminate\Http\Request;
+use App\Models\CategoryService;
+use Illuminate\Support\Facades\Storage;
 
 class BaseServiceController extends Controller
 {
@@ -82,7 +83,8 @@ class BaseServiceController extends Controller
             'name' => 'required',
             'price' => 'required',
             'guarantee' => 'required',
-            'price_receive' => 'required'
+            'price_receive' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         try {
@@ -99,6 +101,16 @@ class BaseServiceController extends Controller
             ];
 
             $insert = BaseService::create($data);
+
+            if ($request->hasFile('image')) {
+
+                $uploadFolder = 'service/image';
+                $photo = $request->file('image');
+                $photo_path = $photo->store($uploadFolder, 'public');
+    
+                $insert->image = Storage::disk('public')->url($photo_path);
+                $insert->save();
+            }
         
             $causer = auth()->user();
 
@@ -106,7 +118,7 @@ class BaseServiceController extends Controller
                         ->causedBy($causer)
                         ->log('Data berhasil ditambahkan');
 
-            toast('Saldo berhasil ditambah','success');
+            toast('Data berhasil ditambah','success');
                         
             return redirect()->route('base_services.index');
 

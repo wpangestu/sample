@@ -116,36 +116,24 @@ class ServiceController extends Controller
             'sertification_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($request->hasFile('sertification_image')) {
-
-            $uploadFolder = 'teknisi/service/certificate';
-            $photo = $request->file('sertification_image');
-            $photo_path_sertificate = $photo->store($uploadFolder, 'public');
-
-            // $service->sertification_image = Storage::disk('public')->url($photo_path);
-            // $service->save();
-        }
-
         $data = [
             "name" => "",
             "price" => 0,
-            "category_service_id"   => $request->category_service_id,
             "engineer_id"           => $request->engineer_id,
             "skill"                 => $request->skill,
             "description"           => $request->description,
-            'sertification_image'   => Storage::disk('public')->url($photo_path_sertificate),
             'base_service_id'       => $request->base_service_id
         ];
 
         $service = Service::create($data);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('sertification_image')) {
 
-            $uploadFolder = 'teknisi/service/images';
-            $photo = $request->file('image');
-            $photo_path = $photo->store($uploadFolder, 'public');
-
-            $service->image = Storage::disk('public')->url($photo_path);
+            $uploadFolder = 'teknisi/service/certificate';
+            $photo = $request->file('sertification_image');
+            $photo_path_sertificate = $photo->store($uploadFolder, 'public');
+            // dd($photo_path_sertificate);
+            $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
             $service->save();
         }
 

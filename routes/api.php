@@ -126,13 +126,19 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
     Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
     
+
+    
     Route::prefix('customer')->group(function () {
+
+        Route::get('/user', [CustomerUserController::class,'showUser']);
+        // Route::get('/user​', [CustomerUserController::class,'showUser']);
+        // Route::get('/user​', [CustomerUserController::class,'show']);
+        Route::post('/user​', [CustomerUserController::class,'update']);
+
+        Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
         Route::post('/user​/token', [UserController::class,'store_fcm_token']);
         Route::delete('/user​/token', [UserController::class,'delete_fcm_token']);
         
-        Route::get('/user​', [CustomerUserController::class,'show']);
-        Route::post('/user​', [CustomerUserController::class,'update']);
-        Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
         
         Route::get('/address', [UserAddressController::class, 'index']);
         Route::post('/address', [UserAddressController::class, 'store']);
@@ -142,8 +148,8 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
         
         Route::get('/service', [CustomerUserController::class, 'service']);
-        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
         Route::get('/service/category', [CustomerUserController::class, 'service_category']);
+        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
         Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
         
         Route::post('/chat/delete', [ChatController::class, 'delete_chat']);
@@ -166,6 +172,8 @@ Route::middleware(['jwt.verify'])->group(function () {
 
 
     });
+
+    // Route::get('/customer/user​', [UserController::class,'userCustomer']);
     
 });
 

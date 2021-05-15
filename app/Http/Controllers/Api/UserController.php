@@ -429,7 +429,7 @@ class UserController extends Controller
 
         try {
             //code...
-
+  
             $user = auth()->user();
 
             $response = [
@@ -456,6 +456,29 @@ class UserController extends Controller
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
 
+    }
+
+    public function userCustomer(){
+
+        try {
+            //code...
+            $user = auth()->user();
+
+            $response = [
+                "id" => $user->id,
+                "name" => $user->name,
+                "profil_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
+                "phone" => $user->phone,
+                "email" => $user->email
+            ];
+
+            // return response()->json($data);
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()],422);
+        }
     }
 
     public function updateEngineer(Request $request)

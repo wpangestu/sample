@@ -16,7 +16,7 @@ class BaseService extends Model
         'description',
         'guarantee',
         'long_guarantee',
-        'price_receive'
+        'price_receive',
     ];
 
     public function service_category(){

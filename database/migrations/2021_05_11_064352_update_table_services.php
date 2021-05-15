@@ -15,7 +15,8 @@ class UpdateTableServices extends Migration
     {
         Schema::table('services', function (Blueprint $table) {
             //
-            $table->dropColumn(['category_service_id']);
+            $table->dropForeign('services_category_service_id_foreign');
+            $table->dropColumn('category_service_id');
             $table->string('name')->nullable()->change();
             // $table->string('category_service_id')->nullable()->change();
             $table->string('price')->nullable()->change();

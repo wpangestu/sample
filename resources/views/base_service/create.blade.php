@@ -68,12 +68,6 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputPrice" class="col-sm-3 col-form-label">Harga*</label>
-                                <div class="col-sm-9">
-                                    <input type="text" name="price" class="form-control" id="inputPrice" value="{{ old('price') }}">
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label for="inputPrice" class="col-sm-3 col-form-label">Garansi</label>
                                 <div class="col-sm-9">
                                     <select name="guarantee" class="form-control">
@@ -87,11 +81,24 @@
                                 <div class="col-sm-9">
                                     <input type="text" name="long_guarantee" class="form-control" value="{{ old('long_guarantee') }}" id="inputLongGuarantee">
                                 </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputIcon" class="col-sm-3 col-form-label">Image</label>
+                                <div class="col-sm-9">
+                                    <input type="file" name="image" id="icon" class="form-control">
+                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
+                                </div>
                             </div>                            
                             <div class="form-group row">
                                 <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
                                 <div class="col-sm-9">
                                     <textarea class="form-control" name="description" id="inputDesc" cols="30" rows="5">{{ old('description') }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputPrice" class="col-sm-3 col-form-label">Harga*</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="price" class="form-control" id="inputPrice" value="{{ old('price') }}">
                                 </div>
                             </div>
                             <div class="form-group row">

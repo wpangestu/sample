@@ -85,6 +85,16 @@
                                 </div>
                             </div>
                             <div class="form-group row">
+                                <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
+                                <div class="col-sm-9">
+                                    @if(!(is_null($data->image)))
+                                    <img src="{{$data->image}}" height="150px" alt="">
+                                    @else
+                                      -
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
                                 <label for="input_price_receive" class="col-sm-3 col-form-label">Fee Teknisi*</label>
                                 <div class="col-sm-9">
                                     <input type="text" name="price_receive" readonly class="form-control" value="{{ rupiah($data->price_receive) }}" id="input_price_receive">
