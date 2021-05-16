@@ -37,6 +37,17 @@ Route::get('/cek', function () {
     dd(activity());
 });
 
+Route::get('/symlink', function(){
+    try {
+        //code...
+        Artisan::call('storage:link');
+        echo "Migrate successfully";
+    } catch (\Throwable $th) {
+        //throw $th;
+        dd($th->getMessage());
+    }
+});
+
 Route::get('/migrate', function(){
     try {
         //code...

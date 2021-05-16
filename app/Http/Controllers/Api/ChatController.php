@@ -314,6 +314,7 @@ class ChatController extends Controller
 
     public function get_message_by_chatroom_id($id,Request $request)
     {
+        dd('cekk');
         try {
             //code...
             $user_id = auth()->user()->id;
