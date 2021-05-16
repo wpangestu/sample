@@ -40,6 +40,7 @@ Route::get('/cek', function () {
 Route::get('/symlink', function(){
     try {
         //code...
+        
         Artisan::call('storage:link');
         echo "Migrate successfully";
     } catch (\Throwable $th) {
