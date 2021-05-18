@@ -88,7 +88,7 @@
                                     <input type="file" name="image" id="icon" class="form-control">
                                     <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="form-group row">
                                 <label for="inputDesc" class="col-sm-3 col-form-label">Deskripsi</label>
                                 <div class="col-sm-9">

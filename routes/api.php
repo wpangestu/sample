@@ -50,6 +50,8 @@ Route::prefix('customer')->group(function () {
     Route::post('/user/forgot-password/change-password', [UserController::class,'change_password']);
 });
 
+Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
+Route::get('teknisi/service/list',[ServiceController::class,'get_base_service_by_category']);
 
 Route::middleware(['jwt.verify'])->group(function () {
 

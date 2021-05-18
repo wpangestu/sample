@@ -307,9 +307,7 @@ class ServiceController extends Controller
     {
         //
         $request->validate([
-            'name' => 'required',
             'category_service_id' => 'required|integer',
-            'price' => 'required|integer',
             'skill' => 'required',
             'sertification_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
@@ -319,7 +317,6 @@ class ServiceController extends Controller
 
             $service = Service::find($id);
 
-            $service->name = $request->name;
             $service->category_service_id = $request->category_service_id;
             $service->price = $request->price;
             $service->skill = $request->skill;

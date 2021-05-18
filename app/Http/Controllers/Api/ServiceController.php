@@ -233,7 +233,7 @@ class ServiceController extends Controller
                 "category" => $data->base_service->service_category->name??'-',
                 "skill" => $skill,
                 "certificate" => $data->sertification_image??'-',
-                "price" => $data->base_service->price??0,
+                "price" => (int)$data->base_service->price??0,
                 "status" => $data->status
             ];
 

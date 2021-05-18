@@ -171,7 +171,8 @@ class BaseServiceController extends Controller
             'name' => 'required',
             'price' => 'required',
             'guarantee' => 'required',
-            'price_receive' => 'required'
+            'price_receive' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
@@ -189,6 +190,16 @@ class BaseServiceController extends Controller
             
             $update = BaseService::find($id);
             $update->update($data);
+
+            if ($request->hasFile('image')) {
+
+                $uploadFolder = 'service/image';
+                $photo = $request->file('image');
+                $photo_path = $photo->store($uploadFolder, 'public');
+    
+                $update->image = Storage::disk('public')->url($photo_path);
+                $update->save();
+            }
 
             toast('Data berhasil diubah','success');
 
