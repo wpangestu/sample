@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceController extends Controller
@@ -23,17 +24,20 @@ class ServiceController extends Controller
             //code...
             $data = Service::where('engineer_id',auth()->user()->id)->latest();
         
-            if($request->has('query')){
-                $query = $request->get('query');
-                $data->where('name', 'like', '%'.$query.'%');
-            }
-            if($request->has('service_category')){
-                $service_category = $request->get('service_category');
-                $service_category = CategoryService::where('slug',$service_category)->first();
-                if(!is_null($service_category)){
-                    $data->where('category_service_id', $service_category->id);
-                }
-            }
+            $query_search = $request->get('query');
+            $data->when($query_search, function ($query, $query_search) {
+                return $query->whereHas('base_service', function ($query) use ($query_search) {
+                    return $query->where('name', 'like', '%'.$query_search.'%');
+                });
+            });
+            $filter = $request->get('filter');
+            $data->when($filter, function ($query, $filter) {
+                return $query->whereHas('base_service', function ($query) use ($filter) {
+                    return $query->whereHas('service_category', function ($query2) use ($filter) {
+                        return $query2->where('slug', $filter);
+                    });
+                });
+            });
             
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
@@ -82,7 +86,7 @@ class ServiceController extends Controller
                 return [
                     "id" => $item->id,
                     "name" => $item->name,
-                    "media" => "",
+                    "media" => $item->image??'',
                     "price" => (int)$item->price
                 ];
             });
@@ -161,7 +165,7 @@ class ServiceController extends Controller
         }
 
         if($validator->fails()){
-            return response()->json(["message" => "Terjadi kesalhan ". $validator->errors()->all()[0]], 422);
+            return response()->json(["message" => "Terjadi kesalahan ". $validator->errors()->all()[0]], 422);
         }
 
         try {
@@ -265,7 +269,9 @@ class ServiceController extends Controller
         try {
             //code...
             $notif = Notification::where('service_id', $id)->first();
-            $notif->delete();
+            if(!is_null($notif)){
+                $notif->delete();
+            }
 
             $service = Service::find($id);
             $service->delete();
@@ -274,7 +280,7 @@ class ServiceController extends Controller
             
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }
 

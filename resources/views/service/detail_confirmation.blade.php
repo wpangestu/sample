@@ -61,7 +61,7 @@
                   <dt class="col-sm-3">Nama Teknisi</dt>
                   <dd class="col-sm-8">: <a href="{{ route('engineer.show',$service->engineer->userid) }}" target="_blank">{{ $service->engineer->name??'-' }}</a></dd>
                   <dt class="col-sm-3">Kategori Jasa</dt>
-                  <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
+                  <dd class="col-sm-8">: {{ $service->base_service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Nama Jasa</dt>
                   <dd class="col-sm-8">: {{ $service->base_service->name??'-' }}</dd>
                   <dt class="col-sm-3">Harga (IDR)</dt>

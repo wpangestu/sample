@@ -28,6 +28,7 @@ class UserController extends Controller
             'phone' => 'required',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+            'id_google' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -58,7 +59,11 @@ class UserController extends Controller
                 "phone"             => $request->get('phone'),
                 'userid'            => $userid,
                 'password'          => Hash::make($request->get('password')),
+                'id_google'         => $request->get('id_google')
             ]);
+
+            $user->last_login = date('Y-m-d H:i:s');
+            $user->save();
 
             $user->assignRole('user');
 
