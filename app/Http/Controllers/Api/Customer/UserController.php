@@ -28,7 +28,7 @@ class UserController extends Controller
             'phone' => 'required',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'id_google' => 'required'
+            'id_google' => 'null'
         ]);
 
         if ($validator->fails()) {
@@ -59,7 +59,7 @@ class UserController extends Controller
                 "phone"             => $request->get('phone'),
                 'userid'            => $userid,
                 'password'          => Hash::make($request->get('password')),
-                'id_google'         => $request->get('id_google')
+                'id_google'         => $request->get('id_google')??null
             ]);
 
             $user->last_login = date('Y-m-d H:i:s');
@@ -93,40 +93,65 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        if ($request->has('id_google')) {
-            $userSocial = Socialite::driver('google')->stateless()->user();
-            $users = User::where(['email' => $userSocial->getEmail()])->first();
-
-            if ($users) {
-                Auth::login($users);
-                return "";
-            } else {
-                $user = User::create([
-                    'name'          => $userSocial->getName(),
-                    'email'         => $userSocial->getEmail(),
-                    'image'         => $userSocial->getAvatar(),
-                    'provider_id'   => $userSocial->getId(),
-                    'provider'      => $provider,
-                ]);
-                return "";
-            }
-        }
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:6',
         ]);
 
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
-        $credentials = $request->only('email', 'password');
-
-        $user = User::where('email', $credentials['email'])->first();
-
-        if (is_null($user)) {
+        $email_check = User::where('email', $request->get('email'))->first();
+        if (is_null($email_check)) {
             return response()->json(['message' => 'Email belum terdaftar'], 423);
+        }
+
+        if($request->has('id_google')){
+
+            $id_google = $request->get('id_google');
+            $email = $request->get('email');
+            
+            $user = User::where('id_google',$id_google)->where('email',$email)->first();
+            if(is_null($user) && is_null($email_check)){
+                return response()->json(["message"=>"Akun belum terdaftar"],424);
+            }
+            elseif(is_null($user)){
+                return response()->json(["message" => "Akun ini tidak terdaftar dengan Google Akun"], 422);
+            }
+            else{
+
+                try {
+                    $token = JWTAuth::fromUser($user);
+                } catch (JWTException $e) {
+                    return response()->json(['error' => 'could_not_create_token'], 422);
+                }
+
+                $payload = JWTAuth::setToken($token)->getPayload();
+                $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
+    
+                $user->last_login = date('Y-m-d H:i:s');
+                $user->save();
+    
+                $data['message'] = "Login successfully";
+                // $data['data'] = $user;
+                $data['token'] = $token;
+                $data['valid_until'] = $expires_at;
+                $data['token_type'] = "Bearer";
+    
+                return response()->json($data);
+        
+            }
+        }else{
+            $validator = Validator::make($request->all(), [
+                'password' => 'required|string|min:6',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(["message" => $validator->errors()->all()[0]], 422);
+            }
+            $credentials = $request->only('email', 'password');
+
         }
 
         try {

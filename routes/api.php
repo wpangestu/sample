@@ -37,6 +37,7 @@ Route::put('/teknisi/user/forgot-password/change-password', [UserController::cla
 Route::post('/teknisi/user/register/request-otp', [UserController::class,'request_otp']);
 Route::post('/teknisi/user/register/confirmation-otp', [UserController::class,'confirmation_otp']);
 
+
 Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
 Route::get('/testing/email', [UserController::class, 'testing']);
 
@@ -52,6 +53,9 @@ Route::prefix('customer')->group(function () {
 
 Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
 Route::get('teknisi/service/list',[ServiceController::class,'get_base_service_by_category']);
+Route::get('/teknisi​/address/recommendation', [UserAddressController::class, 'recommendation']);
+
+Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
 
 Route::middleware(['jwt.verify'])->group(function () {
 
@@ -74,13 +78,13 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
     Route::post('teknisi/wallet/withdraw', [EngineerController::class,'withdraw']);
 
-    Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
+
     Route::get('teknisi​/bank-account​', [BankController::class,'get_user_bank_account']);
     Route::post('teknisi​/bank-account​', [BankController::class,'store_user_bank_account']);
 
     Route::get('/teknisi​/address', [UserAddressController::class, 'index']);
     Route::post('/teknisi​/address', [UserAddressController::class, 'store']);
-    Route::get('/teknisi​/address/recommendation', [UserAddressController::class, 'recommendation']);
+
     Route::get('/teknisi​/address/cek', [UserAddressController::class, 'cek']);
     Route::put('/teknisi​/address/{id}', [UserAddressController::class, 'update']);
     Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);

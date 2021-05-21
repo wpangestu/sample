@@ -139,15 +139,16 @@ class UserAddressController extends Controller
             if($response->successful()){
                 $result_response = [];
                 $result = $response->json()['results'];
+                $no=1;
                 foreach ($result as $key => $value) {
                     # code...
                     $result_response[] = [
-                        "id" => $value['place_id'],
+                        "id" => $no++,
                         "place_name" => $value['name'],
                         "description" => $value['formatted_address'],
                         "geometry" => [
-                            "lat" => $value['geometry']['location']['lat'],
-                            "lng" => $value['geometry']['location']['lng']
+                            "lat" => (float)$value['geometry']['location']['lat'],
+                            "lng" => (float)$value['geometry']['location']['lng']
                         ]
                     ];
                 }
