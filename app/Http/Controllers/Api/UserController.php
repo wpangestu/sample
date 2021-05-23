@@ -467,7 +467,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profil_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
+                "profile_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
                 "phone" => $user->phone,
                 "email" => $user->email
             ];
