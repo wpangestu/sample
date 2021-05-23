@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\BaseService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +29,7 @@ class UserController extends Controller
             'phone' => 'required',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'id_google' => 'null'
+            'id_google' => 'nullable'
         ]);
 
         if ($validator->fails()) {
@@ -103,9 +104,6 @@ class UserController extends Controller
         }
 
         $email_check = User::where('email', $request->get('email'))->first();
-        if (is_null($email_check)) {
-            return response()->json(['message' => 'Email belum terdaftar'], 423);
-        }
 
         if($request->has('id_google')){
 
@@ -117,7 +115,7 @@ class UserController extends Controller
                 return response()->json(["message"=>"Akun belum terdaftar"],424);
             }
             elseif(is_null($user)){
-                return response()->json(["message" => "Akun ini tidak terdaftar dengan Google Akun"], 422);
+                return response()->json(["message" => "Akun tidak ditemukan"], 425);
             }
             else{
 
@@ -143,6 +141,11 @@ class UserController extends Controller
         
             }
         }else{
+
+            if (is_null($email_check)) {
+                return response()->json(['message' => 'Email belum terdaftar'], 423);
+            }
+    
             $validator = Validator::make($request->all(), [
                 'password' => 'required|string|min:6',
             ]);
@@ -161,6 +164,8 @@ class UserController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 422);
         }
+
+        $user = $email_check;
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
 
@@ -301,7 +306,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profil_photo" => $user->profil_photo_path ?? asset('images/no_picture.jpg'),
+                "profile_photo" => $user->profil_photo_path ??"",
                 "phone" => $user->phone,
                 "email" => $user->email
             ];
@@ -417,8 +422,7 @@ class UserController extends Controller
     public function service_recommendation(Request $request)
     {
         try {
-
-            $service = Service::latest();
+            $service = BaseService::latest();
 
             if ($request->has('query')) {
                 $query = $request->get('query');

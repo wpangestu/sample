@@ -48,7 +48,10 @@ Route::prefix('customer')->group(function () {
     Route::post('/user/register/confirmation-otp', [CustomerUserController::class,'confirmation_otp']);
     Route::post('/user/forgot-password', [UserController::class,'forgot_password']);
     Route::post('/user/forgot-password/input-otp', [CustomerUserController::class,'forgot_password_input_otp']);
-    Route::post('/user/forgot-password/change-password', [UserController::class,'change_password']);
+    Route::put('/user/forgot-password/change-password', [UserController::class,'change_password']);
+
+    Route::get('/service/category', [CustomerUserController::class, 'service_category']);
+    Route::get('/address/recommendation', [UserAddressController::class, 'recommendation']);
 });
 
 Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
@@ -92,6 +95,8 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
     Route::post('/​teknisi​/notification/read', [NotificationController::class, 'read']);
 
+    Route::get('/teknisi/chat/support', [ChatController::class, 'get_support_chat']);
+    Route::post('/teknisi/chat/support', [ChatController::class, 'send_chat_support']);
 
     Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
     Route::post('/​teknisi​/chat/pin', [ChatController::class, 'pinned_chat']);
@@ -103,8 +108,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/​teknisi​/history/chat/delete', [ChatController::class, 'delete_history_chat']);
     Route::post('/​teknisi​/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
     
-    Route::get('/teknisi/chat/support', [ChatController::class, 'get_support_chat']);
-    Route::post('/teknisi/chat/support', [ChatController::class, 'send_chat_support']);
+
     
     Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
     
@@ -151,9 +155,12 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
         
         Route::get('/service', [CustomerUserController::class, 'service']);
-        Route::get('/service/category', [CustomerUserController::class, 'service_category']);
-        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
+
         Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
+        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
+
+        Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
+        Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
         
         Route::post('/chat/delete', [ChatController::class, 'delete_chat']);
         Route::post('/chat/pin', [ChatController::class, 'pinned_chat']);
@@ -166,12 +173,13 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::post('/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
         Route::get('/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
 
-        Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
-        Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
+
         
         Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
         Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
         Route::post('order/{id}', [CustomerUserController::class, 'order']);
+
+        Route::post('user/change-profile-photo',[UserController::class,'update_user_profile']);
 
 
     });
