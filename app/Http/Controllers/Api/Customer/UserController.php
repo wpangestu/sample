@@ -782,7 +782,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profil_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
+                "profile_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
                 "phone" => $user->phone,
                 "email" => $user->email
             ];
@@ -793,5 +793,105 @@ class UserController extends Controller
             //throw $th;
             dd($th->getMessage());
         }
+    }
+
+    public function transaction(Request $request){
+
+        $user = auth()->user();
+
+        $orders = Order::where('customer_id',$user->id);
+
+        if($request->has('status')){
+
+            $status = $request->get('status');
+
+            if($status==="ordered"){
+                $orders->where('order_status','waiting_payment');
+            }elseif($status==="done"){
+                $orders->where('order_status','done');
+            }
+        }
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        $orders = $orders->limit($limit)->offset(($page - 1) * $limit);
+        $data = $orders->get();
+        $total = $orders->count();
+
+        $data_arr = [];
+        foreach ($data as $key => $value) {
+
+            $service = [];
+            if($value->order_type=="reguler"){
+                foreach ($value->order_detail as $key => $d) {
+                    $service[] = [
+                        "id" => $d->id,
+                        "name" => $d->name,
+                        "media" => "",
+                        "price" => (int)$d->price
+                    ];
+                }
+            }
+
+            $data_arr[] = [
+                "id" => $value->order_number,
+                "services" => $service,
+                "custom_service" => ($value->order_type=="reguler"?"":"custom_service_name"),
+                "destination" => json_decode($value->address)->name??'-',
+                "reviewed" => false,
+                "created_at" => $value->created_at,
+            ];
+        }
+
+        $response = [
+            "data" => $data_arr,
+            "page" => (int)$page,
+            "size" => (int)$limit,
+            "total" => (int)$total
+        ];
+
+        return response()->json($response);
+    }
+
+    public function transaction_on_going(Request $request)
+    {
+        $user = auth()->user();
+
+        $orders = Order::where('customer_id',$user->id)
+                        ->whereIn('order_status', ['waiting_order', 'accepted', 'processed','extend']);
+
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('size') ? $request->get('size') : 10;
+        $orders = $orders->limit($limit)->offset(($page - 1) * $limit);
+        $data = $orders->get();
+        $total = $orders->count();
+
+        $data_arr = [];
+        foreach ($data as $key => $value) {
+
+            $data_arr[] = [
+                "id" => $value->order_number,
+                "technician" => [
+                    "technician_id" => $value->engineer->id,
+                    "name" => $value->engineer->name,
+                    "media" => $value->engineer->profile_photo_path??'',
+                    "rating" => 0
+                ],
+                "total_service" => $value->order_detail->count(),
+                "is_custom" => $value->order_type=="reguler"?false:true,
+                "destination" => json_decode($value->address)->name??'-',
+                "created_at" => $value->created_at,
+            ];
+        }
+
+        $response = [
+            "data" => $data_arr,
+            "page" => (int)$page,
+            "size" => (int)$limit,
+            "total" => (int)$total
+        ];
+
+        return response()->json($response);
+
     }
 }
