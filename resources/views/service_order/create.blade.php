@@ -159,8 +159,10 @@
 
 
 @section('scripts')
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB980FhrGUf3mBrp9eRFzpqJaC-g6ExNco&libraries=places&callback=initialize" async defer></script>
+@php
+  $key = env('GOOGLE_API_KEY');
+@endphp
+<script src="https://maps.googleapis.com/maps/api/js?key={{$key}}&libraries=places&callback=initialize" async defer></script>
 <script type="text/javascript">      
 
   function initialize() {
