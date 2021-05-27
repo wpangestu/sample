@@ -466,7 +466,7 @@ class UserController extends Controller
             $category = $request->get('category');
             $sorting = $request->get('sorting');
 
-            $service = Service::when($q, function ($query, $q) {
+            $service = BaseService::when($q, function ($query, $q) {
                 return $query->where('name', 'like', '%' . $q . '%');
             })
                 ->when($category, function ($query, $category) {
@@ -515,15 +515,15 @@ class UserController extends Controller
     {
         try {
             //code...
-            $service = Service::find($id);
+            $service = BaseService::find($id);
 
             $data = [
                 "id" => (int)$service->id,
                 "name" => $service->name,
                 "media" => $service->image,
                 "price" => (int)$service->price,
-                "guarantee" => 3,
-                "weight" => 450,
+                "guarantee" => $service->long_guarantee??0,
+                "weight" => 0,
                 "condition" => "new",
                 "category" => [
                     "id" => (int)$service->service_category->id,
@@ -537,7 +537,7 @@ class UserController extends Controller
             return response()->json($data);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json("Terjadi kesalahan " . $th->getMessage());
+            return response()->json("Terjadi kesalahan " . $th->getMessage(),422);
         }
     }
 
