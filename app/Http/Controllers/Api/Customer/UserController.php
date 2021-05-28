@@ -522,7 +522,7 @@ class UserController extends Controller
                 "name" => $service->name,
                 "media" => $service->image,
                 "price" => (int)$service->price,
-                "guarantee" => $service->long_guarantee??0,
+                "guarantee" => (int)$service->long_guarantee??0,
                 "weight" => 0,
                 "condition" => "new",
                 "category" => [

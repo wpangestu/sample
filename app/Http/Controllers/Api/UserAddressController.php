@@ -13,7 +13,7 @@ class UserAddressController extends Controller
 {
     //
 
-    private $api_search_places = "https://maps.googleapis.com/maps/api/place/textsearch/json";
+    private $api_search_places = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 
     public function index(Request $request){
 
@@ -117,7 +117,6 @@ class UserAddressController extends Controller
     public function recommendation(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'query' => 'required',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
         ]);
@@ -127,13 +126,14 @@ class UserAddressController extends Controller
         }
 
         $key = env('GOOGLE_API_KEY','');
-        // dd('lah gimana');
+
         try {
             $response = Http::get($this->api_search_places,[
-                "query" => $request->get('query'),
+                "keyword" => $request->get('query'),
                 "location" => $request->lat.",".$request->lng,
                 "language" => "id",
                 "key" => $key,
+                "radius" => 1000,
             ]);
             
             if($response->successful()){
@@ -145,7 +145,7 @@ class UserAddressController extends Controller
                     $result_response[] = [
                         "id" => $no++,
                         "place_name" => $value['name'],
-                        "description" => $value['formatted_address'],
+                        "description" => $value['vicinity'],
                         "geometry" => [
                             "lat" => (float)$value['geometry']['location']['lat'],
                             "lng" => (float)$value['geometry']['location']['lng']
@@ -154,7 +154,7 @@ class UserAddressController extends Controller
                 }
                 return response()->json($result_response);
             }else{
-                $errors = json_decode($res->getBody()->getContents());
+                $errors = json_decode($response->getBody()->getContents());
                 return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
             }
         
