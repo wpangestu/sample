@@ -52,6 +52,7 @@ Route::prefix('customer')->group(function () {
 
     Route::get('/service/category', [CustomerUserController::class, 'service_category']);
     Route::get('/address/recommendation', [UserAddressController::class, 'recommendation']);
+    Route::get('/bank/payment', [BankController::class, 'bank_payment']);
 });
 
 Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
@@ -149,7 +150,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         
         Route::get('/address', [UserAddressController::class, 'index']);
         Route::post('/address', [UserAddressController::class, 'store']);
-        Route::get('/address/top-address', [CustomerUserController::class, 'top_address']);
+        Route::get('/address/top', [CustomerUserController::class, 'top_address']);
         Route::get('/address/cek', [UserAddressController::class, 'cek']);
         Route::put('/address/{id}', [UserAddressController::class, 'update']);
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
@@ -175,7 +176,11 @@ Route::middleware(['jwt.verify'])->group(function () {
         
         Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
         Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
+        Route::post('order/cancel/{id}', [CustomerUserController::class, 'cancel_order']);
+        Route::post('order/payment-approval/{id}', [CustomerUserController::class, 'payment_approval_store']);
         Route::post('order/{id}', [CustomerUserController::class, 'order']);
+        
+        
 
         Route::post('user/change-profile-photo',[UserController::class,'update_user_profile']);
 

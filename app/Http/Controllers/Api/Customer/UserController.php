@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Api\Customer;
 
 use JWTAuth;
+use App\Models\Bank;
 use App\Models\User;
 use App\Mail\OtpMail;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Models\BaseService;
 use App\Models\OrderDetail;
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\BaseService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -576,7 +578,7 @@ class UserController extends Controller
                 $service_id = $value['service_id'];
                 $qty = $value['quantity'];
 
-                $service = Service::find($service_id);
+                $service = BaseService::find($service_id);
                 $total_service_price += $service->price * $qty;
             }
 
@@ -589,6 +591,7 @@ class UserController extends Controller
                 $promo_code = $request->get('promo_code');
                 $promo = 12000;
                 $promo_message = [
+                    "promo" => $promo,
                     "message" => "Kodo promo aktif",
                     "positive" => true
                 ];
@@ -596,26 +599,27 @@ class UserController extends Controller
                 $promo = 0;
                 $promo_message = [
                     "message" => "",
-                    "positive" => ""
+                    "positive" => false,
+                    "promo"=>$promo
                 ];
             }
 
-            Payment::create([
-                "customer_id" => auth()->user()->id,
-                "amount" => $total_price,
-                "type" => "reguler",
-                "paymentid" => "P" . uniqid(),
-                "convenience_fee" => $unique_code,
-                "orders" => []
-            ]);
+            // Payment::create([
+            //     "customer_id" => auth()->user()->id,
+            //     "amount" => $total_price,
+            //     "type" => "reguler",
+            //     "paymentid" => "P" . uniqid(),
+            //     "convenience_fee" => $unique_code,
+            //     "orders" => []
+            // ]);
 
             $response = [
-                "total_service_price" => $total_service_price,
-                "price_distance" => $shipping,
-                "unique_code" => $unique_code,
-                "total_price" => $total_price,
+                "total_service_price" => (int)$total_service_price,
+                "price_distance" => (int)$shipping,
+                "unique_code" => (int)$unique_code,
+                "total_price" => (int)$total_price,
                 "promo" => $promo,
-                "promo_message" => $promo_message
+                "promo_info" => $promo_message
             ];
 
             DB::commit();
@@ -639,21 +643,23 @@ class UserController extends Controller
             $notes = $request->get('notes');
             $services = $request->get('services');
 
+            $address = [];
+
             if ($request->has('address_id')) {
                 $address_id = $request->get('address_id');
                 $user_address = UserAddress::find($address_id);
 
                 $address = [
-                    "name" => $user_address->address,
-                    "lat" => $user_address->lat,
-                    "lng" => $user_address->lng,
+                    "description" => $user_address->address,
+                    "latitude" => (float)$user_address->lat,
+                    "longitude" => (float)$user_address->lng,
                     "notes" => $user_address->note
                 ];
             } else {
                 $address = [
-                    "name" => "custom",
-                    "lat" => (float)$lat,
-                    "lng" => (float)$lng,
+                    "description" => "custom",
+                    "latitude" => (float)$lat,
+                    "longitude" => (float)$lng,
                     "notes" => $notes
                 ];
             }
@@ -665,7 +671,7 @@ class UserController extends Controller
                 $service_id = $value['service_id'];
                 $qty = $value['quantity'];
 
-                $service = Service::find($service_id);
+                $service = BaseService::find($service_id);
                 $total_service_price += $service->price * $qty;
                 $engineer_id[] = $service->engineer_id;
             }
@@ -707,7 +713,7 @@ class UserController extends Controller
                 $service_id = $value['service_id'];
                 $qty = $value['quantity'];
 
-                $service = Service::find($service_id);
+                $service = BaseService::find($service_id);
                 OrderDetail::create([
                     "order_id" => $order->id,
                     "name" => $service->name,
@@ -718,20 +724,60 @@ class UserController extends Controller
 
             $order_detail = OrderDetail::where('order_id', $order->id)->get();
             $orderdetail_data = [];
+            $no=1;
             foreach ($order_detail as $key => $value) {
                 $orderdetail_data[] = [
-                    "service_id" => "",
+                    "service_id" => $no++,
                     "name" => $value->name,
                     "quantity" => (int)$value->qty,
-                    "price" => $value->price
+                    "price" => (int)$value->price
                 ];
             }
+
+            $engineer = User::find($engineer_id[0]);
+            $engineer_data=[];
+            $origin = [];
+            if(!is_null($engineer)){
+                $engineer_data = [
+                    "technician_id" => (int)$engineer->userid??0,
+                    "name" => $engineer->name??'',
+                    "media" => $engineer->profile_photo_path??'',
+                    "rating" => 0
+                ];
+
+                $origin = [
+                    "latitude" => (float)$engineer->lat??0,
+                    "longitude" => (float)$engineer->lng??0,
+                    "description" => "",
+                ];
+            }
+            // dd($engineer);
+
+            $destination = [
+                "latitude" => (float)$address['latitude']??0,
+                "longitude" => (float)$address['longitude']??0,
+                "description" => $address['description']??'',
+                "note" => $address['notes']??''
+            ];
+
+            $review = [
+                "value"=>0,
+                "liked" => ""
+            ];
+
+            $order_data = Order::find($order->id);
 
             $response = [
                 "order_id" => $order->order_number,
                 "expired_date" => $order->created_at->addHour(),
+                "order_status" => $order_data->order_status,
+                "technician" => $engineer_data,
+                "destination" => $destination,
+                "origin" => $origin,
                 "services" => $orderdetail_data,
+                "review" => $review,
                 "price_distance" => $shipping,
+                "promo" => $promo,
                 "unique_code" => $unique_code,
                 "total_price" => $total_price,
             ];
@@ -749,25 +795,54 @@ class UserController extends Controller
         try {
             $order = Order::where('order_number', $order_id)->first();
             $orderDetail = [];
+            $no=1;
             foreach ($order->order_detail as $key => $value) {
                 $orderDetail[] = [
-                    "service_id" => "",
+                    "service_id" => $no++,
                     "name" => $value->name,
                     "quantity" => (int)$value->qty,
                     "price" => (int)$value->qty * $value->price
                 ];
             }
 
+            $destination = [
+                "latitude" => (float)json_decode($order->address)->latitude??0,
+                "longitude" => (float)json_decode($order->address)->longitude??0,
+                "description" => json_decode($order->address)->description??'',
+                "note" => json_decode($order->address)->note??'',
+            ];
+
             $response = [
                 "order_id" => $order->order_number,
                 "expired_date" => $order->created_at->addHour(),
                 "services" => $orderDetail,
+                "order_status" => $order->order_status,
+                "technician" => [],
+                "destination" => $destination,
+                "origin" => [],
+                "review" => [],
                 "price_distance" => (int)$order->shipping,
                 "unique_code" => (int)$order->convenience_fee,
                 "total_price" => (int)$order->total_payment,
+                "created_at" => $order->created_at
             ];
 
             return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
+    }
+
+    public function cancel_order($order_id){
+        try {
+            //code...
+            $order = Order::where('order_number', $order_id)->first();
+
+            $order->order_status = "canceled";
+            $order->save();
+
+            return response()->json(["message"=>"Order canceled"]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
@@ -893,5 +968,43 @@ class UserController extends Controller
 
         return response()->json($response);
 
+    }
+
+    public function payment_approval_store(Request $request, $order_id){
+        // dd(auth()->user()->id);
+        try {
+            //code...
+            $order = Order::where('order_number', $order_id)->first();
+            $bank = Bank::find($request->get('bank_id'));
+
+            $payment = Payment::create([
+                "customer_id" => auth()->user()->id,
+                "amount" => $order->total_payment??0,
+                "paymentid" => "P".uniqid(),
+                "convenience_fee" => $order->convenience_fee??0,
+                "type" => $bank->name??"",
+                "orders" => json_encode($order_id),
+                "account_holder" => $request->account_holder,
+                "account_number" => $request->account_number,
+                "bank_id" => $request->get('bank_id')
+            ]);
+
+            if($request->hasFile('invoice_picture')){
+
+                $uploadFolder = 'users/photo/payment';
+                $photo = $request->file('invoice_picture');
+                $photo_path = $photo->store($uploadFolder,'public');
+            
+                $payment->image = Storage::disk('public')->url($photo_path);
+                $payment->save();                
+            }
+
+            return response()->json(['message'=>'payment-approval store success']);
+
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
     }
 }

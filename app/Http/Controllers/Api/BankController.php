@@ -112,4 +112,26 @@ class BankController extends Controller
 
 
     }
+
+    public function bank_payment(){
+        try {
+            //code...
+            $bank = Bank::all();
+            $bank_list = [];
+            foreach ($bank as $key => $value) {
+                # code...
+                $bank_list[] = [
+                    "id" => $value->id,
+                    "name" => $value->name,
+                    "account_number" => $value->account_number,
+                    "logo" => $value->logo
+                ];
+            }
+
+            return response()->json($bank_list);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi Kesalahan ".$th->getMessage()],422);
+        }
+    }
 }

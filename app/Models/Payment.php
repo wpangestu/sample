@@ -21,7 +21,10 @@ class Payment extends Model
         'image',
         'convenience_fee',
         'type',
-        'orders'
+        'orders',
+        'account_holder',
+        'account_number',
+        'bank_id'
     ];
 
     public function customer(){
