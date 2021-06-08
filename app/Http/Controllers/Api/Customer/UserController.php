@@ -7,6 +7,7 @@ use App\Models\Bank;
 use App\Models\User;
 use App\Mail\OtpMail;
 use App\Models\Order;
+use App\Models\Promo;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\BaseService;
@@ -17,6 +18,7 @@ use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -589,19 +591,25 @@ class UserController extends Controller
 
             if ($request->has('promo_code')) {
                 $promo_code = $request->get('promo_code');
-                $promo = 12000;
-                $promo_message = [
-                    "promo" => $promo,
-                    "message" => "Kodo promo aktif",
-                    "positive" => true
-                ];
+                $promo = Promo::where('code',$promo_code)
+                                ->where('is_active',1)
+                                ->first();
+
+                if(!is_null($promo)){
+                    $promo_res = [
+                        "promo" => (int)$promo->value,
+                        "message" => "Kodo promo aktif",
+                        "positive" => true
+                    ];
+                }else{
+                    $promo_res = [
+                        "promo" => 0,
+                        "message" => "Promo Tidak ditemukan",
+                        "positive" => false
+                    ];
+                }
             } else {
-                $promo = 0;
-                $promo_message = [
-                    "message" => "",
-                    "positive" => false,
-                    "promo"=>$promo
-                ];
+                $promo_res = null;
             }
 
             // Payment::create([
@@ -617,9 +625,8 @@ class UserController extends Controller
                 "total_service_price" => (int)$total_service_price,
                 "price_distance" => (int)$shipping,
                 "unique_code" => (int)$unique_code,
-                "total_price" => (int)$total_price,
-                "promo" => $promo,
-                "promo_info" => $promo_message
+                "total_price" => (int)$total_price - ($promo_res["promo"]??0),
+                "promo_info" => $promo_res
             ];
 
             DB::commit();
@@ -656,8 +663,24 @@ class UserController extends Controller
                     "notes" => $user_address->note
                 ];
             } else {
+
+                $key = env('GOOGLE_API_KEY','');
+
+                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json",[
+                    "latlng" => $request->lat.",".$request->lng,
+                    "language" => "id",
+                    "key" => $key,
+                ]);
+
+                if($response->successful()){
+                    $result = $response->json()['results'][0];
+                }else{
+                    $errors = json_decode($response->getBody()->getContents());
+                    return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+                }
+
                 $address = [
-                    "description" => "custom",
+                    "description" => $result['formatted_address']??'',
                     "latitude" => (float)$lat,
                     "longitude" => (float)$lng,
                     "notes" => $notes
@@ -692,22 +715,28 @@ class UserController extends Controller
                 "address" => json_encode($address)
             ]);
 
+            $promo_data = [];
+            $promo_value = 0;
             if ($request->has('promo_code')) {
                 $promo_code = $request->get('promo_code');
-                $order->promo_code = $promo_code;
-                $order->save();
-                $promo = 12000;
-                $promo_message = [
-                    "message" => "Kodo promo aktif",
-                    "positive" => true
-                ];
-            } else {
-                $promo = 0;
-                $promo_message = [
-                    "message" => "",
-                    "positive" => ""
-                ];
+
+                $promo = Promo::where('code',$promo_code)
+                                ->where('is_active',1)
+                                ->first();
+
+                if(!is_null($promo)){
+                    $promo_value = $promo->value;
+                    $promo_data = [
+                        "code_promo" => $promo->code,
+                        "value" => (int)$promo->value
+                    ];
+                }
             }
+
+            $order->promo_code = json_encode($promo_data);
+            $order->total_payment = $total_price-$promo_value;
+            $order->total_payment_receive = $total_price-$promo_value;
+            $order->save();
 
             foreach ($services as $key => $value) {
                 $service_id = $value['service_id'];
@@ -735,8 +764,8 @@ class UserController extends Controller
             }
 
             $engineer = User::find($engineer_id[0]);
-            $engineer_data=[];
-            $origin = [];
+            $engineer_data=null;
+            $origin = null;
             if(!is_null($engineer)){
                 $engineer_data = [
                     "technician_id" => (int)$engineer->userid??0,
@@ -761,8 +790,8 @@ class UserController extends Controller
             ];
 
             $review = [
-                "value"=>0,
-                "liked" => ""
+                "value" => 0,
+                "liked" => []
             ];
 
             $order_data = Order::find($order->id);
@@ -777,7 +806,7 @@ class UserController extends Controller
                 "services" => $orderdetail_data,
                 "review" => $review,
                 "price_distance" => $shipping,
-                "promo" => $promo,
+                "promo" => (int)$promo_value,
                 "unique_code" => $unique_code,
                 "total_price" => $total_price,
             ];
@@ -912,7 +941,7 @@ class UserController extends Controller
                 "id" => $value->order_number,
                 "services" => $service,
                 "custom_service" => ($value->order_type=="reguler"?"":"custom_service_name"),
-                "destination" => json_decode($value->address)->name??'-',
+                "destination" => json_decode($value->address)->description??'-',
                 "reviewed" => false,
                 "created_at" => $value->created_at,
             ];
@@ -954,7 +983,7 @@ class UserController extends Controller
                 ],
                 "total_service" => $value->order_detail->count(),
                 "is_custom" => $value->order_type=="reguler"?false:true,
-                "destination" => json_decode($value->address)->name??'-',
+                "destination" => json_decode($value->address)->description??'-',
                 "created_at" => $value->created_at,
             ];
         }
@@ -983,7 +1012,8 @@ class UserController extends Controller
                 "paymentid" => "P".uniqid(),
                 "convenience_fee" => $order->convenience_fee??0,
                 "type" => $bank->name??"",
-                "orders" => json_encode($order_id),
+                "status"=>"check",
+                "orders" => $order_id,
                 "account_holder" => $request->account_holder,
                 "account_number" => $request->account_number,
                 "bank_id" => $request->get('bank_id')

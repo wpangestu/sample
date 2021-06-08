@@ -149,12 +149,25 @@ class PaymentController extends Controller
             $payment->save();
 
             $orders = $payment->orders;
+            $order = Order::where('order_number',$orders)->first();
+            $order->order_status = "payment_success";
+            $order->save();
 
-            foreach($orders  as $val){
-                $order = Order::find($val);
-                $order->order_status = 'waiting-order';
-                $order->save();
-            }
+            $token[] = $payment->customer->fcm_token;
+
+            $cek = fcm()->to($token)
+                ->priority('high')
+                ->timeToLive(0)
+                ->data([
+                    'click_action' => 'New FLUTTER_NOTIFICATION_CLICK',
+                    'main_click_action' => 'ini OPEN_INCOMING_ORDER',
+                    'action_data' => [
+                        "task" => "SHOW_INCOMING_ORDER",
+                        "order_id" => $order->id??'-',
+                        "duration" => 30
+                    ]
+                ])
+                ->send();
 
             $causer = auth()->user();
             $atribut = [

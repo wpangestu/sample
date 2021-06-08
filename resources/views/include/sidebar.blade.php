@@ -169,7 +169,10 @@
             <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment*')?'active':'' }}">
               <i class="nav-icon fas fa-money-bill-wave"></i>
               <p>
-                Konfirmasi Pembayaran
+                Konfirm Pembayaran
+                @if(get_payment_check()>0)
+                    <span class="right badge badge-info">{{ get_payment_check() }}</span>
+                  @endif
               </p>
             </a>
           </li>

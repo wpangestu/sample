@@ -3,6 +3,7 @@
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Chat;
+use App\Models\Payment;
 use Illuminate\Database\Eloquent\Builder;
 
 function get_all_notification(){
@@ -40,6 +41,12 @@ function get_new_chat_engineer()
                         ->count();
     return $unread_message;
 
+}
+
+function get_payment_check()
+{
+    $payment_check = Payment::where('status','check')->count();
+    return $payment_check;    
 }
 
 function get_new_chat_customer(){

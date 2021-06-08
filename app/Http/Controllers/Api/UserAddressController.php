@@ -144,8 +144,8 @@ class UserAddressController extends Controller
                     # code...
                     $result_response[] = [
                         "id" => $no++,
-                        "place_name" => $value['name'],
-                        "description" => $value['vicinity'],
+                        "place_name" => $value['name']??'',
+                        "description" => $value['vicinity']??'',
                         "geometry" => [
                             "lat" => (float)$value['geometry']['location']['lat'],
                             "lng" => (float)$value['geometry']['location']['lng']
