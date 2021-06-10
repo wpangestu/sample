@@ -8,8 +8,10 @@ use App\Models\User;
 use App\Mail\OtpMail;
 use App\Models\Order;
 use App\Models\Promo;
+use App\Models\Deposit;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Models\Withdraw;
 use App\Models\BaseService;
 use App\Models\OrderDetail;
 use App\Models\UserAddress;
@@ -1035,6 +1037,128 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
+    }
+
+    public function withdraw(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required',
+            'note' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+        
+        try {
+            //code...
+            Withdraw::create([
+                "engineer_id" => auth()->user()->id,
+                "amount" => $request->amount,
+                "note" => $request->note,
+                "withdraw_id" => "W".uniqid()
+            ]);
+
+            return response()->json(['message'=>'withdraw successfully created']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
+    public function deposit(Request $request){
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $unique_code = mt_rand(100, 999);
+            $amount = $request->get('amount');
+
+            $deposit = Deposit::create([
+                "customer_id" => auth()->user()->id,
+                "transfer_id" => "TF".uniqid(),
+                "expired_date" => now()->addHour(),
+                "amount" => $amount,
+                "unique_code" => $unique_code,
+                "total_amount" => $amount+$unique_code
+            ]);
+
+            $response = [
+                "transfer_id" => $deposit->transfer_id,
+                "expired_date" => $deposit->expired_date,
+                "amount" => $deposit->amount,
+                "unique_code" => $deposit->unique_code,
+                "total_amount" => $deposit->total_amount
+            ];
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
+    public function destroy_deposit($id){
+        
+        if(is_null($id)){
+            return response()->json(["message" => "id is required"], 422);
+        }
+
+        try {
+            //code...
+            $deposit = Deposit::where('transfer_id',$id)->first();
+            $deposit->delete();
+
+            return response()->json(["message" => "Deposit canceled"]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
+    public function get_custom_category(Request $request)
+    {
+        try {
+            //code...
+            $data = BaseService::whereHas('service_category',function ($query) {
+                $query->where('name', 'like', '%custom%');
+            });
+    
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+            $service = $data->limit($limit)->offset(($page - 1) * $limit);
+            $datas = $service->get();
+            $total = $service->count();
+
+            $data_arr = [];
+            foreach ($datas as $key => $value) {
+                # code...
+                $data_arr[] = [
+                    "id" => $value->id,
+                    "name" => $value->name,
+                    "item_name" => "",
+                    "media" => $value->image
+                ];
+            }
+
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $data_arr;
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }
 }

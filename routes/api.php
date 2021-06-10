@@ -53,6 +53,9 @@ Route::prefix('customer')->group(function () {
     Route::get('/service/category', [CustomerUserController::class, 'service_category']);
     Route::get('/address/recommendation', [UserAddressController::class, 'recommendation']);
     Route::get('/bank/payment', [BankController::class, 'bank_payment']);
+    
+    Route::get('/custom/category', [CustomerUserController::class, 'get_custom_category']);
+
 });
 
 Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
@@ -184,6 +187,11 @@ Route::middleware(['jwt.verify'])->group(function () {
 
         Route::get('transaction',[CustomerUserController::class,'transaction']);
         Route::get('transaction/ongoing',[CustomerUserController::class,'transaction_on_going']);
+        
+        Route::post('wallet/withdraw',[CustomerUserController::class,'withdraw']);
+        Route::post('wallet/deposit',[CustomerUserController::class,'deposit']);
+        Route::post('wallet/deposit/cancel/{id}',[CustomerUserController::class,'destroy_deposit']);
+        
 
     });
 
