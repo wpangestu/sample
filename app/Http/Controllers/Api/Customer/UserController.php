@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
+use App\Models\ReviewService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -793,7 +795,7 @@ class UserController extends Controller
 
             $review = [
                 "value" => 0,
-                "liked" => []
+                "liked" => ""
             ];
 
             $order_data = Order::find($order->id);
@@ -809,6 +811,133 @@ class UserController extends Controller
                 "review" => $review,
                 "price_distance" => $shipping,
                 "promo" => (int)$promo_value,
+                "unique_code" => $unique_code,
+                "total_price" => $total_price,
+            ];
+            DB::commit();
+
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
+    }
+
+    public function custom_order_checkout(Request $request)
+    {
+        try {
+
+            DB::beginTransaction();
+
+            $lat = $request->get('lat');
+            $lng = $request->get('lng');
+            $notes = $request->get('notes');
+            $service = $request->get('category');
+            $custom_type = $request->get('custom_type');
+            $brand = $request->get('brand');
+            $custom_info = $request->get('custom_info');
+            $detail_info = $request->get('detail_info');
+
+            $address = [];
+
+            if ($request->has('address_id')) {
+                $address_id = $request->get('address_id');
+                $user_address = UserAddress::find($address_id);
+
+                $address = [
+                    "description" => $user_address->address,
+                    "latitude" => (float)$user_address->lat,
+                    "longitude" => (float)$user_address->lng,
+                    "notes" => $user_address->note
+                ];
+            } else {
+
+                $key = env('GOOGLE_API_KEY','');
+
+                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json",[
+                    "latlng" => $request->lat.",".$request->lng,
+                    "language" => "id",
+                    "key" => $key,
+                ]);
+
+                if($response->successful()){
+                    $result = $response->json()['results'][0];
+                }else{
+                    $errors = json_decode($response->getBody()->getContents());
+                    return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+                }
+
+                $address = [
+                    "description" => $result['formatted_address']??'',
+                    "latitude" => (float)$lat,
+                    "longitude" => (float)$lng,
+                    "notes" => $notes
+                ];
+            }
+
+            $total_service_price = 0;
+            $service = BaseService::find($service);
+            // dd($service);
+            if(!is_null($service)){
+                $total_service_price = $service->price;
+            }
+
+            $shipping = 12000;
+            $unique_code = mt_rand(100, 999);
+
+            $total_price = $total_service_price + $shipping + $unique_code;
+
+            $custom_order_data = [
+                "level" => $custom_type,
+                "custom_type" => $service->name??'-',
+                "brand" => $brand,
+                "information" => $custom_info,
+                "problem_details" => $detail_info
+            ];
+
+            $order = Order::create([
+                "order_number" => uniqid(),
+                "order_type" => "custom",
+                "customer_id" => auth()->user()->id,
+                "engineer_id" => null,
+                "shipping" => $shipping,
+                "convenience_fee" => $unique_code,
+                "total_payment" => $total_price,
+                "total_payment_receive" => $total_price,
+                "address" => json_encode($address),
+                "custom_order" => json_encode($custom_order_data)
+            ]);
+
+            $engineer_data=null;
+            $origin = null;
+
+            // dd($engineer);
+
+            $destination = [
+                "latitude" => (float)$address['latitude']??0,
+                "longitude" => (float)$address['longitude']??0,
+                "description" => $address['description']??'',
+                "note" => $address['notes']??''
+            ];
+
+            $review = [
+                "value" => 0,
+                "liked" => ""
+            ];
+
+            // $order_data = Order::find($order->id);
+
+            $response = [
+                "order_id" => $order->order_number,
+                "expired_date" => $order->created_at->addHour(),
+                "order_status" => "waiting_payment",
+                "technician" => $engineer_data,
+                "destination" => $destination,
+                "origin" => $origin,
+                "review" => $review,
+                "custom_order" => $custom_order_data,
+                "price_custom" => (int)$total_service_price,
+                "price_distance" => $shipping,
                 "unique_code" => $unique_code,
                 "total_price" => $total_price,
             ];
@@ -1155,6 +1284,103 @@ class UserController extends Controller
             $response['data'] = $data_arr;
 
             return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
+    public function notification(Request $request)
+    {
+
+        try {
+
+            $user = auth()->user();
+            $data = Notification::where('type','customer')
+                                    ->where('user_id',$user->id);
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+            $notif = $data->limit($limit)->offset(($page - 1) * $limit);
+            $datas = $notif->get();
+            $total = $notif->count();
+
+            $datas = $datas->map(function ($data) {
+                return [
+                    "id"        => $data->id,
+                    "avatar"    => "",
+                    "unread"    => ($data->read==false?true:false),
+                    "title"     => $data->title,
+                    "subtitle"  => $data->subtitle,
+                    "subtitle_color" => $data->subtitle_color==null?"":$data->subtitle_color,
+                    "caption" => $data->caption,
+                    "id_data" => $data->id_data,
+                    "action"    => $data->action,
+                    "created_at" => $data->created_at
+                ];
+            });
+
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $datas;
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+
+    }
+
+    public function notification_read(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'notification_id' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $id = $request->get('notification_id');
+            $notif = Notification::find($id);
+            $notif->read = true;
+            $notif->save();
+
+            return response()->json(["message"=>"notification read success"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
+    public function store_review(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_id' => 'required',
+            'rating' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            ReviewService::create([
+                "order_id" => $request->get('order_id'),
+                "ratings" => $request->get('rating'),
+                "liked" => $request->get('likes')??"",
+                "description" => $request->get('review_reason')
+            ]);
+
+            return response()->json(["message" => "Review submit success"]);
 
         } catch (\Throwable $th) {
             //throw $th;

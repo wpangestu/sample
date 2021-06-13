@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ReviewService extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'liked' => 'array'
+    ];
+
+    protected $fillable = ['order_id','ratings','description','liked'];
+
     protected $table = 'reviews';
 
     public function service_order(){

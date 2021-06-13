@@ -179,6 +179,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         
         Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
         Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
+        Route::post('order/checkout/custom', [CustomerUserController::class, 'custom_order_checkout']);
         Route::post('order/cancel/{id}', [CustomerUserController::class, 'cancel_order']);
         Route::post('order/payment-approval/{id}', [CustomerUserController::class, 'payment_approval_store']);
         Route::get('order/{id}', [CustomerUserController::class, 'order']);
@@ -192,6 +193,10 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::post('wallet/deposit',[CustomerUserController::class,'deposit']);
         Route::post('wallet/deposit/cancel/{id}',[CustomerUserController::class,'destroy_deposit']);
         
+        Route::get('notification',[CustomerUserController::class,'notification']);
+        Route::post('notification/read',[CustomerUserController::class,'notification_read']);
+
+        Route::post('review/submit',[CustomerUserController::class,'store_review']);
 
     });
 
