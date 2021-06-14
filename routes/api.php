@@ -165,6 +165,7 @@ Route::middleware(['jwt.verify'])->group(function () {
 
         Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
         Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
+        Route::post('/chat/chatroom', [ChatController::class, 'store_chatroom']);
         
         Route::post('/chat/delete', [ChatController::class, 'delete_chat']);
         Route::post('/chat/pin', [ChatController::class, 'pinned_chat']);

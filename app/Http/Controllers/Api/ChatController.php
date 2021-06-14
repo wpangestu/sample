@@ -721,5 +721,46 @@ class ChatController extends Controller
         
         
     }
+
+    public function store_chatroom(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'from' => "required",
+            'from_type' => 'required',
+            "to" => "required",
+            "to_type" => "required"
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            //code...
+            $to = $request->get('to');
+            $from = $request->get('from');
+
+            $chatroom = Chatroom::where('user_1',$to)->where('user_2',$from);
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',$from)->where('user_2',$to);
+            }
+
+            if($chatroom->count() > 0){
+                $chatroom = $chatroom->first();
+            }else{
+                $chatroom = Chatroom::create([
+                    "user_1" => $from,
+                    "user_2" => $to
+                ]);
+            }
+
+            return response()->json(["chatroom"=>$chatroom->id]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+        
+    }
 }
  
