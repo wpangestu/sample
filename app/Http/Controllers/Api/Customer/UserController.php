@@ -954,16 +954,6 @@ class UserController extends Controller
     {
         try {
             $order = Order::where('order_number', $order_id)->first();
-            $orderDetail = [];
-            $no=1;
-            foreach ($order->order_detail as $key => $value) {
-                $orderDetail[] = [
-                    "service_id" => $no++,
-                    "name" => $value->name,
-                    "quantity" => (int)$value->qty,
-                    "price" => (int)$value->qty * $value->price
-                ];
-            }
 
             $destination = [
                 "latitude" => (float)json_decode($order->address)->latitude??0,
@@ -972,22 +962,94 @@ class UserController extends Controller
                 "note" => json_decode($order->address)->note??'',
             ];
 
-            $response = [
-                "order_id" => $order->order_number,
-                "expired_date" => $order->created_at->addHour(),
-                "services" => $orderDetail,
-                "order_status" => $order->order_status,
-                "technician" => [],
-                "destination" => $destination,
-                "origin" => [],
-                "review" => [],
-                "price_distance" => (int)$order->shipping,
-                "unique_code" => (int)$order->convenience_fee,
-                "total_price" => (int)$order->total_payment,
-                "created_at" => $order->created_at
-            ];
+            $technician = null;
+            if(isset($order->engineer)){
+                $technician = [
+                    "technician_id" => (int)$order->engineer->userid,
+                    "name" => $order->engineer->name,
+                    "media" => $order->engineer->profile_photo_path??'',
+                    "rating" => 0
+                ];
+            }
 
-            return response()->json($response);
+            $origin = null;
+            if(isset($order->engineer)){
+                $origin = [
+                    "latitude" => (float)$order->engineer->lat??0,
+                    "longitude" => (float)$order->engineer->lng??0,
+                    "description" => "alamat teknisi"
+                ];
+            }
+
+            $review = null;
+            $reviewData = ReviewService::where('order_id',$order->id)->first();
+            if(isset($reviewData)){
+                $review = [
+                    "value" => (float)$reviewData->ratings??0,
+                    "liked" => implode(",",$reviewData->liked)
+                ];
+            }
+
+            // $response=null;
+
+            if($order->order_type=="reguler"){
+                $orderDetail = [];
+                $no=1;
+                foreach ($order->order_detail as $key => $value) {
+                    $orderDetail[] = [
+                        "service_id" => $no++,
+                        "name" => $value->name,
+                        "quantity" => (int)$value->qty,
+                        "price" => (int)$value->qty * $value->price
+                    ];
+                }
+
+                $response = [
+                    "order_id" => $order->order_number,
+                    "expired_date" => $order->created_at->addHour(),
+                    "order_status" => $order->order_status,
+                    "technician" => $technician,
+                    "destination" => $destination,
+                    "origin" => $origin,
+                    "services" => $orderDetail,
+                    "review" => $review,
+                    "price_distance" => (int)$order->shipping,
+                    "promo" => json_decode($order->promo_code)->value??0,
+                    "unique_code" => (int)$order->convenience_fee,
+                    "total_price" => (int)$order->total_payment,
+                    "created_at" => $order->created_at
+                ];
+                return response()->json($response);
+            }
+
+            $customorder = null;
+            if($order->order_type=="custom"){
+                $customorder = [
+                    "level" => json_decode($order->custom_order)->level??'',
+                    "custom_type" => json_decode($order->custom_order)->custom_type??'',
+                    "brand" => json_decode($order->custom_order)->brand??'',
+                    "information" => json_decode($order->custom_order)->information??'',
+                    "problem_details" => json_decode($order->custom_order)->problem_details??''
+                ];
+
+                $response = [
+                    "order_id" => $order->order_number,
+                    "expired_date" => $order->created_at->addHour(),
+                    "order_status" => $order->order_status,
+                    "technician" => $technician,
+                    "destination" => $destination,
+                    "origin" => $origin,
+                    "custom_order" => $customorder,
+                    "review" => $review,
+                    "price_distance" => (int)$order->shipping,
+                    "unique_code" => (int)$order->convenience_fee,
+                    "price_custom" => (int)$order->total_payment-(int)$order->convenience_fee,
+                    "total_price" => (int)$order->total_payment,
+                    "created_at" => $order->created_at
+                ];
+                return response()->json($response);
+            }
+
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
