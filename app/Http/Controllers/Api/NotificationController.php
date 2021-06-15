@@ -18,7 +18,8 @@ class NotificationController extends Controller
         try {
 
             $user_id = auth()->user()->id;
-            $data = Notification::where('user_id',$user_id)->latest();
+            $data = Notification::where('user_id',$user_id)
+                                    ->where('type','<>','customer')->latest();
     
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
@@ -49,7 +50,7 @@ class NotificationController extends Controller
                     $review = ReviewService::find($val->id_data);
                     if(is_null($review)){
                         $extra= [
-                            "rating" => null
+                            "rating" => 0
                         ];
                     }else{
                         $extra= [
@@ -63,7 +64,7 @@ class NotificationController extends Controller
                     $withdraw = Withdraw::find($val->id_data);
                     if(is_null($withdraw)){
                         $extra['wallet']=[
-                            "amount" => null,
+                            "amount" => 0,
                             "message" => "",
                             "color" => ""
                         ];

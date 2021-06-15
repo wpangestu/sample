@@ -146,12 +146,12 @@ class TransactionController extends Controller
                 ],
                 "review" => [
                     "value" => $order->review->ratings??null,
-                    "liked" => []
+                    "liked" => $order->review->liked??""
                 ],
                 "address" => [
-                    "latitude" => (float)json_decode($order->address)->lat??0,
-                    "longitude" => (float)json_decode($order->address)->lng??0,
-                    "description" => json_decode($order->address)->name??"",
+                    "latitude" => (float)json_decode($order->address)->latitude??0,
+                    "longitude" => (float)json_decode($order->address)->longitude??0,
+                    "description" => json_decode($order->address)->description??"",
                     "note" => json_decode($order->address)->note??""
                 ],
             ];
@@ -180,6 +180,7 @@ class TransactionController extends Controller
                 $custom["custom_order"] = [
                     "level" => json_decode($order->custom_order)->level??"",
                     "brand" => json_decode($order->custom_order)->brand??"",
+                    "custom_type" => json_decode($order->custom_order)->custom_type??"",
                     "information" => json_decode($order->custom_order)->information??"",
                     "problem_details" => json_decode($order->custom_order)->problem_details??""
                 ];
@@ -284,7 +285,7 @@ class TransactionController extends Controller
         try {
             //code...
             $order = Order::find($id);
-            $order->order_status = "waiting-order";
+            $order->order_status = "accepted";
             $order->save();
             
             return response()->json(["message" => "Order Accepted"]);            
@@ -299,8 +300,8 @@ class TransactionController extends Controller
         try {
             //code...
             $order = Order::find($id);
-            $order->order_status = "denied";
-            $order->save();
+            // $order->order_status = "denied";
+            // $order->save();
             
             return response()->json(["message" => "Order Decline"]);            
             

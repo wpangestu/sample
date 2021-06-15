@@ -104,6 +104,7 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
     Route::post('/​teknisi​/chat/pin', [ChatController::class, 'pinned_chat']);
+    Route::post('/​teknisi​/chat/chatroom', [ChatController::class, 'store_chatroom']);
     Route::get('/​teknisi​/chat/{id}', [ChatController::class, 'get_message_by_chatroom_id']);
     Route::post('/​teknisi​/chat/delete', [ChatController::class, 'delete_chat']);
     
