@@ -709,7 +709,7 @@ class UserController extends Controller
             $total_price = $total_service_price + $shipping + $unique_code;
 
             $order = Order::create([
-                "order_number" => uniqid(),
+                "order_number" => "O".uniqid(),
                 "customer_id" => auth()->user()->id,
                 "engineer_id" => $engineer_id[0],
                 "shipping" => $shipping,
@@ -751,7 +751,9 @@ class UserController extends Controller
                     "order_id" => $order->id,
                     "name" => $service->name,
                     "qty" => $qty,
-                    "price" => $service->price
+                    "price" => $service->price,
+                    "base_id" => $service->id,
+                    "image" => $service->image??''
                 ]);
             }
 
@@ -795,7 +797,7 @@ class UserController extends Controller
 
             $review = [
                 "value" => 0,
-                "liked" => ""
+                "liked" => []
             ];
 
             $order_data = Order::find($order->id);
@@ -896,7 +898,7 @@ class UserController extends Controller
             ];
 
             $order = Order::create([
-                "order_number" => uniqid(),
+                "order_number" => "CO".uniqid(),
                 "order_type" => "custom",
                 "customer_id" => auth()->user()->id,
                 "engineer_id" => null,
@@ -922,7 +924,7 @@ class UserController extends Controller
 
             $review = [
                 "value" => 0,
-                "liked" => ""
+                "liked" => []
             ];
 
             // $order_data = Order::find($order->id);
@@ -981,12 +983,15 @@ class UserController extends Controller
                 ];
             }
 
-            $review = null;
+            $review = [
+                "value" => 0,
+                "liked" => []
+            ];
             $reviewData = ReviewService::where('order_id',$order->id)->first();
             if(isset($reviewData)){
                 $review = [
                     "value" => (float)$reviewData->ratings??0,
-                    "liked" => implode(",",$reviewData->liked)
+                    "liked" => $reviewData->liked
                 ];
             }
 
@@ -1118,24 +1123,26 @@ class UserController extends Controller
         $data_arr = [];
         foreach ($data as $key => $value) {
 
-            $service = [];
+            $service = null;
             if($value->order_type=="reguler"){
                 foreach ($value->order_detail as $key => $d) {
                     $service[] = [
                         "id" => $d->id,
                         "name" => $d->name,
-                        "media" => "",
+                        "media" => $d->image??'',
                         "price" => (int)$d->price
                     ];
                 }
             }
 
+            $review = ReviewService::where('order_id',$value->id)->first();
+
             $data_arr[] = [
                 "id" => $value->order_number,
                 "services" => $service,
-                "custom_service" => ($value->order_type=="reguler"?"":"custom_service_name"),
+                "custom_service" => ($value->order_type=="reguler"?"":json_decode($value->custom_order)->information??''),
                 "destination" => json_decode($value->address)->description??'-',
-                "reviewed" => false,
+                "reviewed" => isset($review)?true:false,
                 "created_at" => $value->created_at,
             ];
         }
@@ -1174,7 +1181,7 @@ class UserController extends Controller
                     "media" => $value->engineer->profile_photo_path??'',
                     "rating" => 0
                 ],
-                "total_service" => $value->order_detail->count(),
+                "total_service" => (int)$value->order_type=="reguler"?$value->order_detail->count():0,
                 "is_custom" => $value->order_type=="reguler"?false:true,
                 "destination" => json_decode($value->address)->description??'-',
                 "created_at" => $value->created_at,
@@ -1196,21 +1203,41 @@ class UserController extends Controller
         // dd(auth()->user()->id);
         try {
             //code...
-            $order = Order::where('order_number', $order_id)->first();
             $bank = Bank::find($request->get('bank_id'));
 
-            $payment = Payment::create([
-                "customer_id" => auth()->user()->id,
-                "amount" => $order->total_payment??0,
-                "paymentid" => "P".uniqid(),
-                "convenience_fee" => $order->convenience_fee??0,
-                "type" => $bank->name??"",
-                "status"=>"check",
-                "orders" => $order_id,
-                "account_holder" => $request->account_holder,
-                "account_number" => $request->account_number,
-                "bank_id" => $request->get('bank_id')
-            ]);
+            $order = Order::where('order_number', $order_id)->first();
+            $deposit = Deposit::where('transfer_id',$order_id)->first();
+            if(isset($order)){
+                $payment = Payment::create([
+                    "customer_id" => auth()->user()->id,
+                    "amount" => $order->total_payment??0,
+                    "paymentid" => "P".uniqid(),
+                    "convenience_fee" => $order->convenience_fee??0,
+                    "type" => $bank->name??"",
+                    "status"=>"check",
+                    "orders" => $order_id,
+                    "type_payment" => "order",
+                    "data_id" => $order_id,
+                    "account_holder" => $request->account_holder,
+                    "account_number" => $request->account_number,
+                    "bank_id" => $request->get('bank_id')
+                ]);
+            }elseif(isset($deposit)){
+                $payment = Payment::create([
+                    "customer_id" => auth()->user()->id,
+                    "amount" => $deposit->amount??0,
+                    "paymentid" => "P".uniqid(),
+                    "convenience_fee" => $deposit->unique_code??0,
+                    "type" => $bank->name??"",
+                    "status"=>"check",
+                    "orders" => $order_id,
+                    "type_payment" => "deposit",
+                    "data_id" => $order_id,
+                    "account_holder" => $request->account_holder,
+                    "account_number" => $request->account_number,
+                    "bank_id" => $request->get('bank_id')
+                ]);
+            }
 
             if($request->hasFile('invoice_picture')){
 
@@ -1438,7 +1465,7 @@ class UserController extends Controller
             ReviewService::create([
                 "order_id" => $request->get('order_id'),
                 "ratings" => $request->get('rating'),
-                "liked" => $request->get('likes')??"",
+                "liked" => $request->get('likes')??[],
                 "description" => $request->get('review_reason')
             ]);
 

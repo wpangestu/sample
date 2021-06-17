@@ -57,7 +57,7 @@
                     <th>No</th>
                     <th>Tanggal</th>
                     <th>ID Pembayaran</th>
-                    <th>Metode</th>
+                    <th>Tipe</th>
                     <th>Total</th>
                     <th>Customer</th>
                     <th>Status</th>
@@ -69,9 +69,9 @@
                         @foreach($payment as $val)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $val->created_at }}</td>
+                            <td>{{ $val->created_at->format('d/m/Y') }}<br>{{ $val->created_at->format('H:i:s') }}</td>
                             <td><a href="#">{{ $val->paymentid }}</a> </td>
-                            <td>Transfer Bank</td>
+                            <td>{{ ucfirst($val->type_payment) }}<br>ref : {{$val->data_id}}</td>
                             <td>{{ rupiah($val->amount+($val->convenience_fee??0)) }}</td>
                             <td>{{ $val->customer->name }}</td>
                             <td>

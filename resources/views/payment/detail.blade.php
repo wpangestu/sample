@@ -71,11 +71,12 @@
                   <dd class="col-sm-8">: {{$payment->paymentid}}</dd>
                   <dt class="col-sm-3">Total</dt>
                   <dd class="col-sm-8">: {{ rupiah($payment->amount+($payment->convenience_fee??0)) }}</dd>
-                  <dt class="col-sm-3">Metode Pembayaran</dt>
-                  <dd class="col-sm-8">: Transfer Bank</dd>
-                  <dt class="col-sm-3">Pembayaran</dt>
-                  <dd class="col-sm-8">: {{ $payment->type }}</dd>
-                   
+                  <dt class="col-sm-3">Tipe Pembayaran</dt>
+                  <dd class="col-sm-8">: {{ ucfirst($payment->type_payment) }} / (#{{$payment->data_id}})</dd>
+                  <dt class="col-sm-3">Pembayaran Tujuan</dt>
+                  <dd class="col-sm-8">: {{ $payment->bank->name." (".($payment->bank->account_number??'').")" }}</dd>
+                  <dt class="col-sm-3">Rekening Pengirim</dt>
+                  <dd class="col-sm-8">: {{ $payment->account_number." (".($payment->account_holder??'-').")" }}</dd>
                   <dt class="col-sm-3">Bukti Struk Pembayaran</dt>
                   <dd class="col-sm-8">
                     @if( !is_null($payment->image) )

@@ -24,10 +24,18 @@ class Payment extends Model
         'orders',
         'account_holder',
         'account_number',
-        'bank_id'
+        'bank_id',
+        'type_payment',
+        'data_id'
     ];
 
     public function customer(){
         return $this->belongsTo('App\Models\User','customer_id','id');
     }
+    
+    public function bank(){
+        return $this->belongsTo('App\Models\Bank','bank_id','id');
+    }
+
+
 }
