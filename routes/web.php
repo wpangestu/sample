@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BankController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -153,6 +154,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('setting/help', [SettingController::class,'help'])->name('setting.help');
     Route::post('setting/help', [SettingController::class,'storeHelp'])->name('setting.help.store');
     Route::post('setting/help/{id}/update', [SettingController::class,'updateHelp'])->name('setting.help.update');
+
+    // Route::get('setting/bank', [BankController::class,'index'])->name('setting.bank.index');
+    Route::resource('banks', BankController::class);
     
     Route::get('chat/engineer', [ChatController::class,'index'])->name('chat.index.engineer');
     Route::get('chat/customer', [ChatController::class,'index_customer'])->name('chat.index.customer');
@@ -177,4 +181,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     Route::get('history', [HistoryController::class,'index'])->name('history.index');
     Route::get('history/engineer', [HistoryController::class,'index_teknisi'])->name('history.engineer.index');
+
+
 });

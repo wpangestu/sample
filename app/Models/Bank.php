@@ -11,6 +11,7 @@ class Bank extends Model
 
     protected $fillable = [
         'name',
-        'code',
+        'logo',
+        'account_number'
     ];
 }

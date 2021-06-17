@@ -245,7 +245,6 @@ class BaseServiceController extends Controller
             return redirect()->back();
 
         } catch (\Throwable $th) {
-            DB::rollback();
             dd($th->getMessage());
             //throw $th;
         }
