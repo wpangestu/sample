@@ -287,6 +287,30 @@ class ChatController extends Controller
                 $response['chat']['role'] = $role;
                 $response['chat']['new'] = $new;
 
+                fcm()->to($to)
+                ->priority('high')
+                ->timeToLive(0)
+                ->notification([
+                    'title' => 'Notifikasi',
+                    'body' => 'Chat Baru',
+                ])
+                ->data([
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                    'main_click_action' => 'OPEN_CHAT_SUPPORT_DETAIL',
+                    'action_data' => [
+                        "task" => "ADD_CHAT_MESSAGE",
+                        "data" => [
+                            "room_id" => (int)$chatroom->id,
+                            "id" => (int)$chat->user_to->id,
+                            "message" => $message,
+                            "from" => (int)$chat->from,
+                            "is_me" => true,
+                            "created_at" => $chat->created_at
+                        ]
+                    ]
+                ])
+                ->send();
+
                 return response()->json($response);
 
             } catch (\Throwable $th) {

@@ -154,14 +154,18 @@ class PaymentController extends Controller
                 $order->order_status = "payment_success";
                 $order->save();
 
-                $token[] = $payment->customer->fcm_token;
+                // $token[] = $payment->customer->fcm_token;
     
-                // $cek = fcm()->to($token)
+                // fcm()->toTopic("technician")
                 //     ->priority('high')
                 //     ->timeToLive(0)
+                //     ->notification([
+                //         'title' => 'Notifikasi',
+                //         'body' => 'Pesanan Baru',
+                //     ])
                 //     ->data([
-                //         'click_action' => 'New FLUTTER_NOTIFICATION_CLICK',
-                //         'main_click_action' => 'ini OPEN_INCOMING_ORDER',
+                //         'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                //         'main_click_action' => 'OPEN_INCOMING_ORDER',
                 //         'action_data' => [
                 //             "task" => "SHOW_INCOMING_ORDER",
                 //             "order_id" => $order->id??'-',

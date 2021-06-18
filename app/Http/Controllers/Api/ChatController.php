@@ -167,6 +167,35 @@ class ChatController extends Controller
                     "created_at" => $chat->created_at
                 ];
 
+                $fcm_token[] = $chat->user_to->fcm_token;
+
+                fcm()->to($fcm_token)
+                    ->priority('high')
+                    ->timeToLive(0)
+                    ->notification([
+                        'title' => 'Notifikasi',
+                        'body' => 'Chat Baru',
+                    ])
+                    ->data([
+                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                        'main_click_action' => 'OPEN_CHAT_DETAIL',
+                        'action_data' => [
+                            "task" => "ADD_CHAT_MESSAGE",
+                            "chatroom_id" => $chatroom_id,
+                            "avatar" => $chat->user_from->profile_photo_path??'',
+                            "name" => $chat->user_from->name,
+                            "data" => [
+                                "room_id" => (int)$chatroom_id,
+                                "id" => (int)$chat->id,
+                                "message" => $chat->message,
+                                "from" => (int)$chat->from,
+                                "is_me" => true,
+                                "created_at" => $chat->created_at
+                            ]
+                        ]
+                    ])
+                    ->send();
+
                 return response()->json($response);
             }else{
                 return response()->json(["message"=>"chatroom_id tidak ditemukan didatabase"],422);
@@ -687,19 +716,46 @@ class ChatController extends Controller
                 "created_at" => $chat->created_at->format('d/m/Y H:i')
             ];
 
+            // fcm()->to($to)
+            //         ->priority('high')
+            //         ->timeToLive(0)
+            //         ->data([
+            //             'userid' => auth()->user()->userid,
+            //             'chat' => $chat_data,
+            //             'role' => $role
+            //         ])
+            //         ->notification([
+            //             'title' => 'Notifikasi',
+            //             'body' => 'Pesan Baru',
+            //         ])
+            //         ->send();
+
             fcm()->to($to)
-                    ->priority('high')
-                    ->timeToLive(0)
-                    ->data([
-                        'userid' => auth()->user()->userid,
-                        'chat' => $chat_data,
-                        'role' => $role
-                    ])
-                    ->notification([
-                        'title' => 'Notifikasi',
-                        'body' => 'Pesan Baru',
-                    ])
-                    ->send();
+            ->priority('high')
+            ->timeToLive(0)
+            ->notification([
+                'title' => 'Notifikasi',
+                'body' => 'Chat Baru',
+            ])
+            ->data([
+                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                'main_click_action' => 'OPEN_CHAT_DETAIL',
+                'action_data' => [
+                    "task" => "ADD_CHAT_MESSAGE",
+                    "chatroom_id" => (int)$chatroom->id,
+                    "avatar" => $chat->user_from->profile_photo_path??'',
+                    "name" => $chat->user_from->name,
+                    "data" => [
+                        "room_id" => (int)$chatroom->id,
+                        "id" => (int)$chat->id,
+                        "message" => $chat->message,
+                        "from" => (int)$chat->from,
+                        "is_me" => true,
+                        "created_at" => $chat->created_at
+                    ]
+                ]
+            ])
+            ->send();
                                 
             $response['id'] = $chat->id;
             $response['message'] = $chat->message;
