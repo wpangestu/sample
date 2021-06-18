@@ -11,6 +11,37 @@ use Illuminate\Support\Facades\DB;
 class ChatController extends Controller
 {
     //
+
+    public function tes()
+    {
+        try {
+            //code...
+
+            $to[] = "eKTGLycPRAm22YsyvzmDHi:APA91bHc5ibL3UvVwihNoPTGfhTQwiy1X0Pmn9qAyr_3JiI6pK7kV4_2kNYQMSFJbRakG446pfduXsfKI9GQSvlxyY80nv-4IWf4TXMnHz0PtHEhlR584-uQg8I6XnSfn9WW1R6d79DA";
+            // $to[] = "eKTGLycPRAm22YsyvzmDHi:APA91bHc5ibL3UvVwihNoPTGfhTQwiy1X0Pmn9qAyr_3JiI6pK7kV4_2kNYQMSFJbRakG446pfduXsfKI9GQSvlxyY80nv-4IWf4TXMnHz0PtHEhlR584-uQg8I6XnSfn9WW1R6d79DA";
+
+            fcm()->to($to)
+            ->priority('high')
+            ->timeToLive(0)
+            ->data([
+                'userid' => "adasd",
+                'chat' => "asd",
+                'role' => "asd"
+            ])
+            ->notification([
+                'title' => 'Notifikasi Teknisi',
+                'body' => 'Pesan Baru',
+            ])
+            ->send();
+
+            echo "success";
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+        }
+    }
+
     public function index()
     {
         $user_id = auth()->user()->id;
@@ -287,7 +318,9 @@ class ChatController extends Controller
                 $response['chat']['role'] = $role;
                 $response['chat']['new'] = $new;
 
-                fcm()->to($to)
+                $token[] = $chat->user_to->fcm_token;
+
+                fcm()->to($token)
                 ->priority('high')
                 ->timeToLive(0)
                 ->notification([

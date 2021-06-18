@@ -80,7 +80,7 @@
                   <dt class="col-sm-3">Bukti Struk Pembayaran</dt>
                   <dd class="col-sm-8">
                     @if( !is_null($payment->image) )
-                    <img src="{{ $payment->image }}" height="180px">
+                      <img src="{{ $payment->image }}" class="img-fluid">
                     @else
                     -
                     @endif

@@ -181,7 +181,7 @@ class ChatController extends Controller
                         'main_click_action' => 'OPEN_CHAT_DETAIL',
                         'action_data' => [
                             "task" => "ADD_CHAT_MESSAGE",
-                            "chatroom_id" => $chatroom_id,
+                            "chatroom_id" => (int)$chatroom_id,
                             "avatar" => $chat->user_from->profile_photo_path??'',
                             "name" => $chat->user_from->name,
                             "data" => [
@@ -715,20 +715,6 @@ class ChatController extends Controller
                 "message" => $chat->message,
                 "created_at" => $chat->created_at->format('d/m/Y H:i')
             ];
-
-            // fcm()->to($to)
-            //         ->priority('high')
-            //         ->timeToLive(0)
-            //         ->data([
-            //             'userid' => auth()->user()->userid,
-            //             'chat' => $chat_data,
-            //             'role' => $role
-            //         ])
-            //         ->notification([
-            //             'title' => 'Notifikasi',
-            //             'body' => 'Pesan Baru',
-            //         ])
-            //         ->send();
 
             fcm()->to($to)
             ->priority('high')

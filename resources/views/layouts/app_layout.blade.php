@@ -67,34 +67,35 @@
 <script src="{{ asset('js/fcm.js') }}"></script>
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-messaging.js"></script>
-
-
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-messaging.js"></script>
 
 <script>
-  console.log('{{ asset("logo_app.png") }}')
   // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   var firebaseConfig = {
-    apiKey: "AIzaSyBd-hpKWU00hnmJq9HaEzVbWQwXnbiF0F8",
-    authDomain: "tesfirebase-cf18a.firebaseapp.com",
-    databaseURL: "https://tesfirebase-cf18a.firebaseio.com",
-    projectId: "tesfirebase-cf18a",
-    storageBucket: "tesfirebase-cf18a.appspot.com",
-    messagingSenderId: "285443598816",
-    appId: "1:285443598816:web:7dfa6d01d2bff7ea176385"
+    apiKey: "AIzaSyCIFe2fIgT8U2S5HtThUKB6-hRGiOXIc5o",
+    authDomain: "zippy-world-298704.firebaseapp.com",
+    projectId: "zippy-world-298704",
+    storageBucket: "zippy-world-298704.appspot.com",
+    messagingSenderId: "652852667154",
+    appId: "1:652852667154:web:88b2b19d35eb9c345ec9cb",
+    measurementId: "G-SNT2TZQ2SL"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
 </script>
 
 <script>
   const messaging = firebase.messaging();
+  // var admin = require('firebase-admin');
+  // import * as admin from 'firebase-admin';
 
   // Add the public key generated from the console here.
-  messaging.getToken({vapidKey: "BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE"});
+  messaging.getToken({vapidKey: "BPq75jHjVcvsnTpujR2Quw1UQ1JLVLvNDLNSSrOJSM_PoINHRq1Lrzk1yjSk2DL5ByrkctWRW9qKbjNyG8zbLjQ"});
 
   function sendTokenToServer(token){
     console.log(token);
@@ -113,11 +114,28 @@
           }
         }
     });
+
+    let registrationTopic = [token];
+
+    // subscribeTopic(registrationTopic,'testing')
+    
+  }
+
+  function subscribeTopic(token,topic){
+      admin.messaging().subscribeToTopic(token, topic)
+                        .then((response) => {
+                          // See the MessagingTopicManagementResponse reference documentation
+                          // for the contents of response.
+                          console.log('Successfully subscribed to topic:', response);
+                        })
+                        .catch((error) => {
+                          console.log('Error subscribing to topic:', error);
+                        });
   }
 
   function retreiveToken(){
 
-      messaging.getToken({vapidKey: 'BOmVU6h5pVaHiZisObJ5lxlshdfApMR5aH0xPNnCNCLW2dLk2DIjg21pVtlJ7bmEAqbKptT06i8GAfniQr9FiiE'}).then((currentToken) => {
+      messaging.getToken({vapidKey: 'BPq75jHjVcvsnTpujR2Quw1UQ1JLVLvNDLNSSrOJSM_PoINHRq1Lrzk1yjSk2DL5ByrkctWRW9qKbjNyG8zbLjQ'}).then((currentToken) => {
           if (currentToken) {
             sendTokenToServer(currentToken);
             // updateUIForPushEnabled(currentToken);

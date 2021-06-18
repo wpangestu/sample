@@ -158,6 +158,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     // Route::get('setting/bank', [BankController::class,'index'])->name('setting.bank.index');
     Route::resource('banks', BankController::class);
     
+    Route::get('chat/tes', [ChatController::class,'tes']);
     Route::get('chat/engineer', [ChatController::class,'index'])->name('chat.index.engineer');
     Route::get('chat/customer', [ChatController::class,'index_customer'])->name('chat.index.customer');
     Route::get('chat/customer/{id?}', [ChatController::class,'show'])->name('chat.customer.show');
