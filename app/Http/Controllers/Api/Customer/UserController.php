@@ -1173,14 +1173,18 @@ class UserController extends Controller
         $data_arr = [];
         foreach ($data as $key => $value) {
 
-            $data_arr[] = [
-                "id" => $value->order_number,
-                "technician" => [
-                    "technician_id" => $value->engineer->id,
+            $technician = null;
+            if(isset($value->engineer_id)){
+                $technician = [
+                    "technician_id" => (int)$value->engineer->id,
                     "name" => $value->engineer->name,
                     "media" => $value->engineer->profile_photo_path??'',
                     "rating" => 0
-                ],
+                ];
+            }
+            $data_arr[] = [
+                "id" => $value->order_number,
+                "technician" => $technician,
                 "total_service" => (int)$value->order_type=="reguler"?$value->order_detail->count():0,
                 "is_custom" => $value->order_type=="reguler"?false:true,
                 "destination" => json_decode($value->address)->description??'-',
@@ -1210,7 +1214,7 @@ class UserController extends Controller
             if(isset($order)){
                 $payment = Payment::create([
                     "customer_id" => auth()->user()->id,
-                    "amount" => $order->total_payment??0,
+                    "amount" => $order->total_payment-$order->convenience_fee??0,
                     "paymentid" => "P".uniqid(),
                     "convenience_fee" => $order->convenience_fee??0,
                     "type" => $bank->name??"",

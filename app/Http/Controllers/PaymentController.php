@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use App\Models\HistoryBalance;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
@@ -140,6 +143,9 @@ class PaymentController extends Controller
         
         try {
             //code...
+
+            DB::beginTransaction();
+
             $payment = Payment::find($id);
 
             $payment->status = 'success';
@@ -153,33 +159,33 @@ class PaymentController extends Controller
                 $order = Order::where('order_number',$orders)->first();
                 $order->order_status = "payment_success";
                 $order->save();
-
-                // $token[] = $payment->customer->fcm_token;
-    
-                // fcm()->toTopic("technician")
-                //     ->priority('high')
-                //     ->timeToLive(0)
-                //     ->notification([
-                //         'title' => 'Notifikasi',
-                //         'body' => 'Pesanan Baru',
-                //     ])
-                //     ->data([
-                //         'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-                //         'main_click_action' => 'OPEN_INCOMING_ORDER',
-                //         'action_data' => [
-                //             "task" => "SHOW_INCOMING_ORDER",
-                //             "order_id" => $order->id??'-',
-                //             "duration" => 30
-                //         ]
-                //     ])
-                //     ->send();
             }
 
+            $amount = $payment->amount;
+            $description = "";            
+            if($payment->type_payment=="order"){
+                $description = "Pemabayaran Order #".$payment->data_id;
+            }else{
+                $description = "Pemabayaran Deposit #".$payment->data_id;
+            }
+
+            $user = User::find($payment->customer_id);
+            $user->balance = $user->balance+$amount;
+            $user->save();
+
+            HistoryBalance::create([
+                "user_id" => $user->id,
+                "amount" => $amount,
+                "description" => $description,
+                "created_by" => auth()->user()->id
+            ]);
 
             $causer = auth()->user();
             $atribut = [
 
             ];
+
+            DB::commit();
 
             activity('confirm_payment')->performedOn($payment)
                         ->causedBy($causer)
@@ -190,6 +196,7 @@ class PaymentController extends Controller
 
         } catch (\Throwable $th) {
             //throw $th;
+            DB::rollBack();
             dd($th->getMessage());
         }
 
