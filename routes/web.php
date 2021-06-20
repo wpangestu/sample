@@ -107,6 +107,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Service Order
     Route::get('service_order/status', [ServiceOrderController::class,'process_decline_order'])->name('service_order.process_decline');
+    Route::get('service_order/{id}/update_waiting_order', [ServiceOrderController::class,'update_waiting_order'])->name('service_order.update_waiting_order');
     Route::resource('service_order', ServiceOrderController::class);
     Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
 

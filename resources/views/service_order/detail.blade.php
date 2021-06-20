@@ -78,6 +78,13 @@
                           {!! $status !!}
                         </div>
                       </div>
+                      @if($order->order_status === "payment_success")
+                      <div class="form-group">
+                        <label for="">Mencari Teknisi</label><br>
+                        <button class="btn btn-sm btn-info" id="btn_search_technician"><i class="fa fa-search"></i> Mencari Teknisi</button>
+                          <!-- <a onclick="return confirm('Apa anda yakin?')" href="#" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi</a> -->
+                      </div>
+                      @endif
                       @if($order->order_status === "waiting-order")
                       <div class="form-group">
                         <label for="">Proses / Tolak Order</label><br>
@@ -119,7 +126,7 @@
                       <div class="form-group">
                         <label for="">Alamat Posisi Customer</label>
                         @php $address = json_decode($order->address) @endphp
-                        <textarea type="text" readonly class="form-control">{{ $address->name??'-' }} | Lat: {{ $address->lat??'-' }} | Lng: {{ $address->lng??'-' }}</textarea> 
+                        <textarea type="text" readonly class="form-control">{{ $address->description??'-' }} | Lat: {{ $address->latitude??'-' }} | Lng: {{ $address->longitude??'-' }} | Note: {{ $address->notes??'-' }} </textarea> 
                       </div>
                     </div>
                 </div>
@@ -142,16 +149,16 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $val->name }}</td>
                                 <td>{{ $val->qty }}</td>
-                                <td class="text-right">{{ $val->price }}</td>
+                                <td class="text-right">{{ rupiah($val->price) }}</td>
                               </tr>
                             @endforeach
                               <tr>
                                 <td class="text-right" colspan="3">Ongkos Kirim</td>
-                                <td class="text-right">{{ $order->shipping }}</td>
+                                <td class="text-right">{{ rupiah($order->shipping) }}</td>
                               </tr>
                               <tr>
                                 <td class="text-right" colspan="3">Total</td>
-                                <td class="text-right">{{ $order->total_payment }}</td>
+                                <td class="text-right">{{ rupiah($order->total_payment) }}</td>
                               </tr>
                           </tbody>
                         </table>
@@ -181,7 +188,34 @@
 
     $(document).ready(function(){
 
+      $('#btn_search_technician').click(function(){
 
+        // fetch("{{ route('service_order.update_waiting_order',$order->id) }}")
+        fetch("{{ route('service_order.update_waiting_order',$order->id) }}")
+          .then( result => console.log(result.json))
+          // .then( text => console.log(text))
+          .catch(error => alert(error));
+
+        $.blockUI.defaults.baseZ = 9999999;
+        $.blockUI({
+            message: '<i class="fa fa-sync fa-spin"></i> Loading <br>(Tunggu 30 Detik)',
+            timeout: 30000, //unblock after 2 seconds
+            overlayCSS: {
+                backgroundColor: '#FFF',
+                opacity: 0.8,
+                cursor: 'wait'
+            },
+            css: {
+                border: 0,
+                padding: 0,
+                color: '#333',
+                backgroundColor: 'transparent'
+            },
+            onUnblock: function() {
+                // alert('Page is now unblocked. FadeOut complete.');
+            }
+        });
+      });
 
     });
 </script>

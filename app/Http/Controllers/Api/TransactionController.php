@@ -135,18 +135,18 @@ class TransactionController extends Controller
             $order = Order::find($id);
 
             $response = [
-                "id" => $order->id,
+                "id" => $order->order_number,
                 "order_status" => $order->order_status,
                 "order_type" => $order->order_type,
-                "is_extend" => $order->is_extend,
+                "is_extend" => $order->is_extend?true:false,
                 "user" => [
-                    "id" => $order->customer->id,
+                    "id" => (int)$order->customer->id,
                     "name" => $order->customer->name,
-                    "avatar" => $order->customer->profile_photo_path
+                    "avatar" => $order->customer->profile_photo_path??""
                 ],
                 "review" => [
-                    "value" => $order->review->ratings??null,
-                    "liked" => $order->review->liked??""
+                    "value" => $order->review->ratings??0,
+                    "liked" => $order->review->liked??[]
                 ],
                 "address" => [
                     "latitude" => (float)json_decode($order->address)->latitude??0,
@@ -161,10 +161,10 @@ class TransactionController extends Controller
                 foreach($order->order_detail as $val){
 
                     $detail["order"][] = [
-                        "id" => $val->id,
+                        "id" => (int)$val->id,
                         "name" => $val->name,
-                        "quantity" => $val->qty,
-                        "price" => (float)$val->price
+                        "quantity" => (int)$val->qty,
+                        "price" => (int)$val->price
                     ];
                 }
                 $combined = array_merge($response, $detail);

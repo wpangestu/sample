@@ -63,6 +63,8 @@
 <script src="{{ asset('plugins/toastr/toastr.min.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+<!-- BlockUI -->
+<script src="{{ asset('plugins/blockui/jquery.blockUI.js') }}"></script>
 
 <script src="{{ asset('js/fcm.js') }}"></script>
 

@@ -211,10 +211,16 @@ class ChatController extends Controller
     {
         try {
             //code...
-
             $user_id = auth()->user()->id;
 
-            $chatroom = Chatroom::where('user_1',$user_id)->orWhere('user_2',$user_id);
+            $chatroom = Chatroom::where(function($query) use($user_id) {
+                                        $query->where('user_1', $user_id)
+                                              ->Where('user_2','<>', 1);
+                                    })
+                                    ->orWhere(function($query) use($user_id) {
+                                        $query->where('user_2', $user_id)
+                                              ->Where('user_1','<>', 1);
+                                    });
     
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
@@ -251,7 +257,7 @@ class ChatController extends Controller
                         "name" => $name,
                         "unread_count" => (int)$unread_message,
                         "avatar" => "",
-                        "pinned" => $pinned,
+                        "pinned" => (boolean)$pinned,
                         "last_message" => $chat_data
                     ];
         
@@ -318,7 +324,7 @@ class ChatController extends Controller
                         "name" => $name,
                         "unread_count" => $unread_message,
                         "avatar" => "",
-                        "pinned" => $pinned,
+                        "pinned" => (boolean)$pinned,
                         "last_message" => $chat_data
                     ];
         
@@ -597,7 +603,7 @@ class ChatController extends Controller
             $chatroom = $chatroom->first();
             if(!is_null($chatroom)){
 
-                $chat = Chat::where('chatroom_id',$chatroom->id);
+                $chat = Chat::where('chatroom_id',$chatroom->id)->latest();
                 $total = $chat->count();
                 $chat = $chat->limit($limit)->offset(($page - 1) * $limit);
 

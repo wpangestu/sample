@@ -20,7 +20,7 @@ class ChatController extends Controller
             $to[] = "eKTGLycPRAm22YsyvzmDHi:APA91bHc5ibL3UvVwihNoPTGfhTQwiy1X0Pmn9qAyr_3JiI6pK7kV4_2kNYQMSFJbRakG446pfduXsfKI9GQSvlxyY80nv-4IWf4TXMnHz0PtHEhlR584-uQg8I6XnSfn9WW1R6d79DA";
             // $to[] = "eKTGLycPRAm22YsyvzmDHi:APA91bHc5ibL3UvVwihNoPTGfhTQwiy1X0Pmn9qAyr_3JiI6pK7kV4_2kNYQMSFJbRakG446pfduXsfKI9GQSvlxyY80nv-4IWf4TXMnHz0PtHEhlR584-uQg8I6XnSfn9WW1R6d79DA";
 
-            fcm()->to($to)
+            fcm()->toTopic("technician")
             ->priority('high')
             ->timeToLive(0)
             ->data([
@@ -29,8 +29,8 @@ class ChatController extends Controller
                 'role' => "asd"
             ])
             ->notification([
-                'title' => 'Notifikasi Teknisi',
-                'body' => 'Pesan Baru',
+                'title' => 'Notifikasi Technician',
+                'body' => 'tes notif from backend',
             ])
             ->send();
 
@@ -332,12 +332,12 @@ class ChatController extends Controller
                     'main_click_action' => 'OPEN_CHAT_SUPPORT_DETAIL',
                     'action_data' => [
                         "task" => "ADD_CHAT_MESSAGE",
+                        "chatroom_id" => -1,
                         "data" => [
-                            "room_id" => (int)$chatroom->id,
-                            "id" => (int)$chat->user_to->id,
+                            "id" => (int)$chat->id,
                             "message" => $message,
                             "from" => (int)$chat->from,
-                            "is_me" => true,
+                            "is_me" => $chat->to==$chat->from?true:false,
                             "created_at" => $chat->created_at
                         ]
                     ]

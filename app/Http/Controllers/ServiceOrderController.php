@@ -62,22 +62,24 @@ class ServiceOrderController extends Controller
                     ->addColumn('order_status',function($row){
                         if($row->order_status==null){
                             return "-";
-                        }elseif($row->order_status=="pending"){
+                        }elseif($row->order_status=="waiting_payment"){
                             return '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
-                        }elseif ($row->order_status=="waiting-order") {
-                            return '<badge class="badge badge-info">Menunggu Konfirmasi Teknisi</badge>';
+                        }elseif ($row->order_status=="payment_success") {
+                            return '<badge class="badge badge-info">Pembayaran Sukses</badge>';
+                        }elseif ($row->order_status=="waiting_order") {
+                            return '<badge class="badge bg-indigo">Mencari Teknisi</badge>';
                         }
-                        elseif($row->order_status=="denied") {
-                            return '<badge class="badge badge-danger">Ditolak</badge>';
+                        elseif($row->order_status=="accepted") {
+                            return '<badge class="badge bg-teal">Diterima Teknisi</badge>';
                         }
                         elseif($row->order_status=="processed") {
-                            return '<badge class="badge badge-primary">Diproses</badge>';
+                            return '<badge class="badge bg-lime">Diproses</badge>';
                         }
-                        elseif($row->order_status=="take_away") {
-                            return '<badge class="badge badge-info">Take Away</badge>';
+                        elseif($row->order_status=="extend") {
+                            return '<badge class="badge bg-olive">Extend</badge>';
                         }
                         elseif($row->order_status=="canceled") {
-                            return '<badge class="badge badge-secondary">Dibatalkan</badge>';
+                            return '<badge class="badge badge-danger">Dibatalkan</badge>';
                         }
                         elseif($row->order_status=="done") {
                             return '<badge class="badge badge-success">Selesai</badge>';
@@ -267,27 +269,28 @@ class ServiceOrderController extends Controller
         }
         if($order->order_status==null){
             $status = "-";
-        }elseif($order->order_status=="pending"){
+        }elseif($order->order_status=="waiting_payment"){
             $status = '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
-        }elseif ($order->order_status=="waiting-order") {
-            $status = '<badge class="badge badge-info">Menunggu Konfirmasi Teknisi</badge>';
+        }elseif ($order->order_status=="payment_success") {
+            $status = '<badge class="badge badge-info">Pembayaran Sukses</badge>';
+        }elseif ($order->order_status=="waiting_order") {
+            $status =  '<badge class="badge badge-info">Cari Teknisi</badge>';
         }
-        elseif($order->order_status=="denied") {
-            $status = '<badge class="badge badge-danger">Ditolak</badge>';
+        elseif($order->order_status=="accepted") {
+            $status =  '<badge class="badge badge-primary">Diterima Teknisi</badge>';
         }
         elseif($order->order_status=="processed") {
-            $status = '<badge class="badge badge-primary">Diproses</badge>';
+            $status =  '<badge class="badge badge-indigo">Diproses</badge>';
         }
-        elseif($order->order_status=="take-away") {
-            $status = '<badge class="badge badge-info">Take Away</badge>';
+        elseif($order->order_status=="extend") {
+            $status =  '<badge class="badge badge-navy">Extend</badge>';
         }
         elseif($order->order_status=="canceled") {
-            $status = '<badge class="badge badge-secondary">Dibatalkan</badge>';
+            $status =  '<badge class="badge badge-danger">Dibatalkan</badge>';
         }
         elseif($order->order_status=="done") {
-            $status = '<badge class="badge badge-success">Selesai</badge>';
+            $status =  '<badge class="badge badge-success">Selesai</badge>';
         }
-        // dd($order);
         return view('service_order.detail',compact('order','status'));
     }
 
@@ -348,5 +351,38 @@ class ServiceOrderController extends Controller
         $delete = ServiceOrder::find($id)->delete();
 
         return Response()->json($delete);
+    }
+
+    public function update_waiting_order($order_id){
+        try {
+            //code...
+            $order = Order::find($order_id);
+            $order->order_status = "waiting_order";
+            $order->save();
+
+            fcm()->toTopic("technician")
+            ->priority('high')
+            ->timeToLive(0)
+            ->data([
+                'click_action' => "FLUTTER_NOTIFICATION_CLICK",
+                'main_click_action' => "OPEN_INCOMING_ORDER",
+                'action_data' => [
+                    "task" => "SHOW_INCOMING_ORDER",
+                    "order_id" => $order_id,
+                    "duration" => 30
+                ]
+            ])
+            ->notification([
+                'title' => 'New Order',
+                'body' => ucfirst($order->order_type)." Order",
+            ])
+            ->send();
+            
+            return response()->json(["success"=>true,"message"=>"update successfully"]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["success"=>false,"message"=>$th->getMessage()]);
+        }
     }
 }
