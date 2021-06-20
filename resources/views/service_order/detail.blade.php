@@ -78,7 +78,7 @@
                           {!! $status !!}
                         </div>
                       </div>
-                      @if($order->order_status === "payment_success")
+                      @if($order->order_status === "payment_success"||$order->order_status === "waiting_order")
                       <div class="form-group">
                         <label for="">Mencari Teknisi</label><br>
                         <button class="btn btn-sm btn-info" id="btn_search_technician"><i class="fa fa-search"></i> Mencari Teknisi</button>

@@ -368,7 +368,7 @@ class ServiceOrderController extends Controller
                 'main_click_action' => "OPEN_INCOMING_ORDER",
                 'action_data' => [
                     "task" => "SHOW_INCOMING_ORDER",
-                    "order_id" => $order_id,
+                    "order_id" => $order->order_number,
                     "duration" => 30
                 ]
             ])

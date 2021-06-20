@@ -132,7 +132,7 @@ class TransactionController extends Controller
                 return response()->json(["message" => "Akun sedang diverifikasi"], 423);
             }
 
-            $order = Order::find($id);
+            $order = Order::where('order_number',$id)->first();
 
             $response = [
                 "id" => $order->order_number,
@@ -154,6 +154,7 @@ class TransactionController extends Controller
                     "description" => json_decode($order->address)->description??"",
                     "note" => json_decode($order->address)->note??""
                 ],
+                "created_at" => $order->created_at,
             ];
 
             $detail=[];
@@ -284,8 +285,9 @@ class TransactionController extends Controller
     public function order_accept($id){
         try {
             //code...
-            $order = Order::find($id);
+            $order = Order::where('order_id',$id)->first();
             $order->order_status = "accepted";
+            $order->engineer_id = auth()->user()->id;
             $order->save();
             
             return response()->json(["message" => "Order Accepted"]);            
