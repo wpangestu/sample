@@ -147,7 +147,7 @@ class ServiceOrderController extends Controller
             $shipping = $request->shipping;
             $data = [
                 "order_number" => $order_id,
-                "order_type" => "reguler",
+                "order_type" => "regular",
                 "order_status" => "pending",
                 "is_take_away" => false,
                 "customer_id" => $request->customer_id,

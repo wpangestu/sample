@@ -189,7 +189,7 @@ class ChatController extends Controller
                                 "id" => (int)$chat->id,
                                 "message" => $chat->message,
                                 "from" => (int)$chat->from,
-                                "is_me" => true,
+                                "is_me" => $chat->from==$chat->to?true:false,
                                 "created_at" => $chat->created_at
                             ]
                         ]
@@ -715,34 +715,27 @@ class ChatController extends Controller
             $to = [];
             $to[] = $chat->user_to->fcm_token;
 
-            $chat_data = [
-                "id" => $chat->id,
-                "name" => $chat->user_from->name,
-                "message" => $chat->message,
-                "created_at" => $chat->created_at->format('d/m/Y H:i')
-            ];
-
             fcm()->to($to)
             ->priority('high')
             ->timeToLive(0)
             ->notification([
-                'title' => 'Notifikasi',
-                'body' => 'Chat Baru',
+                'title' => 'Pesan Baru '.$chat->user_from->name??'',
+                'body' => $chat->message,
             ])
             ->data([
-                'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-                'main_click_action' => 'OPEN_CHAT_DETAIL',
-                'action_data' => [
+                "click_action" => "FLUTTER_NOTIFICATION_CLICK",
+                "main_click_action" => "OPEN_CHAT_DETAIL",
+                "chatroom_id" => (int)$chatroom->id,
+                "action_data" => [
                     "task" => "ADD_CHAT_MESSAGE",
                     "chatroom_id" => (int)$chatroom->id,
                     "avatar" => $chat->user_from->profile_photo_path??'',
                     "name" => $chat->user_from->name,
                     "data" => [
-                        "room_id" => (int)$chatroom->id,
                         "id" => (int)$chat->id,
                         "message" => $chat->message,
                         "from" => (int)$chat->from,
-                        "is_me" => true,
+                        "is_me" => $chat->from==$chat->to?true:false,
                         "created_at" => $chat->created_at
                     ]
                 ]

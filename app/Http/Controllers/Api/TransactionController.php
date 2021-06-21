@@ -158,7 +158,7 @@ class TransactionController extends Controller
             ];
 
             $detail=[];
-            if($order->order_type==="reguler"){
+            if($order->order_type==="regular"){
                 foreach($order->order_detail as $val){
 
                     $detail["order"][] = [

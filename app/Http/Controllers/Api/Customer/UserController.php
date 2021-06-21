@@ -997,7 +997,7 @@ class UserController extends Controller
 
             // $response=null;
 
-            if($order->order_type=="reguler"){
+            if($order->order_type=="regular"){
                 $orderDetail = [];
                 $no=1;
                 foreach ($order->order_detail as $key => $value) {
@@ -1124,7 +1124,7 @@ class UserController extends Controller
         foreach ($data as $key => $value) {
 
             $service = null;
-            if($value->order_type=="reguler"){
+            if($value->order_type=="regular"){
                 foreach ($value->order_detail as $key => $d) {
                     $service[] = [
                         "id" => $d->id,
@@ -1140,7 +1140,7 @@ class UserController extends Controller
             $data_arr[] = [
                 "id" => $value->order_number,
                 "services" => $service,
-                "custom_service" => ($value->order_type=="reguler"?"":json_decode($value->custom_order)->information??''),
+                "custom_service" => ($value->order_type=="regular"?"":json_decode($value->custom_order)->information??''),
                 "destination" => json_decode($value->address)->description??'-',
                 "reviewed" => isset($review)?true:false,
                 "created_at" => $value->created_at,
@@ -1185,8 +1185,8 @@ class UserController extends Controller
             $data_arr[] = [
                 "id" => $value->order_number,
                 "technician" => $technician,
-                "total_service" => (int)$value->order_type=="reguler"?$value->order_detail->count():0,
-                "is_custom" => $value->order_type=="reguler"?false:true,
+                "total_service" => (int)$value->order_type=="regular"?$value->order_detail->count():0,
+                "is_custom" => $value->order_type=="regular"?false:true,
                 "destination" => json_decode($value->address)->description??'-',
                 "created_at" => $value->created_at,
             ];

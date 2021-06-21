@@ -14,5 +14,7 @@ class OrderDetail extends Model
         'name', 
         'qty', 
         'price', 
+        'base_id',
+        'image'
     ]; 
 }
