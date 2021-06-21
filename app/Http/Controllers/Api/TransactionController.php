@@ -285,7 +285,7 @@ class TransactionController extends Controller
     public function order_accept($id){
         try {
             //code...
-            $order = Order::where('order_id',$id)->first();
+            $order = Order::where('order_number',$id)->first();
             if(!is_null($order->engineer_id)){
                 return response()->json(["message" => "Pesanan sudah ada yang mengambil"], 422);                
             }

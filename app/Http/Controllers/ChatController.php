@@ -330,6 +330,7 @@ class ChatController extends Controller
                 ->data([
                     'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
                     'main_click_action' => 'OPEN_CHAT_SUPPORT_DETAIL',
+                    "chatroom_id" => -1,
                     'action_data' => [
                         "task" => "ADD_CHAT_MESSAGE",
                         "chatroom_id" => -1,
