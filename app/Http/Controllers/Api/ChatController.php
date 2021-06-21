@@ -239,26 +239,31 @@ class ChatController extends Controller
                         $name = $value->user_1_data->name??"";
                         $pinned = $value->pinned_user_2;
                     }
-        
+                    
+                    $last_chat_data = null;
+                    $unread_message = 0;
                     $chat = Chat::where('chatroom_id',$value->id)->latest()->first();
-                    $unread_message = Chat::where('chatroom_id',$value->id)
-                                    ->where('to',$user_id)
-                                    ->where('read',false)
-                                    ->count();
-                    $chat_data = [
-                        "message" => $chat->message,
-                        "media" => $chat->media,
-                        "from" => (int)$chat->from,
-                        "is_me" => $user_id==$chat->from?true:false,
-                        "created_at" => $chat->created_at
-                    ];
+                    if(isset($chat)){
+                        $unread_message = Chat::where('chatroom_id',$value->id)
+                                        ->where('to',$user_id)
+                                        ->where('read',false)
+                                        ->count();
+
+                        $last_chat_data = [
+                            "message" => $chat->message,
+                            "media" => $chat->media,
+                            "from" => (int)$chat->from,
+                            "is_me" => $user_id==$chat->from?true:false,
+                            "created_at" => $chat->created_at
+                        ];
+                    }
                     $chatroom_t = [
                         "id" => $value->id,
                         "name" => $name,
                         "unread_count" => (int)$unread_message,
                         "avatar" => "",
                         "pinned" => (boolean)$pinned,
-                        "last_message" => $chat_data
+                        "last_message" => $last_chat_data
                     ];
         
                     $new_chatroom_data[] = $chatroom_t;
@@ -795,7 +800,7 @@ class ChatController extends Controller
                 ]);
             }
 
-            return response()->json(["chatroom"=>$chatroom->id]);
+            return response()->json(["chatroom"=>(string)$chatroom->id]);
 
         } catch (\Throwable $th) {
             //throw $th;

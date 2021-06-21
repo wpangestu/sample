@@ -189,6 +189,8 @@ class UserController extends Controller
             $data['valid_until'] = $expires_at;
             $data['token_type'] = "Bearer";
 
+
+
             return response()->json($data);
         } else {
             return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
@@ -961,13 +963,13 @@ class UserController extends Controller
                 "latitude" => (float)json_decode($order->address)->latitude??0,
                 "longitude" => (float)json_decode($order->address)->longitude??0,
                 "description" => json_decode($order->address)->description??'',
-                "note" => json_decode($order->address)->note??'',
+                "note" => json_decode($order->address)->notes??'',
             ];
 
             $technician = null;
             if(isset($order->engineer)){
                 $technician = [
-                    "technician_id" => (int)$order->engineer->userid,
+                    "technician_id" => (int)$order->engineer->id,
                     "name" => $order->engineer->name,
                     "media" => $order->engineer->profile_photo_path??'',
                     "rating" => 0
@@ -1084,7 +1086,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profile_photo" => $user->profil_photo_path?? asset('images/no_picture.jpg'),
+                "profile_photo" => $user->profile_photo_path?? asset('images/no_picture.jpg'),
                 "phone" => $user->phone,
                 "email" => $user->email
             ];

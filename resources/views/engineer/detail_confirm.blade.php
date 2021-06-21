@@ -100,7 +100,7 @@
                   <dt class="col-sm-3">Foto KTP</dt>
                   <dd class="col-sm-8">: 
                     @if(!is_null($data->engineer->id_card_image))
-                    <img height="200px" src="<?= $data->engineer->id_card_image ?>" alt="">
+                    <img height="200px" src="<?= $data->engineer->id_card_image??'-' ?>" alt="">
                     @else
                       Tidak tersedia
                     @endif
@@ -108,7 +108,7 @@
                   <dt class="col-sm-3">Foto KTP Selfie</dt>
                   <dd class="col-sm-8">: 
                     @if(!is_null($data->engineer->id_card_selfie_image))
-                    <img height="200px" src="<?= $data->engineer->id_card_selfie_image ?>" alt="">
+                    <img height="200px" src="<?= $data->engineer->id_card_selfie_image??'-' ?>" alt="">
                     @else
                       Tidak tersedia
                     @endif
@@ -116,7 +116,7 @@
                   <dt class="col-sm-3">Foto Formal</dt>
                   <dd class="col-sm-8">: 
                     @if(!is_null($data->profile_photo_path))
-                    <img height="200px" src="<?= $data->profile_photo_path ?>" alt="">
+                    <img height="200px" src="<?= $data->profile_photo_path??'-' ?>" alt="">
                     @else
                       Tidak tersedia
                     @endif

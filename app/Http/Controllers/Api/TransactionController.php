@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Chat;
 use App\Models\Order;
 use App\Models\client;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Chatroom;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -69,10 +72,10 @@ class TransactionController extends Controller
                     $count += $val->qty;
                 }
                 $data_arr[] = [
-                    "id" => $value->id,
+                    "id" => $value->order_number,
                     "name" => $value->order_detail[0]->name,
                     "quantity" => $count,
-                    "address" => json_decode($value->address)->name??'-',
+                    "address" => json_decode($value->address)->description??'-',
                     "order_type" => $value->order_type,
                     "order_status" => $value->order_status,
                     "created_at" => $value->created_at
@@ -152,7 +155,7 @@ class TransactionController extends Controller
                     "latitude" => (float)json_decode($order->address)->latitude??0,
                     "longitude" => (float)json_decode($order->address)->longitude??0,
                     "description" => json_decode($order->address)->description??"",
-                    "note" => json_decode($order->address)->note??""
+                    "note" => json_decode($order->address)->notes??""
                 ],
                 "created_at" => $order->created_at,
             ];
@@ -285,6 +288,7 @@ class TransactionController extends Controller
     public function order_accept($id){
         try {
             //code...
+            DB::beginTransaction();
             $order = Order::where('order_number',$id)->first();
             if(!is_null($order->engineer_id)){
                 return response()->json(["message" => "Pesanan sudah ada yang mengambil"], 422);                
@@ -292,10 +296,39 @@ class TransactionController extends Controller
             $order->order_status = "accepted";
             $order->engineer_id = auth()->user()->id;
             $order->save();
+
+            $chatroom = Chatroom::where('user_1',$order->customer_id)
+                                    ->where('user_2',$order->engineer_id)
+                                    ->where('open',1);
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',$order->engineer_id)
+                                        ->where('user_2',$order->customer_id)
+                                        ->where('open',1);
+            }
+
+            if($chatroom->count() > 0){
+                $chatroom = $chatroom->first();
+            }else{
+                $chatroom = Chatroom::create([
+                    "user_1" => $order->engineer_id,
+                    "user_2" => $order->customer_id
+                ]);
+            }
+
+            $chat = Chat::create([
+                "to" => $order->customer_id,
+                "from" => $order->engineer_id,
+                "message" => "Perkenalkan Saya ".$order->engineer->name.", saya teknisi yang akan menangani orderan anda.",
+                "chatroom_id" => $chatroom->id,
+                "media" => null
+            ]);
+
+            DB::commit();
             
             return response()->json(["message" => "Order Accepted"]);            
             
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
             //throw $th;
         }

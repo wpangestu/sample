@@ -85,33 +85,36 @@
                           <!-- <a onclick="return confirm('Apa anda yakin?')" href="#" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi</a> -->
                       </div>
                       @endif
-                      @if($order->order_status === "waiting-order")
+                      @if($order->order_status === "accepted")
                       <div class="form-group">
-                        <label for="">Proses / Tolak Order</label><br>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'processed']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Proses Order</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'decline']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Tolak Order</a>
+                      <label for="">Diterima Teknisi</label><br>
+                        <!-- <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'processed']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Proses Order</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'decline']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Tolak Order</a> -->
                       </div>
                       @endif
                       @if($order->order_status === "processed")
                       <div class="form-group">
-                        <label for="">Aksi</label><br>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'take-away']) }}" class="btn btn-sm btn-info"><i class="fa fa-hands-helping"></i> Take Away</a>
+                      <label for="">Sedang diproses Teknisi</label><br>
+                        <!-- <label for="">Aksi</label><br>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'take-away']) }}" class="btn btn-sm btn-info"><i class="fa fa-hands-helping"></i> Extend</a>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a> -->
                       </div>
                       @endif
-                      @if($order->order_status === "take-away")
+                      @if($order->order_status === "extend")
                       <div class="form-group">
-                        <label for="">Aksi</label><br>
+                      <label for="">Pengerjaan di perpanjang</label><br>
+                        <!-- <label for="">Aksi</label><br>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a>
+                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a> -->
                       </div>
                       @endif
                       @if($order->order_status === "done")
                         <div class="form-group">
+                        <label for="">Selesai</label><br>
+                          <img src="{{ $order->photo }}" class="img-fluid">
                           <label for="">Review Customer</label><br>
                         @if($order->review()->exists())
-
                           @else
                           <span>Belum Ada Review</span> [<a href="{{ route('review_service.create',[$order->id]) }}">Tambahkan</a>]
                         @endif
@@ -128,6 +131,17 @@
                         @php $address = json_decode($order->address) @endphp
                         <textarea type="text" readonly class="form-control">{{ $address->description??'-' }} | Lat: {{ $address->latitude??'-' }} | Lng: {{ $address->longitude??'-' }} | Note: {{ $address->notes??'-' }} </textarea> 
                       </div>
+                      <hr>
+                      @if($order->engineer()->exists())
+                      <div class="form-group">
+                        <label for="">Teknisi</label>
+                        <input type="text" readonly value="{{ $order->engineer->userid." - ".$order->engineer->name }}" class="form-control"> 
+                      </div>
+                      <div class="form-group">
+                        <label for="">Alamat Teknisi</label>
+                        <textarea type="text" readonly class="form-control">{{ $order->engineer->address??'-' }}</textarea> 
+                      </div>
+                      @endif
                     </div>
                 </div>
                 <hr>
@@ -212,7 +226,7 @@
                 backgroundColor: 'transparent'
             },
             onUnblock: function() {
-                // alert('Page is now unblocked. FadeOut complete.');
+              location.reload();
             }
         });
       });
