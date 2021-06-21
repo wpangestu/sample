@@ -260,11 +260,11 @@ class TransactionController extends Controller
                 }
 
                 $data_arr[] = [
-                    "id" => $value->review->id,
+                    "id" => (int)$value->review->id,
                     "name" => $value->order_detail[0]->name,
-                    "quantity" => $count,
-                    "address" => json_decode($value->address)->name??'-',
-                    "rating" => $value->review->ratings??null,
+                    "quantity" => (int)$count,
+                    "address" => json_decode($value->address)->description??'-',
+                    "rating" => $value->review->ratings??0,
                     "created_at" => $value->review->created_at
                 ];
             }
@@ -304,7 +304,7 @@ class TransactionController extends Controller
     public function order_decline($id){
         try {
             //code...
-            $order = Order::find($id);
+            // $order = Order::find($id);
             // $order->order_status = "denied";
             // $order->save();
             
@@ -319,7 +319,7 @@ class TransactionController extends Controller
     public function order_process($id){
         try {
             //code...
-            $order = Order::find($id);
+            $order = Order::where('order_number',$id)->first();
             $order->order_status = "processed";
             $order->save();
             
@@ -346,7 +346,7 @@ class TransactionController extends Controller
             $photo = $request->file('photo');
             $photo_path = $photo->store($uploadFolder,'public');
 
-            $order = Order::find($id);
+            $order = Order::where('order_number',$id)->first();
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
@@ -362,7 +362,7 @@ class TransactionController extends Controller
     public function order_extend($id){
         try {
             //code...
-            $order = Order::find($id);
+            $order = Order::where('order_number',$id)->first();
             $order->order_status = "extend";
             $order->is_extend = true;
             $order->save();
