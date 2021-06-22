@@ -38,6 +38,6 @@ class Order extends Model
     }
 
     public function review(){
-        return $this->hasOne('App\Models\ReviewService','order_id','id');
+        return $this->hasOne('App\Models\ReviewService','order_number_id','order_number');
     }
 }

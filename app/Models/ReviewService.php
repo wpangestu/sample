@@ -13,15 +13,11 @@ class ReviewService extends Model
         'liked' => 'array'
     ];
 
-    protected $fillable = ['order_id','ratings','description','liked'];
+    protected $fillable = ['order_number_id','ratings','description','liked'];
 
     protected $table = 'reviews';
 
-    public function service_order(){
-        return $this->belongsTo('App\Models\ServiceOrder','service_order_id','id');
-    }
-
     public function order(){
-        return $this->belongsTo('App\Models\Order','order_id','id');
+        return $this->belongsTo('App\Models\Order','order_number_id','order_number');
     }
 }

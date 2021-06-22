@@ -280,10 +280,10 @@ class ServiceOrderController extends Controller
             $status =  '<badge class="badge badge-primary">Diterima Teknisi</badge>';
         }
         elseif($order->order_status=="processed") {
-            $status =  '<badge class="badge badge-indigo">Diproses</badge>';
+            $status =  '<badge class="badge bg-indigo">Diproses</badge>';
         }
         elseif($order->order_status=="extend") {
-            $status =  '<badge class="badge badge-navy">Extend</badge>';
+            $status =  '<badge class="badge bg-navy">Extend</badge>';
         }
         elseif($order->order_status=="canceled") {
             $status =  '<badge class="badge badge-danger">Dibatalkan</badge>';

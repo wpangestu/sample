@@ -75,26 +75,26 @@
                       <div class="form-group">
                         <label for="">Status Order</label>
                         <div class="status">
-                          {!! $status !!}
+                        {!! $status !!}
                         </div>
                       </div>
                       @if($order->order_status === "payment_success"||$order->order_status === "waiting_order")
                       <div class="form-group">
-                        <label for="">Mencari Teknisi</label><br>
+                        <label for="">Aksi</label><br>
                         <button class="btn btn-sm btn-info" id="btn_search_technician"><i class="fa fa-search"></i> Mencari Teknisi</button>
                           <!-- <a onclick="return confirm('Apa anda yakin?')" href="#" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi</a> -->
                       </div>
                       @endif
                       @if($order->order_status === "accepted")
                       <div class="form-group">
-                      <label for="">Diterima Teknisi</label><br>
+                      <!-- <label for="">Diterima Teknisi</label><br> -->
                         <!-- <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'processed']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Proses Order</a>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'decline']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Tolak Order</a> -->
                       </div>
                       @endif
                       @if($order->order_status === "processed")
                       <div class="form-group">
-                      <label for="">Sedang diproses Teknisi</label><br>
+                      <!-- <label for="">Sedang diproses Teknisi</label><br> -->
                         <!-- <label for="">Aksi</label><br>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'take-away']) }}" class="btn btn-sm btn-info"><i class="fa fa-hands-helping"></i> Extend</a>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
@@ -103,7 +103,7 @@
                       @endif
                       @if($order->order_status === "extend")
                       <div class="form-group">
-                      <label for="">Pengerjaan di perpanjang</label><br>
+                      <!-- <label for="">Pengerjaan di perpanjang</label><br> -->
                         <!-- <label for="">Aksi</label><br>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
                         <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a> -->
@@ -111,10 +111,26 @@
                       @endif
                       @if($order->order_status === "done")
                         <div class="form-group">
-                        <label for="">Selesai</label><br>
-                          <img src="{{ $order->photo }}" class="img-fluid">
+                          <img style="
+                          width: 50%;
+                          height: 200px;
+                          object-fit: cover;
+                          object-position: center;
+                          " src="{{ $order->photo }}" class="img-fluid">
+                          <br>
                           <label for="">Review Customer</label><br>
                         @if($order->review()->exists())
+                            <i class="text-warning fa fa-star"></i> {{$order->review->ratings}}<br>
+                            <label class="text-muted">Likes</label>
+                            <select class="form-control select2" multiple>
+                            @if (is_array($order->review->liked))
+                              @foreach ($order->review->liked as $val)
+                                <option selected>{{ $val }}</option>                                
+                              @endforeach
+                            @endif
+                            </select>
+                            <label class="text-muted">Komentar</label>
+                            <textarea rows="3" class="form-control" readonly>{{ $order->review->description??'-' }}</textarea>
                           @else
                           <span>Belum Ada Review</span> [<a href="{{ route('review_service.create',[$order->id]) }}">Tambahkan</a>]
                         @endif
@@ -201,6 +217,8 @@
 <script>
 
     $(document).ready(function(){
+
+      $('.select2').select2("readonly", true);
 
       $('#btn_search_technician').click(function(){
 
