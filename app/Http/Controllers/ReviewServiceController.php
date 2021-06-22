@@ -26,7 +26,7 @@ class ReviewServiceController extends Controller
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('service_id',function($row){
-                        return $row->order->order_number??'-';
+                        return $row->order_number_id??'-';
                     })
                     ->addColumn('engineer_id',function($row){
                         return $row->order->engineer->name??'-';
@@ -93,7 +93,7 @@ class ReviewServiceController extends Controller
         ]);
 
         $review = new ReviewService;
-        $review->order_id = $orderid;
+        $review->order_number_id = $orderid;
         $review->ratings = $request->input('ratings');
         $review->description = $request->input('description');
         $review->save();

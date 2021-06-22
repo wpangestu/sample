@@ -47,7 +47,7 @@ class NotificationController extends Controller
     
                 }elseif($val->type ==="review"){
                     
-                    $review = ReviewService::find($val->id_data);
+                    $review = ReviewService::where('order_number_id',$val->id_data)->first();
                     if(is_null($review)){
                         $extra= [
                             "rating" => 0

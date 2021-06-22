@@ -57,6 +57,14 @@
                                 <input required value="{{ $review->ratings }}" type="number" readonly class="form-control" name="ratings" min="0" max="5" id="inputRatings">
                             </div>
                             <div class="form-group">
+                                <label for="inputRatings" class="col-form-label">Likes</label>
+                                <select class="form-control" multiple readonly>
+                                @foreach ($review->liked as $val)
+                                  <option selected>{{ $val }}</option>                                  
+                                @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="inputDescription" class="col-form-label">Deskripsi</label>
                                 <textarea name="description" readonly class="form-control" id="inputDescription" rows="5">{{ $review->description }}</textarea>
                             </div>

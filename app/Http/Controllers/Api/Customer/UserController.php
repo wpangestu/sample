@@ -989,7 +989,7 @@ class UserController extends Controller
                 "value" => 0,
                 "liked" => []
             ];
-            $reviewData = ReviewService::where('order_id',$order->id)->first();
+            $reviewData = ReviewService::where('order_number_id',$order->order_number)->first();
             if(isset($reviewData)){
                 $review = [
                     "value" => (float)$reviewData->ratings??0,
@@ -1137,7 +1137,7 @@ class UserController extends Controller
                 }
             }
 
-            $review = ReviewService::where('order_id',$value->id)->first();
+            $review = ReviewService::where('order_number_id',$value->order_number)->first();
 
             $data_arr[] = [
                 "id" => $value->order_number,
