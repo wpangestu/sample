@@ -18,7 +18,7 @@ class NotificationController extends Controller
             //code...
             $cek = fcm()->to($recipients)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->data([
                         'title' => 'New Message',
                         'body' => 'ini body',

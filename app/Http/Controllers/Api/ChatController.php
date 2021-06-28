@@ -86,7 +86,7 @@ class ChatController extends Controller
 
             fcm()->to($to)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->data([
                         'userid' => auth()->user()->userid,
                         'chat' => $chat_data,
@@ -171,7 +171,7 @@ class ChatController extends Controller
 
                 fcm()->to($fcm_token)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->notification([
                         'title' => 'Notifikasi',
                         'body' => 'Chat Baru',
@@ -722,7 +722,7 @@ class ChatController extends Controller
 
             fcm()->to($to)
             ->priority('high')
-            ->timeToLive(0)
+            ->timeToLive(60)
             ->notification([
                 'title' => 'Pesan Baru '.$chat->user_from->name??'',
                 'body' => $chat->message,

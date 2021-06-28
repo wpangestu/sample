@@ -22,7 +22,7 @@ class ChatController extends Controller
 
             fcm()->toTopic("technician")
             ->priority('high')
-            ->timeToLive(0)
+            ->timeToLive(60)
             ->data([
                 'userid' => "adasd",
                 'chat' => "asd",
@@ -322,7 +322,7 @@ class ChatController extends Controller
 
                 fcm()->to($token)
                 ->priority('high')
-                ->timeToLive(0)
+                ->timeToLive(60)
                 ->notification([
                     'title' => 'Notifikasi',
                     'body' => 'Chat Baru',

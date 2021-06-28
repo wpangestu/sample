@@ -164,7 +164,7 @@ class WithdrawController extends Controller
             $token[] = $withdraw->user->fcm_token;
             fcm()->to($token)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,
@@ -210,7 +210,7 @@ class WithdrawController extends Controller
             $token[] = $withdraw->user->fcm_token;
             fcm()->to($token)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,

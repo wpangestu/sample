@@ -362,7 +362,7 @@ class ServiceOrderController extends Controller
 
             fcm()->toTopic("technician")
             ->priority('high')
-            ->timeToLive(0)
+            ->timeToLive(60)
             ->data([
                 'click_action' => "FLUTTER_NOTIFICATION_CLICK",
                 'main_click_action' => "OPEN_INCOMING_ORDER",
