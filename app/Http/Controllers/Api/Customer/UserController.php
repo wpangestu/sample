@@ -783,9 +783,9 @@ class UserController extends Controller
                 ];
 
                 $origin = [
-                    "latitude" => (float)$engineer->lat??0,
-                    "longitude" => (float)$engineer->lng??0,
-                    "description" => "",
+                    "latitude" => (float)json_decode($order->origin)->latitude??0,
+                    "longitude" => (float)json_decode($order->origin)->latitude??0,
+                    "description" => json_decode($order->irigin)->description??''
                 ];
             }
             // dd($engineer);
@@ -977,11 +977,11 @@ class UserController extends Controller
             }
 
             $origin = null;
-            if(isset($order->engineer)){
+            if(isset($order->origin)){
                 $origin = [
-                    "latitude" => (float)$order->engineer->lat??0,
-                    "longitude" => (float)$order->engineer->lng??0,
-                    "description" => "alamat teknisi"
+                    "latitude" => (float)json_decode($order->origin)->latitude??0,
+                    "longitude" => (float)json_decode($order->origin)->latitude??0,
+                    "description" => json_decode($order->origin)->description??''
                 ];
             }
 
@@ -998,7 +998,6 @@ class UserController extends Controller
             }
 
             // $response=null;
-
             if($order->order_type=="regular"){
                 $orderDetail = [];
                 $no=1;

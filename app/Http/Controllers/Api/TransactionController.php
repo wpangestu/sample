@@ -13,6 +13,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -288,16 +289,51 @@ class TransactionController extends Controller
         }
     }
     
-    public function order_accept($id){
+    public function order_accept(Request $request, $id){
         try {
             //code...
             DB::beginTransaction();
+
+            $lat = 0;
+            $lng = 0;
+            $description = "Alamat teknisi";
+
+            if($request->has('lat')){
+                $lat = $request->get('lat');
+            }
+            if($request->has('lng')){
+                $lng = $request->get('lng');
+            }
+
+            $key = env('GOOGLE_API_KEY','');
+
+            $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json",[
+                "latlng" => $lat.",".$lng,
+                "language" => "id",
+                "key" => $key,
+            ]);
+
+            if($response->successful()){
+                $result = $response->json()['results'][0];
+            }else{
+                $errors = json_decode($response->getBody()->getContents());
+                return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+            }
+
+            $origin = [
+                "description" => $result['formatted_address']??$description,
+                "latitude" => (float)$lat,
+                "longitude" => (float)$lng,
+            ];
+
             $order = Order::where('order_number',$id)->first();
             if(!is_null($order->engineer_id)){
                 return response()->json(["message" => "Pesanan sudah ada yang mengambil"], 422);                
             }
+
             $order->order_status = "accepted";
             $order->engineer_id = auth()->user()->id;
+            $order->origin = json_encode($origin);
             $order->save();
 
             $chatroom = Chatroom::where('user_1',$order->customer_id)
