@@ -167,30 +167,28 @@ class PaymentController extends Controller
                 $description = "Pemabayaran Order #".$payment->data_id;
             }else{
                 $description = "Pemabayaran Deposit #".$payment->data_id;
+                $user = User::find($payment->customer_id);
+                $user->balance = $user->balance+$amount;
+                $user->save();
+    
+                HistoryBalance::create([
+                    "user_id" => $user->id,
+                    "amount" => $amount,
+                    "description" => $description,
+                    "created_by" => auth()->user()->id
+                ]);
             }
-
-            $user = User::find($payment->customer_id);
-            $user->balance = $user->balance+$amount;
-            $user->save();
-
-            HistoryBalance::create([
-                "user_id" => $user->id,
-                "amount" => $amount,
-                "description" => $description,
-                "created_by" => auth()->user()->id
-            ]);
-
             $causer = auth()->user();
             $atribut = [
 
             ];
-
+            
             DB::commit();
 
             activity('confirm_payment')->performedOn($payment)
                         ->causedBy($causer)
                         ->withProperties($atribut)
-                        ->log('Pengguna melakukan konfirmasi ACC Pembayaran');
+                        ->log('Pengguna melakukan konfirmasi ACC '.$description);
 
             return redirect()->route('payment.index')->with('success','Data berhasil diubah');
 
