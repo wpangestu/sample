@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use Carbon\Carbon;
 use App\Models\Chat;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\client;
 use App\Models\Chatroom;
+use App\Models\BaseService;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -379,14 +382,52 @@ class TransactionController extends Controller
             $photo = $request->file('photo');
             $photo_path = $photo->store($uploadFolder,'public');
 
+            DB::beginTransaction();
+
             $order = Order::where('order_number',$id)->first();
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
-            
+
+            $user = User::find($order->engineer_id);
+            $fee_technician = 0;
+            if($order->order_type=="regular"){
+                foreach ($order->order_detail as $key => $value) {
+                    # code...
+                    $base = BaseService::find($value->base_id);
+                    $fee_technician += $base->price_receive;
+                }
+            }
+
+            $user->balance = $user->balance+$fee_technician;
+            $user->save();
+
+            $title = "Order #".$order->order_number." telah selesai";
+            $subtitle = "Saldo ".rupiah($fee_technician)." telah masuk ke saldo anda";
+            Notification::create([
+                "title" => $title,
+                "type" => "order",
+                "user_id" => $order->engineer_id,
+                "read" => false,
+                "subtitle" => $subtitle,
+                "id_data" => $order->order_number,
+            ]);
+
+            $token[] = $order->engineer->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(0)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $subtitle,
+                    ]);            
+
+            DB::commit();
+
             return response()->json(["message" => "Order Comlpete"]);            
             
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
             //throw $th;
         }

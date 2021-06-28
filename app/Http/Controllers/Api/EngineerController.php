@@ -33,7 +33,7 @@ class EngineerController extends Controller
         try {
             //code...
             Withdraw::create([
-                "engineer_id" => auth()->user()->id,
+                "user_id" => auth()->user()->id,
                 "amount" => $request->amount,
                 "note" => $request->note,
                 "withdraw_id" => "W".uniqid()

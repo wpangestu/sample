@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Bank;
+use App\Models\BankPayment;
+use Illuminate\Http\Request;
 use App\Models\UserBankAccount;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 
 class BankController extends Controller
@@ -116,15 +117,15 @@ class BankController extends Controller
     public function bank_payment(){
         try {
             //code...
-            $bank = Bank::all();
+            $bank = BankPayment::all();
             $bank_list = [];
             foreach ($bank as $key => $value) {
                 # code...
                 $bank_list[] = [
                     "id" => $value->id,
-                    "name" => $value->name,
+                    "name" => $value->bank->name,
                     "account_number" => $value->account_number,
-                    "logo" => $value->logo
+                    "logo" => $value->bank->logo
                 ];
             }
 

@@ -1,9 +1,10 @@
 <?php
 
-use App\Models\Service;
-use App\Models\User;
 use App\Models\Chat;
+use App\Models\User;
 use App\Models\Payment;
+use App\Models\Service;
+use App\Models\Withdraw;
 use Illuminate\Database\Eloquent\Builder;
 
 function get_all_notification(){
@@ -47,6 +48,22 @@ function get_payment_check()
 {
     $payment_check = Payment::where('status','check')->count();
     return $payment_check;    
+}
+
+function get_withdraw_technician_check()
+{
+    $data = Withdraw::where('status','pending')->whereHas('user',function($query){
+        $query->Role('teknisi')->where('verified',true);
+    })->count();
+    return $data;    
+}
+
+function get_withdraw_customer_check()
+{
+    $data = Withdraw::where('status','pending')->whereHas('user',function($query){
+        $query->Role('user');
+    })->count();
+    return $data;    
 }
 
 function get_new_chat_customer(){

@@ -9,8 +9,18 @@ class Withdraw extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'engineer_id',
+        'user_id',
         'amount',
         'withdraw_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User','user_id','id');        
+    }
+    
+    public function verified()
+    {
+        return $this->belongsTo('App\Models\User','verified_by','id');        
+    }
 }

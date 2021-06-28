@@ -1277,16 +1277,30 @@ class UserController extends Controller
         
         try {
             //code...
+            $amount = $request->amount;
+            $user = User::find(auth()->user()->id);
+
+            if($amount > $user->balance){
+                return response()->json(["message" => "Tidak dapat di proses"]);
+            }
+
+            DB::beginTransaction();
             Withdraw::create([
-                "engineer_id" => auth()->user()->id,
-                "amount" => $request->amount,
+                "user_id" => auth()->user()->id,
+                "amount" => $amount,
                 "note" => $request->note,
                 "withdraw_id" => "W".uniqid()
             ]);
 
+            $user->balance = $user->balance-$amount;
+            $user->save();
+
+            DB::commit();
+
             return response()->json(['message'=>'withdraw successfully created']);
         } catch (\Throwable $th) {
             //throw $th;
+            DB::rollBack();
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }

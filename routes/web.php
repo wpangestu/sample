@@ -19,6 +19,7 @@ use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\CategoryServiceController;
 use App\Http\Controllers\BaseServiceController;
+use App\Http\Controllers\WithdrawController;
 use App\Http\Livewire\Members; //Load class Members 
 /*
 |--------------------------------------------------------------------------
@@ -184,5 +185,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('history', [HistoryController::class,'index'])->name('history.index');
     Route::get('history/engineer', [HistoryController::class,'index_teknisi'])->name('history.engineer.index');
 
+    Route::get('withdraw/technician', [WithdrawController::class, 'index_engineer'])->name('withdraw.technician.index');
+    Route::get('withdraw/customer', [WithdrawController::class, 'index_customer'])->name('withdraw.customer.index');
+    Route::get('withdraw/technician/{id}/detail', [WithdrawController::class, 'show_engineer'])->name('withdraw.technician.show');
+    Route::get('withdraw/customer/{id}/detail', [WithdrawController::class, 'show_customer'])->name('withdraw.customer.show');
+    Route::get('withdraw/confirm/{id}/accept', [WithdrawController::class, 'confirm_accept'])->name('withdraw.confirm.accept');
+    Route::get('withdraw/confirm/{id}/decline', [WithdrawController::class, 'confirm_decline'])->name('withdraw.confirm.decline');
 
 });

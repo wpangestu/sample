@@ -199,6 +199,38 @@
               </li>
             </ul>
           </li>
+          <li class="nav-item has-treeview {{ request()->routeIs('withdraw*')?'menu-open':'' }}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-money-check"></i>
+              <p>
+                Withdraw
+                <i class="fas fa-angle-left right"></i>
+                @if(get_withdraw_customer_check()+get_withdraw_technician_check() > 0)
+                <i class="fas text-info fa-circle right"></i>
+                @endif
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('withdraw.customer.index') }}" class="nav-link {{ request()->routeIs('withdraw.customer.*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Customer</p>
+                  @if(get_withdraw_customer_check()>0)
+                    <span class="right badge badge-info">{{ get_withdraw_customer_check() }}</span>
+                  @endif
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('withdraw.technician.index') }}" class="nav-link {{ request()->routeIs('withdraw.technician.*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Teknisi</p>
+                  @if(get_withdraw_technician_check()>0)
+                    <span class="right badge badge-info">{{ get_withdraw_technician_check() }}</span>
+                  @endif
+                </a>
+              </li>
+            </ul>
+          </li>
           <li class="nav-item has-treeview {{ request()->routeIs('setting*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>
