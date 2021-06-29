@@ -78,8 +78,19 @@
                   <dt class="col-sm-3">Saldo Setelah Penarikan </dt>
                   <dd class="col-sm-8">: {{ rupiah($data->user->balance??0) }}
                     <hr>
-                  
+
+                  <dt class="col-sm-3">Rekening Teknisi</dt>
+                  <dd class="col-sm-8">
+                      <ul class="inline">
+                         @forelse ($bank_accounts as $val)
+                            <li>{{ $val->bank->name??'' }} {{$val->account_number??0}} - {{$val->account_holder??''}}</li>
+                            @empty
+                            -
+                        @endforelse
+                      </ul>                    
+                        <hr>
                   </dd>
+                  
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $data->created_at }}
                   </dd>
@@ -87,6 +98,8 @@
                   <dd class="col-sm-8">: {{ $data->updated_at }}
 
                     <hr>
+
+
 
                   @if($data->status==="success" || $data->status==="decline")
                   <dt class="col-sm-3">Verifikasi By</dt>

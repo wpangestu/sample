@@ -7,6 +7,7 @@ use App\Models\Withdraw;
 use Illuminate\Http\Request;
 use App\Models\HistoryBalance;
 use App\Models\Notification;
+use App\Models\UserBankAccount;
 use Illuminate\Support\Facades\DB;
 
 class WithdrawController extends Controller
@@ -107,29 +108,33 @@ class WithdrawController extends Controller
 
     public function show_engineer($id)
     {
-        $data = Withdraw::find($id)
+        $data = Withdraw::where('id',$id)
                         ->whereHas('user',function($query) use ($id){
                             $query->Role('teknisi')
                                     ->where('verified',true);
                         })->first();
+
+        $bank_accounts = UserBankAccount::where('user_id',$data->user_id)->get();
+
         if(is_null($data)){
-            toast('Data berhasil ditambah','success');
+            toast('Terjadi kesalahan','error');
             return redirect()->back();
         }
-        return view('withdraw.show_engineer',compact('data'));
+        return view('withdraw.show_engineer',compact('data','bank_accounts'));
     }
 
     public function show_customer($id)
     {
-        $data = Withdraw::find($id)
+        $data = Withdraw::where('id',$id)
                         ->whereHas('user',function($query) use ($id){
                             $query->Role('user');
                         })->first();
+        $bank_accounts = UserBankAccount::where('user_id',$id)->get();
         if(is_null($data)){
-            toast('Data berhasil ditambah','success');
+            toast('Terjadi kesalahan','error');
             return redirect()->back();
         }
-        return view('withdraw.show_customer',compact('data'));
+        return view('withdraw.show_customer',compact('data','bank_accounts'));
     }
 
     public function confirm_accept($id){
