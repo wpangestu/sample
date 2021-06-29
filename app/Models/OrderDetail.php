@@ -17,4 +17,8 @@ class OrderDetail extends Model
         'base_id',
         'image'
     ]; 
+
+    public function base_service(){
+        return $this->belongsTo('App\Models\BaseService','base_id','id');
+    }    
 }

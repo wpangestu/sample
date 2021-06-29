@@ -155,7 +155,7 @@
                       </div>
                       <div class="form-group">
                         <label for="">Alamat Teknisi</label>
-                        <textarea type="text" readonly class="form-control">{{ $order->engineer->address??'-' }}</textarea> 
+                        <textarea type="text" readonly class="form-control">{{ $order->origin??'-' }}</textarea> 
                       </div>
                       @endif
                     </div>
@@ -174,7 +174,13 @@
                             </tr>
                           </thead>
                           <tbody>
+                            @php
+                              $fee = 0;
+                            @endphp
                             @foreach($order->order_detail as $val)
+                              @php
+                                $fee += $val->base_service->price_receive;
+                              @endphp
                               <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $val->name }}</td>
@@ -187,8 +193,16 @@
                                 <td class="text-right">{{ rupiah($order->shipping) }}</td>
                               </tr>
                               <tr>
+                                <td class="text-right" colspan="3">Unique Code</td>
+                                <td class="text-right">{{ rupiah($order->convenience_fee) }}</td>
+                              </tr>
+                              <tr>
                                 <td class="text-right" colspan="3">Total</td>
                                 <td class="text-right">{{ rupiah($order->total_payment) }}</td>
+                              </tr>
+                              <tr>
+                                <td class="text-right" colspan="3">Fee Teknisi</td>
+                                <td class="text-right">{{ rupiah($fee) }}</td>
                               </tr>
                           </tbody>
                         </table>
