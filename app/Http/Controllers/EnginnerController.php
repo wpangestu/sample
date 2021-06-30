@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use DB;
+use Mapper;
+use DataTables;
 use App\Models\User;
-use App\Models\ServiceOrder;
+use App\Models\Regency;
+use App\Models\Village;
+use App\Models\District;
 use App\Models\Engineer;
 use App\Models\Province;
-use App\Models\Regency;
-use App\Models\District;
-use App\Models\Village;
 use App\Models\UserAddress;
-use DataTables;
 use Illuminate\Support\Str;
-use Mapper;
-use Illuminate\Support\Facades\Hash;
-use DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\ServiceOrder;
+use Illuminate\Http\Request;
+use App\Models\UserBankAccount;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 
 
@@ -345,7 +346,8 @@ class EnginnerController extends Controller
             Mapper::map($data->lat, $data->lng,['zoom'=>14]);
             Mapper::informationWindow($data->lat, $data->lng, $data->name, []);
         }
-        return view('engineer.detail2',compact('data','service_orders'));
+        $bank_accounts = UserBankAccount::where('user_id',$data->id)->get();
+        return view('engineer.detail2',compact('data','service_orders','bank_accounts'));
     }
 
     /**

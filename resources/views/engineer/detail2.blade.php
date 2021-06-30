@@ -1,4 +1,5 @@
 @extends('layouts.app_layout')
+@section('title','Detail Teknisi')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -75,7 +76,7 @@
                                 <strong><i class="fas fa-star"></i> Rating</strong>
 
                                 <p class="text-muted">
-                                    4.5
+                                    0
                                 </p>
 
                                 <hr>
@@ -106,7 +107,7 @@
                             <div class="card-header p-2">
                                 <ul class="nav nav-pills">
                                     <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Data  Diri</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#service_order" data-toggle="tab">Service Order</a></li>
+                                    <!-- <li class="nav-item"><a class="nav-link" href="#service_order" data-toggle="tab">Service Order</a></li> -->
                                     <!-- <li class="nav-item"><a class="nav-link" href="#maps" data-toggle="tab">Lokasi Maps</a></li> -->
                                 </ul>
                             </div><!-- /.card-header -->
@@ -146,6 +147,17 @@
                                             <dd class="col-sm-8">: {{ $data->lat??'-' }}</dd>
                                             <dt class="col-sm-3">Lng</dt>
                                             <dd class="col-sm-8">: {{ $data->lng??'-' }}</dd>
+                                            <dt class="col-sm-3">Rekening Teknisi</dt>
+                                            <dd class="col-sm-8">
+                                                <ul class="inline">
+                                                    @forelse ($bank_accounts as $val)
+                                                        <li>{{ $val->bank->name??'' }} {{$val->account_number??0}} - {{$val->account_holder??''}}</li>
+                                                        @empty
+                                                        -
+                                                    @endforelse
+                                                </ul>                    
+                                                <hr>
+                                            </dd>
                                         </dl>
                                         <div id="map" style="width:100%;height:220px;">
                                             {!! Mapper::render() !!}

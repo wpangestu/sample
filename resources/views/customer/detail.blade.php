@@ -71,6 +71,17 @@
                   <dd class="col-sm-8">: {{ $data->address??'-' }}</span>
                   <dt class="col-sm-3">Status</dt>
                   <dd class="col-sm-8">: <span class="badge badge-{{ $data->is_active===1?'success':'secondary' }}">{{ $data->is_active===1?'Aktif':'Tidak Aktif' }}</span>
+                  <dt class="col-sm-3">Rekening Customer</dt>
+                  <dd class="col-sm-8">
+                      <ul class="inline">
+                         @forelse ($bank_accounts as $val)
+                            <li>{{ $val->bank->name??'' }} {{$val->account_number??0}} - {{$val->account_holder??''}}</li>
+                            @empty
+                            -
+                        @endforelse
+                      </ul>                    
+                        <hr>
+                  </dd>
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $data->created_at??'-' }}</dd>
                   <dt class="col-sm-3">Di Update</dt>

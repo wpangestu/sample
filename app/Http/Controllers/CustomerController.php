@@ -8,6 +8,7 @@ use DataTables;
 use Illuminate\Support\Str;
 use App\Exports\CustomerExport;
 use App\Imports\CustomerImport;
+use App\Models\UserBankAccount;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
@@ -119,7 +120,8 @@ class CustomerController extends Controller
     {
         //
         $data = User::Role('user')->where('userid',$id)->first();
-        return view('customer.detail',compact('data'));
+        $bank_accounts = UserBankAccount::where('user_id',$data->id)->get();
+        return view('customer.detail',compact('data','bank_accounts'));
     }
 
     /**
