@@ -326,6 +326,12 @@ class TransactionController extends Controller
                 "longitude" => (float)$lng,
             ];
 
+            $engineer = auth()->user();
+            $engineer->address = $origin['description'];
+            $engineer->lat = $origin['latitude'];
+            $engineer->lng = $origin['longitude'];
+            $engineer->save();
+
             $order = Order::where('order_number',$id)->first();
             if(!is_null($order->engineer_id)){
                 return response()->json(["message" => "Pesanan sudah ada yang mengambil"], 422);                

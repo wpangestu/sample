@@ -693,6 +693,12 @@ class UserController extends Controller
                 ];
             }
 
+            $customer = auth()->user();
+            $customer->address = $address['description'];
+            $customer->lat = $address['latitude'];
+            $customer->lng = $address['longitude'];
+            $customer->save();
+
             $total_service_price = 0;
             $engineer_id = [];
 
@@ -878,6 +884,12 @@ class UserController extends Controller
                     "notes" => $notes
                 ];
             }
+
+            $customer = auth()->user();
+            $customer->address = $address['description'];
+            $customer->lat = $address['latitude'];
+            $customer->lng = $address['longitude'];
+            $customer->save();
 
             $total_service_price = 0;
             $service = BaseService::find($service);
