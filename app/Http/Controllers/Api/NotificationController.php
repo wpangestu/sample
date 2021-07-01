@@ -34,6 +34,7 @@ class NotificationController extends Controller
                     "read" => $val->read===0?false:true,
                     "title" => $val->title,
                     "type" => $val->type,
+                    "image" => "",
                     "id_data" => $val->id_data,
                     "date" => $val->created_at,
                 ];
@@ -47,7 +48,7 @@ class NotificationController extends Controller
     
                 }elseif($val->type ==="review"){
                     
-                    $review = ReviewService::where('order_number_id',$val->id_data)->first();
+                    $review = ReviewService::find($val->id_data)->first();
                     if(is_null($review)){
                         $extra= [
                             "rating" => 0
@@ -71,8 +72,8 @@ class NotificationController extends Controller
                     }else{
                         $extra['wallet']=[
                             "amount" => (int)$withdraw->amount,
-                            "message" => "Berhasi dikirim ke nomor rekening Kamu.",
-                            "color" => "#27AE60"
+                            "message" => $val->subtitle??'',
+                            "color" => $val->subtitle_color??''
                         ];
                     }
                     $response_data = array_merge($response_data, $extra);

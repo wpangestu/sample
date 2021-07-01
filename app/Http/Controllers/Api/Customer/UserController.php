@@ -1493,17 +1493,44 @@ class UserController extends Controller
 
         try {
             //code...
-            ReviewService::create([
+            DB::beginTransaction();
+
+            $review = ReviewService::create([
                 "order_number_id" => $request->get('order_id'),
                 "ratings" => $request->get('rating'),
                 "liked" => $request->get('likes')??[],
                 "description" => $request->get('review_reason')
             ]);
 
+            $order = Order::where('order_number',$request->get('order_id'))->first();
+
+            $title = auth()->user()->name." telah memberikan rating";
+
+            Notification::create([
+                "title" => $title,
+                "type" => "review",
+                "user_id" => $order->engineer_id,
+                "id_data" => $review->id,
+            ]);
+
+            $technician = User::find($order->engineer_id);
+
+            fcm()->to($technician->fcm_token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->data([
+                        'title' => $title,
+                        'body' => "Rating : ".$request->get('rating'),
+                    ])
+                    ->send();
+
+            DB::commit();
+
             return response()->json(["message" => "Review submit success"]);
 
         } catch (\Throwable $th) {
             //throw $th;
+            DB::rollBack();
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }

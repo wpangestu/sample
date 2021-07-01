@@ -193,12 +193,26 @@ class ServiceController extends Controller
             $service->verified_at = date("Y-m-d H:i:s");
             $service->save();
 
+            $title = "Jasa: " . $service->base_service->name;
+
             Notification::create([
-                "title" => "Jasa: " . $service->name,
+                "title" => $title,
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
-                "service_id" => $service->id
+                "id_data" => $service->id,
+                "service_status" => "active"
             ]);
+
+            $technician = User::find($service->engineer_id);
+
+            fcm()->to($technician->fcm_token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->data([
+                        'title' => $title,
+                        'body' => 'Telah Aktif',
+                    ])
+                    ->send();
 
             $causer = auth()->user();
             activity('confirm_service')->performedOn($service)
@@ -229,12 +243,26 @@ class ServiceController extends Controller
             $service->verified_at = date("Y-m-d H:i:s");
             $service->save();
 
+            $title = "Jasa: " . $service->base_service->name;
+
             Notification::create([
-                "title" => "Jasa: " . $service->name,
+                "title" => $title,
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
-                "service_id" => $service->id
+                "id_data" => $service->id,
+                "service_status" => "denied"
             ]);
+
+            $technician = User::find($service->engineer_id);
+
+            fcm()->to($technician->fcm_token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->data([
+                        'title' => $title,
+                        'body' => 'Telah Ditolak',
+                    ])
+                    ->send();
 
             $causer = auth()->user();
             activity('confirm_service')->performedOn($service)

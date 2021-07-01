@@ -368,6 +368,29 @@ class TransactionController extends Controller
                 "media" => null
             ]);
 
+            $title = "Berhasil menerima order";
+            $count = 0;
+            foreach($order->order_detail as $val){
+                $count++;
+            }
+            $subtitle = $count==1 ? $order->order_detail[0]->name : $order->order_detail[0]->name.", dan ".($count-1)." jasa lainya";
+            Notification::create([
+                "title" => $title,
+                "type" => "order",
+                "user_id" => $order->engineer_id,
+                "id_data" => $order->id,
+                "subtitle" => $subtitle
+            ]);
+
+            $token[] = $order->engineer->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $subtitle,
+                    ]);            
+
             DB::commit();
             
             return response()->json(["message" => "Order Accepted"]);            
@@ -458,7 +481,7 @@ class TransactionController extends Controller
             $token[] = $order->engineer->fcm_token;
             fcm()->to($token)
                     ->priority('high')
-                    ->timeToLive(0)
+                    ->timeToLive(60)
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,

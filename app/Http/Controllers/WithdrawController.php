@@ -156,14 +156,16 @@ class WithdrawController extends Controller
                 "created_by" => auth()->user()->id
             ]);
 
-            $title = "Penarikan saldo berhasil";
-            $subtitle = "Penarikan saldo ".$withdraw->user->balance??'-'." berhasil";
+            $title = "Penarikan saldo sebesar ".rupiah($withdraw->amount);
+            $subtitle = "Berhasil dikirim ke nomor rekening kamu";
             Notification::create([
                 "title" => $title,
                 "type" => "wallet",
                 "user_id" => $withdraw->user_id,
                 "read" => false,
-                "subtitle" => $subtitle
+                "id_data" => $withdraw->id,
+                "subtitle" => $subtitle,
+                "subtitle_color" => "#00FF00"
             ]);
 
             $token[] = $withdraw->user->fcm_token;
@@ -202,14 +204,16 @@ class WithdrawController extends Controller
             $withdraw->user->balance = $withdraw->user->balance+
             $withdraw->save();
 
-            $title = "Penarikan saldo ditolak";
-            $subtitle = "Penarikan saldo ".$withdraw->user->balance??'-'." ditolak";
+            $title = "Penarikan saldo sebesar ".rupiah($withdraw->amount);
+            $subtitle = "Ditolak oleh admin";
             Notification::create([
                 "title" => $title,
                 "type" => "wallet",
                 "user_id" => $withdraw->user_id,
                 "read" => false,
-                "subtitle" => $subtitle
+                "id_data" => $withdraw->id,
+                "subtitle" => $subtitle,
+                "subtitle_color" => "#FF0000"
             ]);
 
             $token[] = $withdraw->user->fcm_token;
@@ -219,7 +223,7 @@ class WithdrawController extends Controller
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,
-                    ]);
+                    ]);            
             DB::commit();            
 
             toast('Konfirmasi Withdraw Ditolak','success');
