@@ -561,6 +561,8 @@ class UserController extends Controller
             $lng = $request->get('lng');
             $notes = $request->get('notes');
             $services = $request->get('services');
+            $custom_category = $request->get('custom_category');
+            $custom_type = $request->get('custom_type');
 
             if ($request->has('address_id')) {
                 $address_id = $request->get('address_id');
@@ -582,12 +584,18 @@ class UserController extends Controller
             }
 
             $total_service_price = 0;
-            foreach ($services as $key => $value) {
-                $service_id = $value['service_id'];
-                $qty = $value['quantity'];
 
-                $service = BaseService::find($service_id);
-                $total_service_price += $service->price * $qty;
+            if(isset($custom_category)){
+                $service = BaseService::find($custom_category);
+                $total_service_price = $service->price??0;
+            }elseif(isset($service)){
+                foreach ($services as $key => $value) {
+                    $service_id = $value['service_id'];
+                    $qty = $value['quantity'];
+    
+                    $service = BaseService::find($service_id);
+                    $total_service_price += $service->price * $qty;
+                }
             }
 
             $shipping = 12000;
@@ -726,6 +734,22 @@ class UserController extends Controller
                 "total_payment_receive" => $total_price,
                 "address" => json_encode($address)
             ]);
+
+            $payment_type = $request->get('payment_type');
+
+            if($payment_type=="saldo"){
+
+                if($customer->balance >= $total_price){
+                    $order->order_status = "payment_success";
+                    $order->save();
+
+                    $customer->balance -= $total_price;
+                    $customer->save();
+
+                }else{
+                    return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
+                }
+            }
 
             $promo_data = [];
             $promo_value = 0;
@@ -923,6 +947,21 @@ class UserController extends Controller
                 "address" => json_encode($address),
                 "custom_order" => json_encode($custom_order_data)
             ]);
+
+            $payment_type = $request->get('payment_type');
+
+            if($payment_type=="saldo"){
+
+                if($customer->balance >= $total_price){
+                    $order->order_status = "payment_success";
+                    $order->save();
+
+                    $customer->balance -= $total_price;
+                    $customer->save();
+                }else{
+                    return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
+                }
+            }
 
             $engineer_data=null;
             $origin = null;

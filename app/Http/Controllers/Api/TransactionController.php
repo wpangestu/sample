@@ -196,7 +196,7 @@ class TransactionController extends Controller
                 $combined = array_merge($response, $custom);
 
                 $extra = [
-                    "deposit" => (int)$order->deposit
+                    "deposit" => (int)$order->customer->balance
                 ];
 
                 $combined = array_merge($combined,$extra);
@@ -373,7 +373,11 @@ class TransactionController extends Controller
             foreach($order->order_detail as $val){
                 $count++;
             }
-            $subtitle = $count==1 ? $order->order_detail[0]->name : $order->order_detail[0]->name.", dan ".($count-1)." jasa lainya";
+            if($order->order_type=="reguler"){
+                $subtitle = $count==1 ? $order->order_detail[0]->name : $order->order_detail[0]->name.", dan ".($count-1)." jasa lainya";
+            }elseif($order->order_type=="custom"){
+                $subtitle = "Custom Order";
+            }
             Notification::create([
                 "title" => $title,
                 "type" => "order",

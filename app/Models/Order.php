@@ -22,7 +22,9 @@ class Order extends Model
         'address',
         'total_payment',
         'total_payment_receive',
-        'origin'
+        'origin',
+        'custom_order',
+        'order_status'
     ]; 
 
     public function customer(){
