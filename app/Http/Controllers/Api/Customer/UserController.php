@@ -584,11 +584,11 @@ class UserController extends Controller
             }
 
             $total_service_price = 0;
-
+            
             if(isset($custom_category)){
                 $service = BaseService::find($custom_category);
                 $total_service_price = $service->price??0;
-            }elseif(isset($service)){
+            }elseif(isset($services)){
                 foreach ($services as $key => $value) {
                     $service_id = $value['service_id'];
                     $qty = $value['quantity'];
