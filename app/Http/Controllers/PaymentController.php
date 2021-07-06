@@ -182,6 +182,15 @@ class PaymentController extends Controller
             $atribut = [
 
             ];
+
+            $token[] = $user->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $description,
+                        'body' => "Berhasil diterima oleh admin",
+                    ]);            
             
             DB::commit();
 
@@ -211,6 +220,24 @@ class PaymentController extends Controller
             $payment->verified_at = date('Y-m-d H:i:s');
             $payment->verified_name = auth()->user()->name;
             $payment->save();
+
+            $description = "";            
+            if($payment->type_payment=="order"){
+                $description = "Pemabayaran Order #".$payment->data_id;
+            }else{
+                $description = "Pemabayaran Deposit #".$payment->data_id;
+            }
+
+            $user = User::find($payment->customer_id);
+
+            $token[] = $user->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $description,
+                        'body' => "Gagal diterima oleh admin",
+                    ]);
 
             $causer = auth()->user();
             $atribut = [

@@ -60,9 +60,9 @@ Route::prefix('customer')->group(function () {
 
 Route::get('teknisi/service/category',[CustomerUserController::class,'service_category']);
 Route::get('teknisi/service/list',[ServiceController::class,'get_base_service_by_category']);
-Route::get('/teknisi​/address/recommendation', [UserAddressController::class, 'recommendation']);
+Route::get('/teknisi/address/recommendation', [UserAddressController::class, 'recommendation']);
 
-Route::get('teknisi​/bank-account​/bank', [BankController::class,'index']);
+Route::get('teknisi/bank-account/bank', [BankController::class,'index']);
 
 Route::middleware(['jwt.verify'])->group(function () {
 
@@ -80,42 +80,43 @@ Route::middleware(['jwt.verify'])->group(function () {
     // User
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
     Route::post('teknisi/user', [UserController::class,'updateEngineer']);
-    Route::post('teknisi​/user​/token', [UserController::class,'store_fcm_token']);
-    Route::delete('teknisi​/user​/token', [UserController::class,'delete_fcm_token']);
+    Route::post('teknisi/user/token', [UserController::class,'store_fcm_token']);
+    Route::delete('teknisi/user/token', [UserController::class,'delete_fcm_token']);
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
     Route::post('teknisi/wallet/withdraw', [EngineerController::class,'withdraw']);
 
 
-    Route::get('teknisi​/bank-account​', [BankController::class,'get_user_bank_account']);
-    Route::post('teknisi​/bank-account​', [BankController::class,'store_user_bank_account']);
+    Route::get('teknisi/bank-account', [BankController::class,'get_user_bank_account']);
+    Route::post('teknisi/bank-account', [BankController::class,'store_user_bank_account']);
 
-    Route::get('/teknisi​/address', [UserAddressController::class, 'index']);
-    Route::post('/teknisi​/address', [UserAddressController::class, 'store']);
+    Route::get('/teknisi/address', [UserAddressController::class, 'index']);
+    Route::post('/teknisi/address', [UserAddressController::class, 'store']);
 
-    Route::get('/teknisi​/address/cek', [UserAddressController::class, 'cek']);
-    Route::put('/teknisi​/address/{id}', [UserAddressController::class, 'update']);
-    Route::delete('/teknisi​/address/{id}', [UserAddressController::class, 'destroy']);
+    Route::get('/teknisi/address/cek', [UserAddressController::class, 'cek']);
+    Route::put('/teknisi/address/{id}', [UserAddressController::class, 'update']);
+    Route::delete('/teknisi/address/{id}', [UserAddressController::class, 'destroy']);
     
-    Route::get('/​teknisi​/notification', [NotificationController::class, 'index']);
-    Route::post('/​teknisi​/notification/read', [NotificationController::class, 'read']);
+    Route::get('/teknisi/notification', [NotificationController::class, 'index']);
+    Route::post('/teknisi/notification/read', [NotificationController::class, 'read']);
 
     Route::get('/teknisi/chat/support', [ChatController::class, 'get_support_chat']);
     Route::post('/teknisi/chat/support', [ChatController::class, 'send_chat_support']);
 
-    Route::get('/​teknisi​/chat', [ChatController::class, 'get_message_chat']);
-    Route::post('/​teknisi​/chat/pin', [ChatController::class, 'pinned_chat']);
-    Route::post('/​teknisi​/chat/chatroom', [ChatController::class, 'store_chatroom']);
-    Route::get('/​teknisi​/chat/{id}', [ChatController::class, 'get_message_by_chatroom_id']);
-    Route::post('/​teknisi​/chat/delete', [ChatController::class, 'delete_chat']);
+    Route::get('/teknisi/chat', [ChatController::class, 'get_message_chat']);
+    Route::post('/teknisi/chat/pin', [ChatController::class, 'pinned_chat']);
+    Route::post('/teknisi/chat/chatroom', [ChatController::class, 'store_chatroom']);
+    Route::get('/teknisi/chat/{id}', [ChatController::class, 'get_message_by_chatroom_id']);
+    Route::post('/teknisi/chat/{id}', [ChatController::class, 'send_new_chat']);
+    Route::post('/teknisi/chat/delete', [ChatController::class, 'delete_chat']);
     
-    Route::get('/​teknisi​/history/chat', [ChatController::class, 'get_history_message_chat']);
-    Route::get('/​teknisi​/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
-    Route::post('/​teknisi​/history/chat/delete', [ChatController::class, 'delete_history_chat']);
-    Route::post('/​teknisi​/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
+    Route::get('/teknisi/history/chat', [ChatController::class, 'get_history_message_chat']);
+    Route::get('/teknisi/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
+    Route::post('/teknisi/history/chat/delete', [ChatController::class, 'delete_history_chat']);
+    Route::post('/teknisi/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
     
 
     
-    Route::post('/​teknisi​/chat/send', [ChatController::class, 'send_message']);
+    Route::post('/teknisi/chat/send', [ChatController::class, 'send_message']);
     
     // Route::get('customer/{id}',[CustomerController::class,'show']);
     // Route::put('customer/{id}/update',[CustomerController::class,'update']);
@@ -145,11 +146,11 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/user', [CustomerUserController::class,'showUser']);
         // Route::get('/user​', [CustomerUserController::class,'showUser']);
         // Route::get('/user​', [CustomerUserController::class,'show']);
-        Route::post('/user​', [CustomerUserController::class,'update']);
+        Route::post('/user', [CustomerUserController::class,'update']);
 
         Route::get('/wallet/balance', [CustomerUserController::class,'balance']);
-        Route::post('/user​/token', [UserController::class,'store_fcm_token']);
-        Route::delete('/user​/token', [UserController::class,'delete_fcm_token']);
+        Route::post('/user/token', [UserController::class,'store_fcm_token']);
+        Route::delete('/user/token', [UserController::class,'delete_fcm_token']);
         
         
         Route::get('/address', [UserAddressController::class, 'index']);

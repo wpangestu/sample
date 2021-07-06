@@ -373,7 +373,7 @@ class TransactionController extends Controller
             foreach($order->order_detail as $val){
                 $count++;
             }
-            if($order->order_type=="reguler"){
+            if($order->order_type=="regular"){
                 $subtitle = $count==1 ? $order->order_detail[0]->name : $order->order_detail[0]->name.", dan ".($count-1)." jasa lainya";
             }elseif($order->order_type=="custom"){
                 $subtitle = "Custom Order";
@@ -386,13 +386,22 @@ class TransactionController extends Controller
                 "subtitle" => $subtitle
             ]);
 
-            $token[] = $order->engineer->fcm_token;
+            // $token[] = $order->engineer->fcm_token;
+            // fcm()->to($token)
+            //         ->priority('high')
+            //         ->timeToLive(60)
+            //         ->notification([
+            //             'title' => $title,
+            //             'body' => $subtitle,
+            //         ]);            
+
+            $token[] = $order->customer->fcm_token;
             fcm()->to($token)
                     ->priority('high')
                     ->timeToLive(60)
                     ->notification([
-                        'title' => $title,
-                        'body' => $subtitle,
+                        'title' => "Order #".$order->order_number,
+                        'body' => "Berhasil mendapat teknisi",
                     ]);            
 
             DB::commit();
