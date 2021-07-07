@@ -177,6 +177,13 @@ class UserController extends Controller
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
 
+            if($user->hasRole('teknisi')){
+                return response()->json(['message' => 'Akun anda terdaftar sebagai akun teknisi, gunakan aplikasi Benerin teknisi'], 422);
+            }
+            if($user->hasAnyRole(['admin', 'superadmin','cs'])){
+                return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
+            }
+
             $payload = JWTAuth::setToken($token)->getPayload();
             $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 

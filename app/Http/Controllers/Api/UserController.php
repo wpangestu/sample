@@ -51,6 +51,14 @@ class UserController extends Controller
         // $user = User::Role('teknisi')->where('email', $credentials['email'])->first();
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
+
+            if($user->hasRole('user')){
+                return response()->json(['message' => 'Akun anda terdaftar sebagai akun customer, gunakan aplikasi Benerin customer'], 422);
+            }
+            if($user->hasAnyRole(['admin', 'superadmin','cs'])){
+                return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
+            }
+
             // dd($user);
             // \Carbon\Carbon::setLocale('id');
             // $currentDateTime = Carbon::now();
