@@ -161,13 +161,14 @@ class PaymentController extends Controller
                 $order->save();
             }
 
+            $user = User::find($payment->customer_id);
+
             $amount = $payment->amount;
             $description = "";            
             if($payment->type_payment=="order"){
                 $description = "Pemabayaran Order #".$payment->data_id;
             }else{
                 $description = "Pemabayaran Deposit #".$payment->data_id;
-                $user = User::find($payment->customer_id);
                 $user->balance = $user->balance+$amount;
                 $user->save();
     
