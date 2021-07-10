@@ -72,18 +72,30 @@ class TransactionController extends Controller
             $data_arr = [];
             foreach($data as $d => $value){
                 $count = 0;
-                foreach($value->order_detail as $d => $val){
-                    $count += $val->qty;
+                if($value->order_type=="regular"){
+                    foreach($value->order_detail as $d => $val){
+                        $count += $val->qty;
+                    }
+                    $data_arr[] = [
+                        "id" => $value->order_number,
+                        "name" => $value->order_detail[0]->name,
+                        "quantity" => $count,
+                        "address" => json_decode($value->address)->description??'-',
+                        "order_type" => $value->order_type,
+                        "order_status" => $value->order_status,
+                        "created_at" => $value->created_at
+                    ];
+                }else{
+                    $data_arr[] = [
+                        "id" => $value->order_number,
+                        "name" => $value->order_detail[0]->name,
+                        "quantity" => 1,
+                        "address" => json_decode($value->address)->description??'-',
+                        "order_type" => $value->order_type,
+                        "order_status" => $value->order_status,
+                        "created_at" => $value->created_at
+                    ];
                 }
-                $data_arr[] = [
-                    "id" => $value->order_number,
-                    "name" => $value->order_detail[0]->name,
-                    "quantity" => $count,
-                    "address" => json_decode($value->address)->description??'-',
-                    "order_type" => $value->order_type,
-                    "order_status" => $value->order_status,
-                    "created_at" => $value->created_at
-                ];
             }
 
             $response['page'] = (int)$page;
@@ -186,11 +198,11 @@ class TransactionController extends Controller
                 $combined = array_merge($combined,$extra);
             }elseif($order->order_type==="custom"){
                 $custom["custom_order"] = [
-                    "level" => json_decode($order->custom_order)->level??"",
-                    "brand" => json_decode($order->custom_order)->brand??"",
-                    "custom_type" => json_decode($order->custom_order)->custom_type??"",
-                    "information" => json_decode($order->custom_order)->information??"",
-                    "problem_details" => json_decode($order->custom_order)->problem_details??""
+                    "level" => json_decode($order->order_detail[0]->custom_order)->level??"",
+                    "brand" => json_decode($order->order_detail[0]->custom_order)->brand??"",
+                    "custom_type" => json_decode($order->order_detail[0]->custom_order)->custom_type??"",
+                    "information" => json_decode($order->order_detail[0]->custom_order)->information??"",
+                    "problem_details" => json_decode($order->order_detail[0]->custom_order)->problem_details??""
                 ];
 
                 $combined = array_merge($response, $custom);
@@ -450,6 +462,10 @@ class TransactionController extends Controller
             'photo' => 'required|mimes:img,png,jpeg,jpg|max:2048',
         ]);
 
+        if(is_null($id)){
+            return response()->json(["message" => "order_id required"], 422);            
+        }
+
         if($validator->fails()){
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
@@ -508,6 +524,79 @@ class TransactionController extends Controller
             DB::rollBack();
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
             //throw $th;
+        }
+    }
+
+    public function custom_order_complete(Request $request, $id){
+        if(is_null($id)){
+            return response()->json(["message" => "order_id required"], 422);            
+        }
+
+        try {
+            //code...
+            $uploadFolder = 'teknisi/order';
+            $photo = $request->file('photo');
+            $photo_path = $photo->store($uploadFolder,'public');
+
+            DB::beginTransaction();
+
+            $order = Order::where('order_number',$id)->first();
+            $order->order_status = "done";
+            $order->photo = Storage::disk('public')->url($photo_path);
+            $order->save();
+
+            $user = User::find($order->engineer_id);
+            $fee_technician = 0;
+            if($order->order_type=="custom"){
+                $base = BaseService::find($order->order_detail[0]->base_id);
+                $fee_technician += $base->price_receive;
+            }
+            
+            $user->balance = $user->balance+$fee_technician;
+            $user->save();
+
+            $products = $request->get('product');
+
+            $data_product = [];
+            if(!is_null($products)){
+                foreach ($products as $key => $value) {
+                    # code...
+                    $name = $value['name'];
+                    $qty = $value['quantity'];
+                    $price = $value['price'];
+                    // $receipt = $value['receipt'];
+                    // dd($name);
+                    // $receipt_url='';
+                    // if(isset($receipt)){
+
+                    //     $uploadFolder = 'teknisi/order';
+                    //     $photo = $value->file('receipt');
+                    //     $photo_path = $photo->store($uploadFolder,'public');
+    
+                    //     $receipt_url = Storage::disk('public')->url($photo_path);
+                    // }
+    
+                    $data_product[] = [
+                        "name" => $name,
+                        "quantity" => $qty,
+                        "price" => $price,
+                        // "receipt" => $receipt_url
+                    ];
+                }
+            }
+
+            $order = Order::where('order_number',$id)->first();
+            $order->custom_order = json_encode($data_product);
+            $order->save();
+
+            DB::commit();
+
+            return response()->json(["message" => "Order Comlpete"]);            
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }
 

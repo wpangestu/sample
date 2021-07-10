@@ -792,7 +792,8 @@ class UserController extends Controller
                     "qty" => $qty,
                     "price" => $service->price,
                     "base_id" => $service->id,
-                    "image" => $service->image??''
+                    "image" => $service->image??'',
+                    'price_receive' => $service->price_receive
                 ]);
             }
 
@@ -924,6 +925,15 @@ class UserController extends Controller
 
             $total_service_price = 0;
             $service = BaseService::find($service);
+
+            $custom_order_data = [
+                "level" => $custom_type,
+                "custom_type" => $service->name??'-',
+                "brand" => $brand,
+                "information" => $custom_info,
+                "problem_details" => $detail_info
+            ];
+
             // dd($service);
             if(!is_null($service)){
                 $total_service_price = $service->price;
@@ -933,14 +943,6 @@ class UserController extends Controller
             $unique_code = mt_rand(100, 999);
 
             $total_price = $total_service_price + $shipping + $unique_code;
-
-            $custom_order_data = [
-                "level" => $custom_type,
-                "custom_type" => $service->name??'-',
-                "brand" => $brand,
-                "information" => $custom_info,
-                "problem_details" => $detail_info
-            ];
 
             $order = Order::create([
                 "order_number" => "CO".uniqid(),
@@ -952,7 +954,19 @@ class UserController extends Controller
                 "total_payment" => $total_price,
                 "total_payment_receive" => $total_price,
                 "address" => json_encode($address),
-                "custom_order" => json_encode($custom_order_data)
+                "custom_order" => null,
+                "order_status" => "waiting_payment"
+            ]);
+
+            OrderDetail::create([
+                "order_id" => $order->id,
+                "name" => $service->name,
+                "qty" => 1,
+                "price" => $service->price,
+                "base_id" => $service->id,
+                "image" => $service->image??'',
+                'price_receive' => $service->price_receive,
+                'custom_order' => json_encode($custom_order_data)
             ]);
 
             $payment_type = $request->get('payment_type');
@@ -992,7 +1006,7 @@ class UserController extends Controller
             $response = [
                 "order_id" => $order->order_number,
                 "expired_date" => $order->created_at->addHour(),
-                "order_status" => "waiting_payment",
+                "order_status" => $order->order_status,
                 "technician" => $engineer_data,
                 "destination" => $destination,
                 "origin" => $origin,
@@ -1089,11 +1103,11 @@ class UserController extends Controller
             $customorder = null;
             if($order->order_type=="custom"){
                 $customorder = [
-                    "level" => json_decode($order->custom_order)->level??'',
-                    "custom_type" => json_decode($order->custom_order)->custom_type??'',
-                    "brand" => json_decode($order->custom_order)->brand??'',
-                    "information" => json_decode($order->custom_order)->information??'',
-                    "problem_details" => json_decode($order->custom_order)->problem_details??''
+                    "level" => json_decode($order->order_detail[0]->custom_order)->level??'',
+                    "custom_type" => json_decode($order->order_detail[0]->custom_order)->custom_type??'',
+                    "brand" => json_decode($order->order_detail[0]->custom_order)->brand??'',
+                    "information" => json_decode($order->order_detail[0]->custom_order)->information??'',
+                    "problem_details" => json_decode($order->order_detail[0]->custom_order)->problem_details??''
                 ];
 
                 $response = [
@@ -1199,7 +1213,7 @@ class UserController extends Controller
             $data_arr[] = [
                 "id" => $value->order_number,
                 "services" => $service,
-                "custom_service" => ($value->order_type=="regular"?"":json_decode($value->custom_order)->information??''),
+                "custom_service" => ($value->order_type=="regular"?"":$value->order_detail[0]->name??''),
                 "destination" => json_decode($value->address)->description??'-',
                 "reviewed" => isset($review)?true:false,
                 "created_at" => $value->created_at,

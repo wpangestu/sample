@@ -1,0 +1,287 @@
+@startuml
+
+entity Users{
+    *id : INTEGER
+    --
+    *name : VARCHAR
+    *email : VARCHAR
+    *phone : VARCHAR
+    *userid : VARCHAR
+    *password : VARCHAR
+    *fcm_token : VARCHAR
+    address : VARCHAR
+    email_verified_at : DATETIME
+    profile_photo_path : VARCHAR
+    is_active : BOOLEAN default(1)
+    lat : DOUBLE
+    lng : DOUBLE
+    last_login : DATETIME
+    verified : BOOLEAN default(0)
+    id_card_number : varchar
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity service_base{
+    *id : INTEGER
+    --
+    category_service_id : INTEGER
+    name : VARCHAR
+    price : DECIMAL
+    description : Text
+    guarantee : BOOLEAN
+    long_guarantee : INTEGER,
+    price_receive : DECIMAL,
+}
+
+entity services{
+    *id : INTEGER
+    --
+    *name : VARCHAR
+    *category_service_id : INTEGER
+    *price : DECIMAL(12,0)
+    *engineer_id : INTEGER
+    description : TEXT
+    skill : ARRAY
+    image : VARCHAR
+    sertification_image : VARCHAR
+    status : enum[active, non_active, denied, review]
+    verified_by : INTEGER
+    verified_at : DATETIME
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity category_services{
+    *id : INTEGER
+    --
+    *name : VARCHAR
+    *icon : VARCHAR
+    *status : BOOLEAN default(1)
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity engineers{
+    *id : INTEGER
+    --
+    id_card_number : VARCHAR
+    name : VARCHAR
+    phone : VARCHAR
+    address : VARCHAR
+    email : VARCHAR
+    is_verified_email : BOOLEAN default(0)
+    verified_email_at : DATETIME
+    is_verified_data : BOOLEAN default(0)
+    verified_data_at : DATETIME
+    verified_by : INTEGER
+    user_id : INTEGER
+    id_card_image : VARCHAR
+    id_card_selfie_image : VARCHAR
+    status : enum['pending','decline','success']
+    created_at : DATETIME
+    updated_at :  DATETIME
+}
+
+entity user_addresses{
+    *id : INTEGER
+    --
+    *user_id : INTEGER
+    *name : VARCHAR
+    *address : VARCHAR
+    *lat : DOUBLE
+    *lng : DOUBLE
+    detail : VARCHAR
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity history_wallets{
+    *id : INTEGER
+    --
+    *user_id : INTEGER
+    *amount : DECIMAL(12,0)
+    *descrition: Text
+    created_by : integer
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity orders{
+    *id : INTEGER
+    --
+    *orderid : INTEGER
+    *order_type : ENUM['reguler','custom']
+    *order_status : ENUM[pending, waiting-order, denied, processed, take-away, canceled, done]
+    *is_take_away : BOOLEAN defaul(false)
+    *customer_id : INTEGER
+    *engineer_id : INTEGER
+    *deposit : DECIMAL(12,0)
+    *ongkir : DECIMAL(12,0)
+    *convenience_fee : INTEGER(3)
+    *total_payment : DECIMAL(12,0)
+    *total_payment_receive : DECIMAL(12,0)
+    note : TEXT
+    photo : VARCHAR
+    promo: json {code_promo:123,amount:12000}
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity order_details{
+    id : INTEGER
+    --
+    order_id : INTEGER
+    name : VARCHAR
+    qty : INTEGER
+    price : DECIMAL(12,0),
+    base_id: INTEGER,
+    image : LONGTEXT,
+    price_receive : INTEGER,
+    custom_order : TEXT(JSON)
+
+}
+
+entity payments{
+    * id : INTEGER
+    --
+    *customer_id : INTEGER
+    *amount : DECIMAL(12,0)
+    *order_id : JSON
+    *paymentid : INTEGER
+    *status : enum['pending','decline','success']
+    *images : VARCHAR
+    *type : VARCHAR['BRI','BNI','dll']
+    *convenience_fee : INTEGER(3)
+    verified_by : INTEGER
+    verified_at : DATETIME
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity reviews{
+    *id : INTEGER
+    --
+    *order_id : INTEGER
+    ratings : DOUBLE
+    liked : ARRAY
+    description : TEXT
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+
+entity withdraws{
+    *id : INTEGER
+    --
+    *engineer_id : INTEGER
+    *amount : DECIMAL(12,0)
+    *withdrawid : INTEGER
+    note : VARCHAR
+    status : ENUM['pending','decline','success']
+    description : text
+    verified_by : INTEGER
+    verified_at : DATETIME
+    created_at : DATETIME
+    updated_at : DATETIME
+}
+
+entity notifications{
+    * id : INTEGER
+    --
+    * title : VARCHAR
+    * type : ENUM[service_info, review, wallet, order]
+    * user_id : INTEGER
+    read : BOOLEAN default(false)
+    id_data : INTEGER
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+
+}
+
+entity chatrooms{
+    * id: INTEGER
+    --
+    * user_1 : INTEGER
+    * user_2 : INTEGER
+    * pinned_user_1 : BOOLEAN
+    * pinned_user_2 : BOOLEAN
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity chats{
+    *id: BigInteger
+    --
+    *to : INTEGER
+    *from : INTEGER
+    *message : TEXT
+    *chatroom_id : INTEGER
+    media : LONGTEXT
+    read : BOOLEAN default(0)
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity settings{
+
+}
+
+entity banks{
+    *id : INTEGER
+    --
+    *name : VARCHAR
+    *code : VARCHAR
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity user_bank_accounts{
+    * id: VARCHAR
+    --
+    *account_number : VARCHAR
+    *account_holder : VARCHAR
+    *bank_id : VARCHAR
+    user_id : INTEGER
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity promo_order{
+    * id : BigInteger
+    --
+    order_id : BigInteger
+    promo_id : BigInteger
+    created_at: DATETIME
+    updated_at: DATETIME
+}
+
+entity promo{
+    * id: integer
+    --
+    name: VARCHAR
+    code: VARCHAR(uniqeu)
+    description : VARCHAR NULL
+    start: DATETIME
+    end: DATETIME
+    type: ENUM['presentation','fixed']
+    value: DECIMAL
+    multiple: BOOLEAN
+    is_active: BOOLEAN
+    created_at: DATETIME
+    updated_at: DATETIME
+}
+
+@enduml
+
+
+
+' sion laravel
+' martin laraverl web, projek
+' hosea mobile react, projek
+' hengki - tugas kampus
+' juan - tugas kampus
+' yepta - frontend
+' leo - 
+
+

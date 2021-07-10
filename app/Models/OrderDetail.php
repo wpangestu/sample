@@ -15,7 +15,9 @@ class OrderDetail extends Model
         'qty', 
         'price', 
         'base_id',
-        'image'
+        'image',
+        'price_receive',
+        'custom_order'
     ]; 
 
     public function base_service(){

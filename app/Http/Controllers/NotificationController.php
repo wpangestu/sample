@@ -10,8 +10,9 @@ class NotificationController extends Controller
     //
     public function test()
     {
+        
         $recipients = [
-            'fStn52P6Rike5S03z0oaUn:APA91bFwAgpakxHBojrq2FZ_MeE6-YMCtoR5hLS-4askMWUJmXBUG4Hf8G0qinT39sbUH4b8EE8_faTwNmvJiulwhvF4LNhgswIhl8X3vOLkBk_PGAFeV-JiSgP3HIyQ1BNYmcC4LNDE',
+            'e1AKEDODSwyl-l_5eY0Lth:APA91bEeL6PxE10INn2Mvy5Oz7TofhrdULlGvuFcLSqViHPQldg_ZyrOr6UkapBKQZL0teupH-_u6P9csj6NSIsBdNYhBBTgCUL5CmRLjbq_4vAyoroBp66qtvhaz5Hukx80Ecp5f4kf',
         ];
         // dd($recipients);
         try {
@@ -24,8 +25,8 @@ class NotificationController extends Controller
                         'body' => 'ini body',
                     ])
                     ->send();
-            // dd($cek);
-            return redirect()->route('service_category.index');
+            dd($cek);
+            // return redirect()->route('service_category.index');
         } catch (\Throwable $th) {
             //throw $th;
             dd($th->getMessage());

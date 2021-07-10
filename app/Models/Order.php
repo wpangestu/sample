@@ -24,7 +24,7 @@ class Order extends Model
         'total_payment_receive',
         'origin',
         'custom_order',
-        'order_status'
+        'order_status',
     ]; 
 
     public function customer(){
