@@ -1574,8 +1574,8 @@ class UserController extends Controller
             ]);
 
             $technician = User::find($order->engineer_id);
-
-            fcm()->to($technician->fcm_token)
+            $fcm_token[] = $technician->fcm_token;
+            fcm()->to($fcm_token)
                     ->priority('high')
                     ->timeToLive(60)
                     ->data([
