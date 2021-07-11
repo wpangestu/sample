@@ -163,7 +163,7 @@
 
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
-    const type = payload.data.role;
+    const type = payload.data.action_data.data.role;
     const url = window.location.href;
 
     if(url.includes("{{ route('chat.index.engineer') }}")){
@@ -184,8 +184,8 @@
       const url_array = url.split("/");
       const lastItem = url_array[url_array.length - 1];
 
-      if(lastItem == payload.data.userid+"#"){
-        const chat = JSON.parse(payload.data.chat);
+      if(lastItem == payload.data.action_data.data.userid+"#"){
+        const chat = JSON.parse(payload.data.action_data.data.message);
         let get_new_chat = append_message(chat);
 
         $('#message_user').append(get_new_chat);
@@ -206,11 +206,13 @@
           $('#list_user_chat').html(list_user_chat);
         }
       });
+
+      // get id user
       const url_array = url.split("/");
       const lastItem = url_array[url_array.length - 1];
 
-      if(lastItem == payload.data.userid+"#"){
-        const chat = JSON.parse(payload.data.chat);
+      if(lastItem == payload.data.action_data.data.userid+"#"){
+        const chat = JSON.parse(payload.data.action_data.data.message);
         let get_new_chat = append_message(chat);
 
         $('#message_user').append(get_new_chat);

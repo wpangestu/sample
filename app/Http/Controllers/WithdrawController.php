@@ -164,6 +164,7 @@ class WithdrawController extends Controller
                 "user_id" => $withdraw->user_id,
                 "read" => false,
                 "id_data" => $withdraw->id,
+                "id_data_string" => $withdraw->withdraw_id,
                 "subtitle" => $subtitle,
                 "subtitle_color" => "#00FF00"
             ]);
@@ -212,6 +213,7 @@ class WithdrawController extends Controller
                 "user_id" => $withdraw->user_id,
                 "read" => false,
                 "id_data" => $withdraw->id,
+                "id_data_string" => $withdraw->withdraw_id,
                 "subtitle" => $subtitle,
                 "subtitle_color" => "#FF0000"
             ]);

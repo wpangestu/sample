@@ -169,12 +169,18 @@ class ChatController extends Controller
 
                 $fcm_token[] = $chat->user_to->fcm_token;
 
+                if(auth()->user()->hasRole('teknisi')){
+                    $role = 'teknisi';
+                }else{
+                    $role = 'user';
+                }
+
                 fcm()->to($fcm_token)
                     ->priority('high')
                     ->timeToLive(60)
                     ->notification([
-                        'title' => 'Notifikasi',
-                        'body' => 'Chat Baru',
+                        'title' => $chat->user_from->name,
+                        'body' => $message,
                     ])
                     ->data([
                         'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
@@ -190,7 +196,9 @@ class ChatController extends Controller
                                 "message" => $chat->message,
                                 "from" => (int)$chat->from,
                                 "is_me" => $chat->from==$chat->to?true:false,
-                                "created_at" => $chat->created_at
+                                "created_at" => $chat->created_at,
+                                "role" => $role,
+                                'userid' => auth()->user()->userid,
                             ]
                         ]
                     ])

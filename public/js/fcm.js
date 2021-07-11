@@ -27,7 +27,7 @@ function update_list_user_chat(data){
       template += `</ul>`;
     return template;
 }
-
+ 
 function append_message(params){
   template = `
           <div class="direct-chat-msg left" data-chat_id="${params.id}">

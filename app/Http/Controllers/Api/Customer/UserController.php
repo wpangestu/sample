@@ -1571,6 +1571,7 @@ class UserController extends Controller
                 "type" => "review",
                 "user_id" => $order->engineer_id,
                 "id_data" => $review->id,
+                "id_data_string" => $order->order_number
             ]);
 
             $technician = User::find($order->engineer_id);

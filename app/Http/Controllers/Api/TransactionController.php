@@ -395,6 +395,7 @@ class TransactionController extends Controller
                 "type" => "order",
                 "user_id" => $order->engineer_id,
                 "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
                 "subtitle" => $subtitle
             ]);
 
@@ -504,7 +505,8 @@ class TransactionController extends Controller
                 "user_id" => $order->engineer_id,
                 "read" => false,
                 "subtitle" => $subtitle,
-                "id_data" => $order->order_number,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number
             ]);
 
             $token[] = $order->engineer->fcm_token;
