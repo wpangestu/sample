@@ -749,7 +749,9 @@ class ChatController extends Controller
                         "message" => $chat->message,
                         "from" => (int)$chat->from,
                         "is_me" => $chat->from==$chat->to?true:false,
-                        "created_at" => $chat->created_at
+                        "created_at" => $chat->created_at,
+                        "role" => $role,
+                        'userid' => auth()->user()->userid,
                     ]
                 ]
             ])

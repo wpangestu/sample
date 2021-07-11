@@ -163,7 +163,8 @@
 
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
-    const type = payload.data.action_data.data.role;
+    const action_data = JSON.parse(payload.data.action_data);
+    const type = action_data.data.role;
     const url = window.location.href;
 
     if(url.includes("{{ route('chat.index.engineer') }}")){
@@ -184,9 +185,15 @@
       const url_array = url.split("/");
       const lastItem = url_array[url_array.length - 1];
 
-      if(lastItem == payload.data.action_data.data.userid+"#"){
-        const chat = JSON.parse(payload.data.action_data.data.message);
-        let get_new_chat = append_message(chat);
+      if(lastItem == action_data.data.userid+"#"){
+        // const chat = JSON.parse(action_data.data.message);
+        const message_data = {
+          "id" : action_data.data.id,
+          "name":action_data.name,
+          "created_at":action_data.data.created_at,
+          "message" :action_data.data.message
+        };
+        let get_new_chat = append_message(message_data);
 
         $('#message_user').append(get_new_chat);
         var objDiv = document.getElementById("message_user");
@@ -211,9 +218,15 @@
       const url_array = url.split("/");
       const lastItem = url_array[url_array.length - 1];
 
-      if(lastItem == payload.data.action_data.data.userid+"#"){
-        const chat = JSON.parse(payload.data.action_data.data.message);
-        let get_new_chat = append_message(chat);
+      if(lastItem == action_data.data.userid+"#"){
+        const message_data = {
+          "id" : action_data.data.id,
+          "name":action_data.name,
+          "created_at":action_data.data.created_at,
+          "message" :action_data.data.message
+        };
+        
+        let get_new_chat = append_message(message_data);
 
         $('#message_user').append(get_new_chat);
         var objDiv = document.getElementById("message_user");
