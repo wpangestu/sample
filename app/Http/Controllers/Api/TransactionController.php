@@ -279,11 +279,11 @@ class TransactionController extends Controller
                 }
 
                 $data_arr[] = [
-                    "id" => (int)$value->review->id,
+                    "id" => $value->review->order_number_id,
                     "name" => $value->order_detail[0]->name,
                     "quantity" => (int)$count,
                     "address" => json_decode($value->address)->description??'-',
-                    "rating" => $value->review->ratings??0,
+                    "rating" => (int)$value->review->ratings??0,
                     "created_at" => $value->review->created_at
                 ];
             }

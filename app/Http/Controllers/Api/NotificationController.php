@@ -36,7 +36,7 @@ class NotificationController extends Controller
                     "title" => $val->title,
                     "type" => $val->type,
                     "image" => "",
-                    "id_data" => $val->id_data,
+                    "id_data" => (int)$val->id_data,
                     "date" => $val->created_at,
                 ];
     
