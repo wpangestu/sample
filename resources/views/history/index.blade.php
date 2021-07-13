@@ -59,7 +59,7 @@
                                 <th>Nama</th>
                                 <th>Role</th>
                                 <th>Deskrpsi</th>
-                                <!-- <th>Aksi</th> -->
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                     </table>
@@ -102,7 +102,7 @@
                 {data: 'name', name: 'name'},
                 {data: 'role', name: 'role'},
                 {data: 'description', name: 'description'},
-                // {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
 

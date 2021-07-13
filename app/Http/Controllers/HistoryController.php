@@ -38,13 +38,11 @@ class HistoryController extends Controller
                     ->addColumn('action', function($row){
                     
                     $btn = '
-                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle" data-toggle="dropdown">
-                        Aksi
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-dice-three"></i>
                     </button>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-item"><a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
-                        <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
-                        <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                        <li class="dropdown-item"><a href="'.route('history.index.detail',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
                     </ul>
                     ';
 
@@ -89,9 +87,7 @@ class HistoryController extends Controller
                         Aksi
                     </button>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-item"><a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
-                        <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
-                        <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                        <li class="dropdown-item"><a href="'.route('history.index.detail',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
                     </ul>
                     ';
 
@@ -140,6 +136,13 @@ class HistoryController extends Controller
     public function show($id)
     {
         //
+        try {
+            //code...
+            $data = Activity::find($id);
+            return view('history.detail',compact('data'));            
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

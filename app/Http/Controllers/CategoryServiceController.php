@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Models\CategoryService;
-use DataTables;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryServiceController extends Controller
@@ -98,7 +99,8 @@ class CategoryServiceController extends Controller
 
             activity('add_category_service')->performedOn($insert)
                         ->causedBy($causer)
-                        ->log('Pengguna melakukan penambahan kategori jasa');
+                        ->withProperties(["attributes"=>$insert])
+                        ->log('Pengguna melakukan penambahan kategori jasa ['.$insert->id.'#'.$insert->name.']');
 
             return redirect()->route('service_category.index')
                         ->with('success','Data berhasil ditambahkan');
@@ -156,27 +158,42 @@ class CategoryServiceController extends Controller
             "slug" => $request->input('slug')
         ];
 
-        $service_category = CategoryService::find($id);
-        $update = $service_category->update($data);
+        try {
+            //code...
 
-        if ($request->hasFile('icon')) {
+            DB::beginTransaction();
 
-            $uploadFolder = 'admin/service_category';
-            $photo = $request->file('icon');
-            $photo_path = $photo->store($uploadFolder,'public');
+            $service_category = CategoryService::find($id);
+            $old = $service_category;
+            $update = $service_category->update($data);
 
-            $service_category->icon = Storage::disk('public')->url($photo_path);
-            $service_category->save();
-        }
+            if ($request->hasFile('icon')) {
+    
+                $uploadFolder = 'admin/service_category';
+                $photo = $request->file('icon');
+                $photo_path = $photo->store($uploadFolder,'public');
+    
+                $service_category->icon = Storage::disk('public')->url($photo_path);
+                $service_category->save();
+            }
+            $service_category = CategoryService::find($id);
+            $causer = auth()->user();
 
-        if($update){
+            activity('edit_category_service')->performedOn($service_category)
+                        ->causedBy($causer)
+                        ->withProperties(["attributes"=>$service_category,"old"=>$old])
+                        ->log('Pengguna melakukan pembaruan kategori jasa ['.$service_category->id.'#'.$service_category->name.']');
+
+            DB::commit();
+
             return redirect()->route('service_category.index')
                         ->with('success','Data berhasil diubah');            
-        }else{
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
             return redirect()->route('service_category.index')
                         ->with('error','Opps, Terjadi kesalahan.');            
         }
-
     }
 
     /**

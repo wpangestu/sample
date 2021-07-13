@@ -715,6 +715,7 @@ class UserController extends Controller
             $customer->save();
 
             $total_service_price = 0;
+            $total_payment_reveice = 0;
             $engineer_id = [];
 
             foreach ($services as $key => $value) {
@@ -723,6 +724,7 @@ class UserController extends Controller
 
                 $service = BaseService::find($service_id);
                 $total_service_price += $service->price * $qty;
+                $total_payment_reveice += $service->price_receive * $qty;
                 $engineer_id[] = $service->engineer_id;
             }
 
@@ -738,7 +740,7 @@ class UserController extends Controller
                 "shipping" => $shipping,
                 "convenience_fee" => $unique_code,
                 "total_payment" => $total_price,
-                "total_payment_receive" => $total_price,
+                "total_payment_receive" => $total_payment_reveice,
                 "address" => json_encode($address)
             ]);
 
@@ -778,7 +780,7 @@ class UserController extends Controller
 
             $order->promo_code = json_encode($promo_data);
             $order->total_payment = $total_price-$promo_value;
-            $order->total_payment_receive = $total_price-$promo_value;
+            // $order->total_payment_receive = $total_price-$promo_value;
             $order->save();
 
             foreach ($services as $key => $value) {
@@ -942,6 +944,7 @@ class UserController extends Controller
             $shipping = 12000;
             $unique_code = mt_rand(100, 999);
 
+            $total_payment_receive = $service->price_receive;
             $total_price = $total_service_price + $shipping + $unique_code;
 
             $order = Order::create([
@@ -952,7 +955,7 @@ class UserController extends Controller
                 "shipping" => $shipping,
                 "convenience_fee" => $unique_code,
                 "total_payment" => $total_price,
-                "total_payment_receive" => $total_price,
+                "total_payment_receive" => $total_payment_receive,
                 "address" => json_encode($address),
                 "custom_order" => null,
                 "order_status" => "waiting_payment"
