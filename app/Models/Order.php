@@ -25,6 +25,7 @@ class Order extends Model
         'origin',
         'custom_order',
         'order_status',
+        'expired_date'
     ]; 
 
     public function customer(){

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Customer;
 
 use JWTAuth;
+use Carbon\Carbon;
 use App\Models\Bank;
 use App\Models\User;
 use App\Mail\OtpMail;
@@ -15,12 +16,12 @@ use App\Models\Withdraw;
 use App\Models\BaseService;
 use App\Models\OrderDetail;
 use App\Models\UserAddress;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\ReviewService;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Notification;
-use App\Models\ReviewService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -741,7 +742,8 @@ class UserController extends Controller
                 "convenience_fee" => $unique_code,
                 "total_payment" => $total_price,
                 "total_payment_receive" => $total_payment_reveice,
-                "address" => json_encode($address)
+                "address" => json_encode($address),
+                "expired_date" => Carbon::now()->addHour()
             ]);
 
             $payment_type = $request->get('payment_type');
@@ -846,7 +848,7 @@ class UserController extends Controller
 
             $response = [
                 "order_id" => $order->order_number,
-                "expired_date" => $order->created_at->addHour(),
+                "expired_date" => $order->expired_date,
                 "order_status" => $order_data->order_status,
                 "technician" => $engineer_data,
                 "destination" => $destination,
@@ -958,7 +960,8 @@ class UserController extends Controller
                 "total_payment_receive" => $total_payment_receive,
                 "address" => json_encode($address),
                 "custom_order" => null,
-                "order_status" => "waiting_payment"
+                "order_status" => "waiting_payment",
+                "expired_date" => Carbon::now()->addHour()
             ]);
 
             OrderDetail::create([
@@ -1008,7 +1011,7 @@ class UserController extends Controller
 
             $response = [
                 "order_id" => $order->order_number,
-                "expired_date" => $order->created_at->addHour(),
+                "expired_date" => $order->expired_date,
                 "order_status" => $order->order_status,
                 "technician" => $engineer_data,
                 "destination" => $destination,
@@ -1087,7 +1090,7 @@ class UserController extends Controller
 
                 $response = [
                     "order_id" => $order->order_number,
-                    "expired_date" => $order->created_at->addHour(),
+                    "expired_date" => $order->expired_date??$order->created_at->addHour(),
                     "order_status" => $order->order_status,
                     "technician" => $technician,
                     "destination" => $destination,
@@ -1115,7 +1118,7 @@ class UserController extends Controller
 
                 $response = [
                     "order_id" => $order->order_number,
-                    "expired_date" => $order->created_at->addHour(),
+                    "expired_date" => $order->expired_date??$order->created_at->addHour(),
                     "order_status" => $order->order_status,
                     "technician" => $technician,
                     "destination" => $destination,
