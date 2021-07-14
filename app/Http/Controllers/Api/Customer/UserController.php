@@ -1187,7 +1187,7 @@ class UserController extends Controller
             $status = $request->get('status');
 
             if ($status === "ordered") {
-                $orders->where('order_status', 'waiting_payment');
+                $orders->whereIn('order_status', ['waiting_payment', 'waiting_order']);
             } elseif ($status === "done") {
                 $orders->where('order_status', 'done');
             }
@@ -1241,7 +1241,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         $orders = Order::where('customer_id', $user->id)
-            ->whereIn('order_status', ['waiting_order', 'accepted', 'processed', 'extend']);
+            ->whereIn('order_status', ['accepted', 'processed', 'extend']);
 
         $page = $request->has('page') ? $request->get('page') : 1;
         $limit = $request->has('size') ? $request->get('size') : 10;

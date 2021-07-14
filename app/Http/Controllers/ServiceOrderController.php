@@ -360,7 +360,14 @@ class ServiceOrderController extends Controller
             $order->order_status = "waiting_order";
             $order->save();
 
-            fcm()->toTopic("technician")
+            $users = User::Role('teknisi')
+                                ->where('verified',true)
+                                ->whereNotNull('fcm_token')
+                                ->get();
+
+            $token_technician = $users->pluck('fcm_token')->toArray();
+
+            fcm()->to($token_technician)
             ->priority('high')
             ->timeToLive(60)
             ->data([
