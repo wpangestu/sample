@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserController extends Controller
 {
@@ -69,7 +70,7 @@ class UserController extends Controller
                 "phone"             => $request->get('phone'),
                 'userid'            => $userid,
                 'password'          => Hash::make($request->get('password')),
-                'id_google'         => $request->get('id_google')??null
+                'id_google'         => $request->get('id_google') ?? null
             ]);
 
             $user->last_login = date('Y-m-d H:i:s');
@@ -114,19 +115,17 @@ class UserController extends Controller
 
         $email_check = User::where('email', $request->get('email'))->first();
 
-        if($request->has('id_google')){
+        if ($request->has('id_google')) {
 
             $id_google = $request->get('id_google');
             $email = $request->get('email');
-            
-            $user = User::where('id_google',$id_google)->where('email',$email)->first();
-            if(is_null($user) && is_null($email_check)){
-                return response()->json(["message"=>"Akun belum terdaftar"],424);
-            }
-            elseif(is_null($user)){
+
+            $user = User::where('id_google', $id_google)->where('email', $email)->first();
+            if (is_null($user) && is_null($email_check)) {
+                return response()->json(["message" => "Akun belum terdaftar"], 424);
+            } elseif (is_null($user)) {
                 return response()->json(["message" => "Akun tidak ditemukan"], 425);
-            }
-            else{
+            } else {
 
                 try {
                     $token = JWTAuth::fromUser($user);
@@ -136,25 +135,24 @@ class UserController extends Controller
 
                 $payload = JWTAuth::setToken($token)->getPayload();
                 $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
-    
+
                 $user->last_login = date('Y-m-d H:i:s');
                 $user->save();
-    
+
                 $data['message'] = "Login successfully";
                 // $data['data'] = $user;
                 $data['token'] = $token;
                 $data['valid_until'] = $expires_at;
                 $data['token_type'] = "Bearer";
-    
+
                 return response()->json($data);
-        
             }
-        }else{
+        } else {
 
             if (is_null($email_check)) {
                 return response()->json(['message' => 'Email belum terdaftar'], 423);
             }
-    
+
             $validator = Validator::make($request->all(), [
                 'password' => 'required|string|min:6',
             ]);
@@ -163,7 +161,6 @@ class UserController extends Controller
                 return response()->json(["message" => $validator->errors()->all()[0]], 422);
             }
             $credentials = $request->only('email', 'password');
-
         }
 
         try {
@@ -178,10 +175,10 @@ class UserController extends Controller
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
 
-            if($user->hasRole('teknisi')){
+            if ($user->hasRole('teknisi')) {
                 return response()->json(['message' => 'Akun anda terdaftar sebagai akun teknisi, gunakan aplikasi Benerin teknisi'], 422);
             }
-            if($user->hasAnyRole(['admin', 'superadmin','cs'])){
+            if ($user->hasAnyRole(['admin', 'superadmin', 'cs'])) {
                 return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
             }
 
@@ -324,7 +321,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profile_photo" => $user->profil_photo_path ??"",
+                "profile_photo" => $user->profil_photo_path ?? "",
                 "phone" => $user->phone,
                 "email" => $user->email
             ];
@@ -440,7 +437,9 @@ class UserController extends Controller
     public function service_recommendation(Request $request)
     {
         try {
-            $service = BaseService::latest();
+            $service = BaseService::whereHas('service_category', function (Builder $query) {
+                $query->where('slug', '<>', 'custom');
+            })->latest();
 
             if ($request->has('query')) {
                 $query = $request->get('query');
@@ -460,7 +459,8 @@ class UserController extends Controller
                     "id" => $value->id,
                     "name" => $value->name,
                     "media" => $value->image,
-                    "price" => (int)$value->price
+                    "price" => (int)$value->price,
+                    "category" => $value->service_category->name
                 ];
             }
 
@@ -540,7 +540,7 @@ class UserController extends Controller
                 "name" => $service->name,
                 "media" => $service->image,
                 "price" => (int)$service->price,
-                "guarantee" => (int)$service->long_guarantee??0,
+                "guarantee" => (int)$service->long_guarantee ?? 0,
                 "weight" => 0,
                 "condition" => "new",
                 "category" => [
@@ -555,7 +555,7 @@ class UserController extends Controller
             return response()->json($data);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json("Terjadi kesalahan " . $th->getMessage(),422);
+            return response()->json("Terjadi kesalahan " . $th->getMessage(), 422);
         }
     }
 
@@ -592,15 +592,15 @@ class UserController extends Controller
             }
 
             $total_service_price = 0;
-            
-            if(isset($custom_category)){
+
+            if (isset($custom_category)) {
                 $service = BaseService::find($custom_category);
-                $total_service_price = $service->price??0;
-            }elseif(isset($services)){
+                $total_service_price = $service->price ?? 0;
+            } elseif (isset($services)) {
                 foreach ($services as $key => $value) {
                     $service_id = $value['service_id'];
                     $qty = $value['quantity'];
-    
+
                     $service = BaseService::find($service_id);
                     $total_service_price += $service->price * $qty;
                 }
@@ -613,17 +613,17 @@ class UserController extends Controller
 
             if ($request->has('promo_code')) {
                 $promo_code = $request->get('promo_code');
-                $promo = Promo::where('code',$promo_code)
-                                ->where('is_active',1)
-                                ->first();
+                $promo = Promo::where('code', $promo_code)
+                    ->where('is_active', 1)
+                    ->first();
 
-                if(!is_null($promo)){
+                if (!is_null($promo)) {
                     $promo_res = [
                         "promo" => (int)$promo->value,
                         "message" => "Kodo promo aktif",
                         "positive" => true
                     ];
-                }else{
+                } else {
                     $promo_res = [
                         "promo" => 0,
                         "message" => "Promo Tidak ditemukan",
@@ -647,7 +647,7 @@ class UserController extends Controller
                 "total_service_price" => (int)$total_service_price,
                 "price_distance" => (int)$shipping,
                 "unique_code" => (int)$unique_code,
-                "total_price" => (int)$total_price - ($promo_res["promo"]??0),
+                "total_price" => (int)$total_price - ($promo_res["promo"] ?? 0),
                 "promo_info" => $promo_res
             ];
 
@@ -686,23 +686,23 @@ class UserController extends Controller
                 ];
             } else {
 
-                $key = env('GOOGLE_API_KEY','');
+                $key = env('GOOGLE_API_KEY', '');
 
-                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json",[
-                    "latlng" => $request->lat.",".$request->lng,
+                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
+                    "latlng" => $request->lat . "," . $request->lng,
                     "language" => "id",
                     "key" => $key,
                 ]);
 
-                if($response->successful()){
+                if ($response->successful()) {
                     $result = $response->json()['results'][0];
-                }else{
+                } else {
                     $errors = json_decode($response->getBody()->getContents());
-                    return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+                    return response()->json(["message" => "Terjadi Kesalahan " . $errors], 422);
                 }
 
                 $address = [
-                    "description" => $result['formatted_address']??'',
+                    "description" => $result['formatted_address'] ?? '',
                     "latitude" => (float)$lat,
                     "longitude" => (float)$lng,
                     "notes" => $notes
@@ -735,7 +735,7 @@ class UserController extends Controller
             $total_price = $total_service_price + $shipping + $unique_code;
 
             $order = Order::create([
-                "order_number" => "O".uniqid(),
+                "order_number" => "O" . uniqid(),
                 "customer_id" => auth()->user()->id,
                 "engineer_id" => $engineer_id[0],
                 "shipping" => $shipping,
@@ -748,16 +748,15 @@ class UserController extends Controller
 
             $payment_type = $request->get('payment_type');
 
-            if($payment_type=="saldo"){
+            if ($payment_type == "saldo") {
 
-                if($customer->balance >= $total_price){
+                if ($customer->balance >= $total_price) {
                     $order->order_status = "payment_success";
                     $order->save();
 
                     $customer->balance -= $total_price;
                     $customer->save();
-
-                }else{
+                } else {
                     return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
                 }
             }
@@ -767,11 +766,11 @@ class UserController extends Controller
             if ($request->has('promo_code')) {
                 $promo_code = $request->get('promo_code');
 
-                $promo = Promo::where('code',$promo_code)
-                                ->where('is_active',1)
-                                ->first();
+                $promo = Promo::where('code', $promo_code)
+                    ->where('is_active', 1)
+                    ->first();
 
-                if(!is_null($promo)){
+                if (!is_null($promo)) {
                     $promo_value = $promo->value;
                     $promo_data = [
                         "code_promo" => $promo->code,
@@ -781,7 +780,7 @@ class UserController extends Controller
             }
 
             $order->promo_code = json_encode($promo_data);
-            $order->total_payment = $total_price-$promo_value;
+            $order->total_payment = $total_price - $promo_value;
             // $order->total_payment_receive = $total_price-$promo_value;
             $order->save();
 
@@ -796,14 +795,14 @@ class UserController extends Controller
                     "qty" => $qty,
                     "price" => $service->price,
                     "base_id" => $service->id,
-                    "image" => $service->image??'',
+                    "image" => $service->image ?? '',
                     'price_receive' => $service->price_receive
                 ]);
             }
 
             $order_detail = OrderDetail::where('order_id', $order->id)->get();
             $orderdetail_data = [];
-            $no=1;
+            $no = 1;
             foreach ($order_detail as $key => $value) {
                 $orderdetail_data[] = [
                     "service_id" => $no++,
@@ -814,29 +813,29 @@ class UserController extends Controller
             }
 
             $engineer = User::find($engineer_id[0]);
-            $engineer_data=null;
+            $engineer_data = null;
             $origin = null;
-            if(!is_null($engineer)){
+            if (!is_null($engineer)) {
                 $engineer_data = [
-                    "technician_id" => (int)$engineer->userid??0,
-                    "name" => $engineer->name??'',
-                    "media" => $engineer->profile_photo_path??'',
+                    "technician_id" => (int)$engineer->userid ?? 0,
+                    "name" => $engineer->name ?? '',
+                    "media" => $engineer->profile_photo_path ?? '',
                     "rating" => 0
                 ];
 
                 $origin = [
-                    "latitude" => (float)json_decode($order->origin)->latitude??0,
-                    "longitude" => (float)json_decode($order->origin)->latitude??0,
-                    "description" => json_decode($order->irigin)->description??''
+                    "latitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "longitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "description" => json_decode($order->irigin)->description ?? ''
                 ];
             }
             // dd($engineer);
 
             $destination = [
-                "latitude" => (float)$address['latitude']??0,
-                "longitude" => (float)$address['longitude']??0,
-                "description" => $address['description']??'',
-                "note" => $address['notes']??''
+                "latitude" => (float)$address['latitude'] ?? 0,
+                "longitude" => (float)$address['longitude'] ?? 0,
+                "description" => $address['description'] ?? '',
+                "note" => $address['notes'] ?? ''
             ];
 
             $review = [
@@ -898,23 +897,23 @@ class UserController extends Controller
                 ];
             } else {
 
-                $key = env('GOOGLE_API_KEY','');
+                $key = env('GOOGLE_API_KEY', '');
 
-                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json",[
-                    "latlng" => $request->lat.",".$request->lng,
+                $response = Http::get("https://maps.googleapis.com/maps/api/geocode/json", [
+                    "latlng" => $request->lat . "," . $request->lng,
                     "language" => "id",
                     "key" => $key,
                 ]);
 
-                if($response->successful()){
+                if ($response->successful()) {
                     $result = $response->json()['results'][0];
-                }else{
+                } else {
                     $errors = json_decode($response->getBody()->getContents());
-                    return response()->json(["message" => "Terjadi Kesalahan ".$errors],422);                
+                    return response()->json(["message" => "Terjadi Kesalahan " . $errors], 422);
                 }
 
                 $address = [
-                    "description" => $result['formatted_address']??'',
+                    "description" => $result['formatted_address'] ?? '',
                     "latitude" => (float)$lat,
                     "longitude" => (float)$lng,
                     "notes" => $notes
@@ -932,14 +931,14 @@ class UserController extends Controller
 
             $custom_order_data = [
                 "level" => $custom_type,
-                "custom_type" => $service->name??'-',
+                "custom_type" => $service->name ?? '-',
                 "brand" => $brand,
                 "information" => $custom_info,
                 "problem_details" => $detail_info
             ];
 
             // dd($service);
-            if(!is_null($service)){
+            if (!is_null($service)) {
                 $total_service_price = $service->price;
             }
 
@@ -950,7 +949,7 @@ class UserController extends Controller
             $total_price = $total_service_price + $shipping + $unique_code;
 
             $order = Order::create([
-                "order_number" => "CO".uniqid(),
+                "order_number" => "CO" . uniqid(),
                 "order_type" => "custom",
                 "customer_id" => auth()->user()->id,
                 "engineer_id" => null,
@@ -970,36 +969,36 @@ class UserController extends Controller
                 "qty" => 1,
                 "price" => $service->price,
                 "base_id" => $service->id,
-                "image" => $service->image??'',
+                "image" => $service->image ?? '',
                 'price_receive' => $service->price_receive,
                 'custom_order' => json_encode($custom_order_data)
             ]);
 
             $payment_type = $request->get('payment_type');
 
-            if($payment_type=="saldo"){
+            if ($payment_type == "saldo") {
 
-                if($customer->balance >= $total_price){
+                if ($customer->balance >= $total_price) {
                     $order->order_status = "payment_success";
                     $order->save();
 
                     $customer->balance -= $total_price;
                     $customer->save();
-                }else{
+                } else {
                     return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
                 }
             }
 
-            $engineer_data=null;
+            $engineer_data = null;
             $origin = null;
 
             // dd($engineer);
 
             $destination = [
-                "latitude" => (float)$address['latitude']??0,
-                "longitude" => (float)$address['longitude']??0,
-                "description" => $address['description']??'',
-                "note" => $address['notes']??''
+                "latitude" => (float)$address['latitude'] ?? 0,
+                "longitude" => (float)$address['longitude'] ?? 0,
+                "description" => $address['description'] ?? '',
+                "note" => $address['notes'] ?? ''
             ];
 
             $review = [
@@ -1038,28 +1037,28 @@ class UserController extends Controller
             $order = Order::where('order_number', $order_id)->first();
 
             $destination = [
-                "latitude" => (float)json_decode($order->address)->latitude??0,
-                "longitude" => (float)json_decode($order->address)->longitude??0,
-                "description" => json_decode($order->address)->description??'',
-                "note" => json_decode($order->address)->notes??'',
+                "latitude" => (float)json_decode($order->address)->latitude ?? 0,
+                "longitude" => (float)json_decode($order->address)->longitude ?? 0,
+                "description" => json_decode($order->address)->description ?? '',
+                "note" => json_decode($order->address)->notes ?? '',
             ];
 
             $technician = null;
-            if(isset($order->engineer)){
+            if (isset($order->engineer)) {
                 $technician = [
                     "technician_id" => (int)$order->engineer->id,
                     "name" => $order->engineer->name,
-                    "media" => $order->engineer->profile_photo_path??'',
+                    "media" => $order->engineer->profile_photo_path ?? '',
                     "rating" => 0
                 ];
             }
 
             $origin = null;
-            if(isset($order->origin)){
+            if (isset($order->origin)) {
                 $origin = [
-                    "latitude" => (float)json_decode($order->origin)->latitude??0,
-                    "longitude" => (float)json_decode($order->origin)->latitude??0,
-                    "description" => json_decode($order->origin)->description??''
+                    "latitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "longitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "description" => json_decode($order->origin)->description ?? ''
                 ];
             }
 
@@ -1067,18 +1066,18 @@ class UserController extends Controller
                 "value" => 0,
                 "liked" => []
             ];
-            $reviewData = ReviewService::where('order_number_id',$order->order_number)->first();
-            if(isset($reviewData)){
+            $reviewData = ReviewService::where('order_number_id', $order->order_number)->first();
+            if (isset($reviewData)) {
                 $review = [
-                    "value" => (float)$reviewData->ratings??0,
+                    "value" => (float)$reviewData->ratings ?? 0,
                     "liked" => $reviewData->liked
                 ];
             }
 
             // $response=null;
-            if($order->order_type=="regular"){
+            if ($order->order_type == "regular") {
                 $orderDetail = [];
-                $no=1;
+                $no = 1;
                 foreach ($order->order_detail as $key => $value) {
                     $orderDetail[] = [
                         "service_id" => $no++,
@@ -1090,7 +1089,7 @@ class UserController extends Controller
 
                 $response = [
                     "order_id" => $order->order_number,
-                    "expired_date" => $order->expired_date??$order->created_at->addHour(),
+                    "expired_date" => $order->expired_date ?? $order->created_at->addHour(),
                     "order_status" => $order->order_status,
                     "technician" => $technician,
                     "destination" => $destination,
@@ -1098,7 +1097,7 @@ class UserController extends Controller
                     "services" => $orderDetail,
                     "review" => $review,
                     "price_distance" => (int)$order->shipping,
-                    "promo" => json_decode($order->promo_code)->value??0,
+                    "promo" => json_decode($order->promo_code)->value ?? 0,
                     "unique_code" => (int)$order->convenience_fee,
                     "total_price" => (int)$order->total_payment,
                     "created_at" => $order->created_at
@@ -1107,18 +1106,18 @@ class UserController extends Controller
             }
 
             $customorder = null;
-            if($order->order_type=="custom"){
+            if ($order->order_type == "custom") {
                 $customorder = [
-                    "level" => json_decode($order->order_detail[0]->custom_order)->level??'',
-                    "custom_type" => json_decode($order->order_detail[0]->custom_order)->custom_type??'',
-                    "brand" => json_decode($order->order_detail[0]->custom_order)->brand??'',
-                    "information" => json_decode($order->order_detail[0]->custom_order)->information??'',
-                    "problem_details" => json_decode($order->order_detail[0]->custom_order)->problem_details??''
+                    "level" => json_decode($order->order_detail[0]->custom_order)->level ?? '',
+                    "custom_type" => json_decode($order->order_detail[0]->custom_order)->custom_type ?? '',
+                    "brand" => json_decode($order->order_detail[0]->custom_order)->brand ?? '',
+                    "information" => json_decode($order->order_detail[0]->custom_order)->information ?? '',
+                    "problem_details" => json_decode($order->order_detail[0]->custom_order)->problem_details ?? ''
                 ];
 
                 $response = [
                     "order_id" => $order->order_number,
-                    "expired_date" => $order->expired_date??$order->created_at->addHour(),
+                    "expired_date" => $order->expired_date ?? $order->created_at->addHour(),
                     "order_status" => $order->order_status,
                     "technician" => $technician,
                     "destination" => $destination,
@@ -1127,20 +1126,20 @@ class UserController extends Controller
                     "review" => $review,
                     "price_distance" => (int)$order->shipping,
                     "unique_code" => (int)$order->convenience_fee,
-                    "price_custom" => (int)$order->total_payment-(int)$order->convenience_fee,
+                    "price_custom" => (int)$order->total_payment - (int)$order->convenience_fee,
                     "total_price" => (int)$order->total_payment,
                     "created_at" => $order->created_at
                 ];
                 return response()->json($response);
             }
-
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
-    public function cancel_order($order_id){
+    public function cancel_order($order_id)
+    {
         try {
             //code...
             $order = Order::where('order_number', $order_id)->first();
@@ -1148,7 +1147,7 @@ class UserController extends Controller
             $order->order_status = "canceled";
             $order->save();
 
-            return response()->json(["message"=>"Order canceled"]);
+            return response()->json(["message" => "Order canceled"]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
@@ -1163,7 +1162,7 @@ class UserController extends Controller
             $response = [
                 "id" => $user->id,
                 "name" => $user->name,
-                "profile_photo" => $user->profile_photo_path?? asset('images/no_picture.jpg'),
+                "profile_photo" => $user->profile_photo_path ?? asset('images/no_picture.jpg'),
                 "phone" => $user->phone,
                 "email" => $user->email
             ];
@@ -1176,20 +1175,21 @@ class UserController extends Controller
         }
     }
 
-    public function transaction(Request $request){
+    public function transaction(Request $request)
+    {
 
         $user = auth()->user();
 
-        $orders = Order::where('customer_id',$user->id);
+        $orders = Order::where('customer_id', $user->id);
 
-        if($request->has('status')){
+        if ($request->has('status')) {
 
             $status = $request->get('status');
 
-            if($status==="ordered"){
-                $orders->where('order_status','waiting_payment');
-            }elseif($status==="done"){
-                $orders->where('order_status','done');
+            if ($status === "ordered") {
+                $orders->where('order_status', 'waiting_payment');
+            } elseif ($status === "done") {
+                $orders->where('order_status', 'done');
             }
         }
 
@@ -1203,25 +1203,25 @@ class UserController extends Controller
         foreach ($data as $key => $value) {
 
             $service = null;
-            if($value->order_type=="regular"){
+            if ($value->order_type == "regular") {
                 foreach ($value->order_detail as $key => $d) {
                     $service[] = [
                         "id" => $d->id,
                         "name" => $d->name,
-                        "media" => $d->image??'',
+                        "media" => $d->image ?? '',
                         "price" => (int)$d->price
                     ];
                 }
             }
 
-            $review = ReviewService::where('order_number_id',$value->order_number)->first();
+            $review = ReviewService::where('order_number_id', $value->order_number)->first();
 
             $data_arr[] = [
                 "id" => $value->order_number,
                 "services" => $service,
-                "custom_service" => ($value->order_type=="regular"?"":$value->order_detail[0]->name??''),
-                "destination" => json_decode($value->address)->description??'-',
-                "reviewed" => isset($review)?true:false,
+                "custom_service" => ($value->order_type == "regular" ? "" : $value->order_detail[0]->name ?? ''),
+                "destination" => json_decode($value->address)->description ?? '-',
+                "reviewed" => isset($review) ? true : false,
                 "created_at" => $value->created_at,
             ];
         }
@@ -1240,8 +1240,8 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        $orders = Order::where('customer_id',$user->id)
-                        ->whereIn('order_status', ['waiting_order', 'accepted', 'processed','extend']);
+        $orders = Order::where('customer_id', $user->id)
+            ->whereIn('order_status', ['waiting_order', 'accepted', 'processed', 'extend']);
 
         $page = $request->has('page') ? $request->get('page') : 1;
         $limit = $request->has('size') ? $request->get('size') : 10;
@@ -1253,20 +1253,20 @@ class UserController extends Controller
         foreach ($data as $key => $value) {
 
             $technician = null;
-            if(isset($value->engineer_id)){
+            if (isset($value->engineer_id)) {
                 $technician = [
                     "technician_id" => (int)$value->engineer->id,
                     "name" => $value->engineer->name,
-                    "media" => $value->engineer->profile_photo_path??'',
+                    "media" => $value->engineer->profile_photo_path ?? '',
                     "rating" => 0
                 ];
             }
             $data_arr[] = [
                 "id" => $value->order_number,
                 "technician" => $technician,
-                "total_service" => (int)$value->order_type=="regular"?$value->order_detail->count():0,
-                "is_custom" => $value->order_type=="regular"?false:true,
-                "destination" => json_decode($value->address)->description??'-',
+                "total_service" => (int)$value->order_type == "regular" ? $value->order_detail->count() : 0,
+                "is_custom" => $value->order_type == "regular" ? false : true,
+                "destination" => json_decode($value->address)->description ?? '-',
                 "created_at" => $value->created_at,
             ];
         }
@@ -1279,25 +1279,25 @@ class UserController extends Controller
         ];
 
         return response()->json($response);
-
     }
 
-    public function payment_approval_store(Request $request, $order_id){
+    public function payment_approval_store(Request $request, $order_id)
+    {
         // dd(auth()->user()->id);
         try {
             //code...
             $bank = Bank::find($request->get('bank_id'));
 
             $order = Order::where('order_number', $order_id)->first();
-            $deposit = Deposit::where('transfer_id',$order_id)->first();
-            if(isset($order)){
+            $deposit = Deposit::where('transfer_id', $order_id)->first();
+            if (isset($order)) {
                 $payment = Payment::create([
                     "customer_id" => auth()->user()->id,
-                    "amount" => $order->total_payment-$order->convenience_fee??0,
-                    "paymentid" => "P".uniqid(),
-                    "convenience_fee" => $order->convenience_fee??0,
-                    "type" => $bank->name??"",
-                    "status"=>"check",
+                    "amount" => $order->total_payment - $order->convenience_fee ?? 0,
+                    "paymentid" => "P" . uniqid(),
+                    "convenience_fee" => $order->convenience_fee ?? 0,
+                    "type" => $bank->name ?? "",
+                    "status" => "check",
                     "orders" => $order_id,
                     "type_payment" => "order",
                     "data_id" => $order_id,
@@ -1305,14 +1305,14 @@ class UserController extends Controller
                     "account_number" => $request->account_number,
                     "bank_id" => $request->get('bank_id')
                 ]);
-            }elseif(isset($deposit)){
+            } elseif (isset($deposit)) {
                 $payment = Payment::create([
                     "customer_id" => auth()->user()->id,
-                    "amount" => $deposit->amount??0,
-                    "paymentid" => "P".uniqid(),
-                    "convenience_fee" => $deposit->unique_code??0,
-                    "type" => $bank->name??"",
-                    "status"=>"check",
+                    "amount" => $deposit->amount ?? 0,
+                    "paymentid" => "P" . uniqid(),
+                    "convenience_fee" => $deposit->unique_code ?? 0,
+                    "type" => $bank->name ?? "",
+                    "status" => "check",
                     "orders" => $order_id,
                     "type_payment" => "deposit",
                     "data_id" => $order_id,
@@ -1322,19 +1322,17 @@ class UserController extends Controller
                 ]);
             }
 
-            if($request->hasFile('invoice_picture')){
+            if ($request->hasFile('invoice_picture')) {
 
                 $uploadFolder = 'users/photo/payment';
                 $photo = $request->file('invoice_picture');
-                $photo_path = $photo->store($uploadFolder,'public');
-            
+                $photo_path = $photo->store($uploadFolder, 'public');
+
                 $payment->image = Storage::disk('public')->url($photo_path);
-                $payment->save();                
+                $payment->save();
             }
 
-            return response()->json(['message'=>'payment-approval store success']);
-
-
+            return response()->json(['message' => 'payment-approval store success']);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
@@ -1348,16 +1346,16 @@ class UserController extends Controller
             'note' => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
-        
+
         try {
             //code...
             $amount = $request->amount;
             $user = User::find(auth()->user()->id);
 
-            if($amount > $user->balance){
+            if ($amount > $user->balance) {
                 return response()->json(["message" => "Tidak dapat di proses"]);
             }
 
@@ -1366,28 +1364,29 @@ class UserController extends Controller
                 "user_id" => auth()->user()->id,
                 "amount" => $amount,
                 "note" => $request->note,
-                "withdraw_id" => "W".uniqid()
+                "withdraw_id" => "W" . uniqid()
             ]);
 
-            $user->balance = $user->balance-$amount;
+            $user->balance = $user->balance - $amount;
             $user->save();
 
             DB::commit();
 
-            return response()->json(['message'=>'withdraw successfully created']);
+            return response()->json(['message' => 'withdraw successfully created']);
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
-    public function deposit(Request $request){
+    public function deposit(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'amount' => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
@@ -1398,11 +1397,11 @@ class UserController extends Controller
 
             $deposit = Deposit::create([
                 "customer_id" => auth()->user()->id,
-                "transfer_id" => "TF".uniqid(),
+                "transfer_id" => "TF" . uniqid(),
                 "expired_date" => now()->addHour(),
                 "amount" => $amount,
                 "unique_code" => $unique_code,
-                "total_amount" => $amount+$unique_code
+                "total_amount" => $amount + $unique_code
             ]);
 
             $response = [
@@ -1414,28 +1413,28 @@ class UserController extends Controller
             ];
 
             return response()->json($response);
-
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
-    public function destroy_deposit($id){
-        
-        if(is_null($id)){
+    public function destroy_deposit($id)
+    {
+
+        if (is_null($id)) {
             return response()->json(["message" => "id is required"], 422);
         }
 
         try {
             //code...
-            $deposit = Deposit::where('transfer_id',$id)->first();
+            $deposit = Deposit::where('transfer_id', $id)->first();
             $deposit->delete();
 
             return response()->json(["message" => "Deposit canceled"]);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
@@ -1443,10 +1442,10 @@ class UserController extends Controller
     {
         try {
             //code...
-            $data = BaseService::whereHas('service_category',function ($query) {
+            $data = BaseService::whereHas('service_category', function ($query) {
                 $query->where('name', 'like', '%custom%');
             });
-    
+
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
             $service = $data->limit($limit)->offset(($page - 1) * $limit);
@@ -1470,10 +1469,9 @@ class UserController extends Controller
             $response['data'] = $data_arr;
 
             return response()->json($response);
-
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
@@ -1483,8 +1481,8 @@ class UserController extends Controller
         try {
 
             $user = auth()->user();
-            $data = Notification::where('type','customer')
-                                    ->where('user_id',$user->id);
+            $data = Notification::where('type', 'customer')
+                ->where('user_id', $user->id);
 
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
@@ -1496,12 +1494,12 @@ class UserController extends Controller
                 return [
                     "id"        => $data->id,
                     "avatar"    => "",
-                    "unread"    => ($data->read==false?true:false),
+                    "unread"    => ($data->read == false ? true : false),
                     "title"     => $data->title,
                     "subtitle"  => $data->subtitle,
-                    "subtitle_color" => $data->subtitle_color==null?"":$data->subtitle_color,
+                    "subtitle_color" => $data->subtitle_color == null ? "" : $data->subtitle_color,
                     "caption" => $data->caption,
-                    "id_data" => $data->id_data_string??'',
+                    "id_data" => $data->id_data_string ?? '',
                     "action"    => $data->action,
                     "created_at" => $data->created_at
                 ];
@@ -1513,12 +1511,10 @@ class UserController extends Controller
             $response['data'] = $datas;
 
             return response()->json($response);
-
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
-
     }
 
     public function notification_read(Request $request)
@@ -1527,7 +1523,7 @@ class UserController extends Controller
             'notification_id' => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
@@ -1538,11 +1534,10 @@ class UserController extends Controller
             $notif->read = true;
             $notif->save();
 
-            return response()->json(["message"=>"notification read success"]);
-
+            return response()->json(["message" => "notification read success"]);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
@@ -1553,7 +1548,7 @@ class UserController extends Controller
             'rating' => 'required'
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
@@ -1564,13 +1559,13 @@ class UserController extends Controller
             $review = ReviewService::create([
                 "order_number_id" => $request->get('order_id'),
                 "ratings" => $request->get('rating'),
-                "liked" => $request->get('likes')??[],
+                "liked" => $request->get('likes') ?? [],
                 "description" => $request->get('review_reason')
             ]);
 
-            $order = Order::where('order_number',$request->get('order_id'))->first();
+            $order = Order::where('order_number', $request->get('order_id'))->first();
 
-            $title = auth()->user()->name." telah memberikan rating";
+            $title = auth()->user()->name . " telah memberikan rating";
 
             Notification::create([
                 "title" => $title,
@@ -1583,22 +1578,21 @@ class UserController extends Controller
             $technician = User::find($order->engineer_id);
             $fcm_token[] = $technician->fcm_token;
             fcm()->to($fcm_token)
-                    ->priority('high')
-                    ->timeToLive(60)
-                    ->data([
-                        'title' => $title,
-                        'body' => "Rating : ".$request->get('rating'),
-                    ])
-                    ->send();
+                ->priority('high')
+                ->timeToLive(60)
+                ->data([
+                    'title' => $title,
+                    'body' => "Rating : " . $request->get('rating'),
+                ])
+                ->send();
 
             DB::commit();
 
             return response()->json(["message" => "Review submit success"]);
-
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 }
