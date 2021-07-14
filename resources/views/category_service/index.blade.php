@@ -77,6 +77,18 @@
   </div>
   <!-- /.content-wrapper -->
 
+  <x-modal id="md_delete" title="Hapus Data Kategori Jasa">
+    <p>Apa anda yakin?</p>
+    <form action="" method="post">
+      @csrf
+      @method('delete')
+      <div class="text-right">
+        <button class="btn btn-primary" type="submit">Ya</button>
+        <button class="btn btn-secondary" data-dismiss="modal" type="button">Batal</button>
+      </div>
+    </form>
+  </x-modal>
+
 @endsection
 
 @section('scripts')
@@ -100,25 +112,31 @@
                 {data: 'name', name: 'name'},
                 {data: 'icon', name: 'icon'},
                 {data: 'status', name: 'status',width:'10%',class:'text-center'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'action', name: 'action', width:'5%', orderable: false, searchable: false, class:'text-center'},
             ]
         });
 
         $('body').on('click', '.btn_delete', function () {
             const url = $(this).data('url');
 
-            if (confirm("Apakah anda yakin?") == true) {
-                // ajax
-                $.ajax({
-                    type:"POST",
-                    url: url,
-                    dataType: 'json',
-                    success: function(res){
-                        var oTable = $('#table_category_service').dataTable();
-                        oTable.fnDraw(false);
-                    }
-                });
-            }
+            $('#md_delete').modal('show');
+            $('#md_delete').find('form').attr('action',url);
+
+            // const url = $(this).data('url');
+
+            // if (confirm("Apakah anda yakin?") == true) {
+            //     // ajax
+            //     $.ajax({
+            //         type:"POST",
+            //         url: url,
+            //         dataType: 'json',
+            //         success: function(res){
+
+            //             var oTable = $('#table_category_service').dataTable();
+            //             oTable.fnDraw(false);
+            //         }
+            //     });
+            // }
 
         })
 

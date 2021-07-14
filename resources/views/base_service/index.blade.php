@@ -80,7 +80,7 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <x-modal id="md_delete" title="Hapus Data Master Service">
+  <x-modal id="md_delete" title="Hapus Data Master Jasa">
     <p>Apa anda yakin?</p>
     <form action="" method="post">
       @csrf

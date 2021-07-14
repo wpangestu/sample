@@ -34,11 +34,21 @@ class CategoryServiceController extends Controller
                         return '<img src="'.$row->icon.'" height="120px">';
                     })
                     ->addColumn('action', function($row){
+
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            Aksi
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="'.route('service_category.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
+                            <li class="dropdown-item"><a href="'.route('service_category.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                            <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_category.destroy',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                        </ul>';
    
-                            $btn = '<a href="'.route('service_category.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-                            $btn .= ' <a href="'.route('service_category.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-warning btn-sm">Detail</a>';
+                            // $btn = '<a href="'.route('service_category.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
+                            // $btn .= ' <a href="'.route('service_category.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-warning btn-sm">Detail</a>';
    
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_category.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                            // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_category.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
     
                             return $btn;
                     })
@@ -75,38 +85,36 @@ class CategoryServiceController extends Controller
             'slug' => 'required|unique:category_services'
         ]);
 
-        $data = [
-            "name" => $request->input('name'),
-            "status" => $request->input('active')??0,
-            'slug' => $request->input('slug')
-        ];
- 
-        $insert = CategoryService::create($data);
+        try {
+            //code...
+            $photo_path=null;
+    
+            if ($request->hasFile('icon')) {
+    
+                $uploadFolder = 'admin/service_category';
+                $photo = $request->file('icon');
+                $photo_path = $photo->store($uploadFolder,'public');
+    
+                $icon = Storage::disk('public')->url($photo_path);
+            }
+    
+            $data = [
+                "name" => $request->input('name'),
+                "status" => $request->input('active')??0,
+                'slug' => $request->input('slug'),
+                'icon' => $icon
+            ];
 
-        if ($request->hasFile('icon')) {
+            CategoryService::create($data);
 
-            $uploadFolder = 'admin/service_category';
-            $photo = $request->file('icon');
-            $photo_path = $photo->store($uploadFolder,'public');
+            toast('Data berhasil ditambah','success');
 
-            $insert->icon = Storage::disk('public')->url($photo_path);
-            $insert->save();
-        }
+            return redirect()->route('service_category.index');
 
-        if($insert){
-
-            $causer = auth()->user();
-
-            activity('add_category_service')->performedOn($insert)
-                        ->causedBy($causer)
-                        ->withProperties(["attributes"=>$insert])
-                        ->log('Pengguna melakukan penambahan kategori jasa ['.$insert->id.'#'.$insert->name.']');
-
+        } catch (\Throwable $th) {
+            //throw $th;
             return redirect()->route('service_category.index')
-                        ->with('success','Data berhasil ditambahkan');
-        }else{
-            return redirect()->route('service_category.index')
-                        ->with('error','Opps, Terjadi kesalahan.');
+                                ->with('error','Opps, Terjadi kesalahan.');
         }
     }
 
@@ -164,8 +172,7 @@ class CategoryServiceController extends Controller
             DB::beginTransaction();
 
             $service_category = CategoryService::find($id);
-            $old = $service_category;
-            $update = $service_category->update($data);
+            $service_category->update($data);
 
             if ($request->hasFile('icon')) {
     
@@ -176,18 +183,12 @@ class CategoryServiceController extends Controller
                 $service_category->icon = Storage::disk('public')->url($photo_path);
                 $service_category->save();
             }
-            $service_category = CategoryService::find($id);
-            $causer = auth()->user();
-
-            activity('edit_category_service')->performedOn($service_category)
-                        ->causedBy($causer)
-                        ->withProperties(["attributes"=>$service_category,"old"=>$old])
-                        ->log('Pengguna melakukan pembaruan kategori jasa ['.$service_category->id.'#'.$service_category->name.']');
 
             DB::commit();
 
-            return redirect()->route('service_category.index')
-                        ->with('success','Data berhasil diubah');            
+            toast('Data berhasil diubah','success');
+
+            return redirect()->route('service_category.index');            
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
@@ -205,8 +206,19 @@ class CategoryServiceController extends Controller
     public function destroy($id)
     {
         //
-        $delete = CategoryService::find($id)->delete();
+        try {
+            //code...
+            $delete = CategoryService::find($id)->delete();
 
-        return Response()->json($delete);
+            toast('Data berhasil dihapus','success');
+
+            return redirect()->route('service_category.index');
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('service_category.index')
+                        ->with('error','Opps, Terjadi kesalahan.');
+        }
+
     }
 }

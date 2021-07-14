@@ -71,7 +71,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     
     // Kategori Jas
     Route::resource('service_category', CategoryServiceController::class);
-    Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax');
+    // Route::post('/service_category/{id}/delete', [CategoryServiceController::class,'destroy'])->name('service_category.delete.ajax');
     // Jasa
 
     // Master Jasa
