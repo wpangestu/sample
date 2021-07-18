@@ -15,6 +15,7 @@ class Chat extends Model
         'message',
         'chatroom_id',
         'media',
+        'read'
     ];
 
     public function user_from(){

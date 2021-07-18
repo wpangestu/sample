@@ -825,7 +825,7 @@ class UserController extends Controller
 
                 $origin = [
                     "latitude" => (float)json_decode($order->origin)->latitude ?? 0,
-                    "longitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "longitude" => (float)json_decode($order->origin)->longitude ?? 0,
                     "description" => json_decode($order->irigin)->description ?? ''
                 ];
             }
@@ -1057,7 +1057,7 @@ class UserController extends Controller
             if (isset($order->origin)) {
                 $origin = [
                     "latitude" => (float)json_decode($order->origin)->latitude ?? 0,
-                    "longitude" => (float)json_decode($order->origin)->latitude ?? 0,
+                    "longitude" => (float)json_decode($order->origin)->longitude ?? 0,
                     "description" => json_decode($order->origin)->description ?? ''
                 ];
             }
@@ -1187,7 +1187,7 @@ class UserController extends Controller
             $status = $request->get('status');
 
             if ($status === "ordered") {
-                $orders->whereIn('order_status', ['waiting_payment', 'waiting_order']);
+                $orders->whereIn('order_status', ['waiting_payment']);
             } elseif ($status === "done") {
                 $orders->where('order_status', 'done');
             }
@@ -1241,7 +1241,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         $orders = Order::where('customer_id', $user->id)
-            ->whereIn('order_status', ['accepted', 'processed', 'extend']);
+            ->whereIn('order_status', ['payment_success','waiting_order','accepted', 'processed', 'extend']);
 
         $page = $request->has('page') ? $request->get('page') : 1;
         $limit = $request->has('size') ? $request->get('size') : 10;
@@ -1261,14 +1261,25 @@ class UserController extends Controller
                     "rating" => 0
                 ];
             }
-            $data_arr[] = [
-                "id" => $value->order_number,
-                "technician" => $technician,
-                "total_service" => (int)$value->order_type == "regular" ? $value->order_detail->count() : 0,
-                "is_custom" => $value->order_type == "regular" ? false : true,
-                "destination" => json_decode($value->address)->description ?? '-',
-                "created_at" => $value->created_at,
-            ];
+
+            if(isset($technician)){
+                $data_arr[] = [
+                    "id" => $value->order_number,
+                    "technician" => $technician,
+                    "total_service" => (int)$value->order_type == "regular" ? $value->order_detail->count() : 0,
+                    "is_custom" => $value->order_type == "regular" ? false : true,
+                    "destination" => json_decode($value->address)->description ?? '-',
+                    "created_at" => $value->created_at,
+                ];
+            }else{
+                $data_arr[] = [
+                    "id" => $value->order_number,
+                    "total_service" => (int)$value->order_type == "regular" ? $value->order_detail->count() : 0,
+                    "is_custom" => $value->order_type == "regular" ? false : true,
+                    "destination" => json_decode($value->address)->description ?? '-',
+                    "created_at" => $value->created_at,
+                ];
+            }
         }
 
         $response = [

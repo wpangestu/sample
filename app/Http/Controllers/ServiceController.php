@@ -204,8 +204,8 @@ class ServiceController extends Controller
             ]);
 
             $technician = User::find($service->engineer_id);
-
-            fcm()->to($technician->fcm_token)
+            $token[] = $technician->fcm_token; 
+            fcm()->to($token)
                     ->priority('high')
                     ->timeToLive(60)
                     ->data([

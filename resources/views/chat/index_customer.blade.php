@@ -37,9 +37,11 @@
                 <li class="nav-item active">
                   <a href="#" data-user_id="{{ $value['user_id'] }}" data-userid="{{ $value['userid'] }}" class="nav-link engineer_list">
                     <i class="fas fa-user"></i> {{$value['user_name']}}
-                    @if($value['unread_count'] > 0 )
-                      <span class="badge bg-primary float-right">{{ $value['unread_count'] }}</span>
-                    @endif
+                    <span id="notif_sidebar_chat_{{ $value['user_id'] }}">               
+                      @if($value['unread_count'] > 0 )
+                        <span class="badge bg-primary float-right">{{ $value['unread_count'] }}</span>
+                      @endif
+                    </span>
                   </a>
                 </li>
               @endforeach
@@ -76,7 +78,10 @@
                                 <span class="pl-1 pr-1 direct-chat-timestamp float-{{ $value->user_from->hasRole(['admin', 'cs']) ? 'right':'left'}}"> [{{$value->created_at->format('d/m/Y H:i')}}] </span>
                               </div>
                               <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->user_from->hasRole(['admin', 'cs']) ?'right':'left'}}">
-                                {{ $value->message }}
+                                  @isset($value->media)
+                                    <img src="{{$value->media}}" class="img-fluid"> <br>                                
+                                  @endisset    
+                                  {{ $value->message }}
                               </div>
                           </div>
 
@@ -130,6 +135,34 @@
           if (event.target.scrollTop === 0) {
             const first = $('.direct-chat-msg.first').data('chat_id');
             // alert(first);
+            if(first!==undefined){
+              $('.direct-chat-msg[data-chat_id='+first+']').removeClass('first');
+  
+              $('#card-refresh-layout').attr('hidden',false);
+  
+              $.ajax({
+                  url: "{{ route('chat.before') }}",
+                  type: "get",
+                  data: {
+                      _token: "{{ csrf_token() }}",
+                      "id_chat" : first
+                  },
+                  success: function(response) {
+                    // console.log(response);
+                    const val = {"chat":response}
+                    const chat_before = template_message_user(val);
+
+                    $('#message_user').prepend(chat_before)
+  
+                    $('.direct-chat-msg[data-chat_id='+first+']')[0].scrollIntoView();
+  
+                    setTimeout(function(){
+                      $('#card-refresh-layout').attr('hidden',true);
+                    },1000)
+                  }
+              });            
+            }
+
           }
       }, false);
 
@@ -169,6 +202,7 @@
               objDiv.scrollTop = objDiv.scrollHeight;
 
               // $('#form_post_message').attr('action','{{ route("post.chat.user",'+user_id+') }}');
+              $('#notif_sidebar_chat_'+user_id).html('');
             }
         });
 
@@ -189,6 +223,7 @@
                         <span class="pl-1 pr-1 direct-chat-timestamp float-${ d.admin_cs ?'right':'left'}"> [${d.created_at}] </span>
                       </div>
                       <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.admin_cs ?'right':'left'}">
+                        ${ d.media !== null?'<img src="'+d.media+'" class="img-fluid"> <br>':'' }
                         ${ d.message }
                       </div>
                   </div>

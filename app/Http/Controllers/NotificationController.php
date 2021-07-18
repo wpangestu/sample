@@ -14,9 +14,10 @@ class NotificationController extends Controller
                             ->where('verified',true)
                             ->whereNotNull('fcm_token')
                             ->get();
+        dd($users->pluck('fcm_token')->toArray());
         $recipients[] = 'e1AKEDODSwyl-l_5eY0Lth:APA91bEeL6PxE10INn2Mvy5Oz7TofhrdULlGvuFcLSqViHPQldg_ZyrOr6UkapBKQZL0teupH-_u6P9csj6NSIsBdNYhBBTgCUL5CmRLjbq_4vAyoroBp66qtvhaz5Hukx80Ecp5f4kf';
         $recipients[] = '123';
-        // dd($recipients);
+        dd($recipients);
         
         try {
             //code...

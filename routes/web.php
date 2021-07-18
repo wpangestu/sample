@@ -162,6 +162,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     
     Route::get('chat/tes', [ChatController::class,'tes']);
     Route::get('chat/engineer', [ChatController::class,'index'])->name('chat.index.engineer');
+    Route::get('chat/before', [ChatController::class,'get_chat_before'])->name('chat.before');
     Route::get('chat/customer', [ChatController::class,'index_customer'])->name('chat.index.customer');
     Route::get('chat/customer/{id?}', [ChatController::class,'show'])->name('chat.customer.show');
     Route::get('chat/engineer/{id?}', [ChatController::class,'show'])->name('chat.engineer.show');

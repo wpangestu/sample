@@ -193,10 +193,17 @@ class ChatController extends Controller
 
             if($chatroom->count() > 0){
                 $chat = Chat::where('chatroom_id',$chatroom->first()->id)
-                            ->offset(($page - 1) * $limit)
-                            ->limit($limit)
-                            ->orderBy('created_at','desc')
+                            // ->offset(($page - 1) * $limit)
+                            // ->skip(10)
+                            ->latest()
+                            ->take($limit)
                             ->get();
+
+                $readchat = Chat::where('chatroom_id',$chatroom->first()->id)
+                                ->where('to',$user_admin);
+                if($readchat->count() > 0){
+                    $readchat->update(['read'=>true]);
+                }
             }
 
             $response['chatroom'] = $chatroom->get();
@@ -237,6 +244,49 @@ class ChatController extends Controller
             return response()->json($th->getMessage());
         }
 
+    }
+
+    public function get_chat_before(Request $request){
+        $id = $request->get('id_chat');
+        try {
+            //code...
+            $chat = Chat::find($id);
+
+            $chat_before = Chat::where('chatroom_id',$chat->chatroom_id)
+                                    ->where('created_at', '<',$chat->created_at)
+                                    ->latest()
+                                    ->limit(10)
+                                    ->get()
+                                    ->map(function ($value, $key) {
+
+                                        $admin_cs = false;
+                                        $role = "";
+                                        if($value->user_from->hasRole(['admin','cs'])){
+                                            $admin_cs = true; 
+                                            if($value->user_from->hasRole(['cs'])){
+                                                $role = "cs";
+                                            }else{
+                                                $role = "admin";
+                                            }
+                                        }
+
+                                        return [
+                                            "id" => $value->id,
+                                            "to" => $value->id,
+                                            "from" => $value->from,
+                                            "message" => $value->message,
+                                            "chatroom_id" => $value->chatromm_id,
+                                            "media" => $value->media,
+                                            "name" => $value->user_from->name,
+                                            "created_at" => $value->created_at->format('d/m/Y H:i'),
+                                            "admin_cs" => $admin_cs,
+                                            "role" => $role
+                                        ];
+                                    });
+            return response()->json($chat_before);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     public function store_chat(Request $request)
