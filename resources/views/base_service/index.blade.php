@@ -34,7 +34,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('base_services.create')}}" class="btn btn-primary mb-3">Tambah</a>
+                <a href="{{route('base_services.create')}}" class="btn btn-sm btn-primary mb-3">Tambah</a>
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
@@ -57,10 +57,11 @@
                       <th>No</th>
                       <th>Nama</th>
                       <th>Kategori</th>
-                      <th>Deskripsi</th>
+                      <!-- <th>Deskripsi</th> -->
                       <th>Garansi</th>
                       <th>Harga</th>
-                       <th>Fee Teknisi</th>
+                      <th>Fee Teknisi</th>
+                      <th>Update</th>
                       <th>Aksi</th>
                     </tr>
                     </thead>
@@ -86,8 +87,8 @@
       @csrf
       @method('delete')
       <div class="text-right">
-        <button class="btn btn-primary" type="submit">Ya</button>
-        <button class="btn btn-secondary" data-dismiss="modal" type="button">Batal</button>
+        <button class="btn btn-sm btn-primary" type="submit">Ya</button>
+        <button class="btn btn-sm btn-secondary" data-dismiss="modal" type="button">Batal</button>
       </div>
     </form>
   </x-modal>
@@ -114,10 +115,11 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'name', name: 'name'},
                 {data: 'category_service_id', name: 'category_service_id'},
-                {data: 'description', name: 'description'},
+                // {data: 'description', name: 'description'},
                 {data: 'guarantee', name: 'guarantee'},
                 {data: 'price', name: 'price'},
                 {data: 'price_receive', name: 'price_receive'},
+                {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

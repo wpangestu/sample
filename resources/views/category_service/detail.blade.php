@@ -12,10 +12,11 @@
             <h1 class="m-0 text-dark">Kategori Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('service_category.index') }}">Kategori Jasa</a></li>
+              <li class="breadcrumb-item active">Detail Kategori Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -62,6 +63,8 @@
                   </dd>
                   <dt class="col-sm-3">Status</dt>
                   <dd class="col-sm-8">: <span class="badge badge-{{ $categoryService->status===1?'success':'secondary' }}">{{ $categoryService->status===1?'Aktif':'Tidak Aktif' }}</span>
+                  <dt class="col-sm-3">Slug</dt>
+                  <dd class="col-sm-8">: {{$categoryService->slug}}
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $categoryService->created_at??'-' }}
                   </dd>

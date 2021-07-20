@@ -98,7 +98,7 @@
 {{ $key }} =>
 @if (is_array($value))
     @foreach ($value as $key => $val)
-    {{ $key }} => {{ $val }}                                           
+    {{ $key }} => {{$val}}                                    
     @endforeach
 @else
     {{$value}}

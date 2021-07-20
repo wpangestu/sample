@@ -59,7 +59,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{ route('services.index') }}" class="nav-link {{ request()->routeIs('services.index')||request()->routeIs('services.create')?'active':'' }}">
+                <a href="{{ route('services.index') }}" class="nav-link {{ request()->routeIs('services.index')||request()->routeIs('services.create')||request()->routeIs('services.edit')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>List Jasa</p>
                 </a>

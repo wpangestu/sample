@@ -58,8 +58,8 @@
                       <th>Nama</th>
                       <th>Kategori</th>
                       <th>Teknisi</th>
-                      <th>Harga</th>
                       <th>Status</th>
+                      <th>Update</th>
                       <th>Aksi</th>
                     </tr>
                     </thead>
@@ -113,8 +113,8 @@
                 {data: 'name', name: 'name'},
                 {data: 'service_category_id', name: 'service_category_id'},
                 {data: 'engineer_id', name: 'engineer_id'},
-                {data: 'price', name: 'price'},
                 {data: 'status', name: 'status',class:'text-center'},
+                {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

@@ -12,10 +12,11 @@
             <h1 class="m-0 text-dark">Kategori Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+          <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('service_category.index') }}">Kategori Jasa</a></li>
+              <li class="breadcrumb-item active">Ubah Kategori Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -89,8 +90,8 @@
                             <div class="form-group row">
                                 <label for="inputStatus" class="col-sm-2 col-form-label"></label>
                                 <div class="col-sm-10">
-                                    <button class="btn btn-info">Ubah</button>
-                                    <a href="{{ route('service_category.index') }}" class="btn btn-secondary">Kembali</a>
+                                    <button class="btn btn-sm btn-info">Ubah</button>
+                                    <a href="{{ route('service_category.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
                                 </div>
                             </div>
                         </form>
@@ -112,5 +113,21 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
+@endsection
+
+@section('scripts')
+
+<script>
+
+    $(document).ready(function(){
+      $('#inputName').on('keyup',function(){
+        const text = $(this).val().toLowerCase()
+                                  .replace(/ /g,'-')
+                                  .replace(/[^\w-]+/g,'');
+        $('#inputSlug').val(text);
+      })
+    });
+</script>
 
 @endsection

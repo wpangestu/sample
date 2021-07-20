@@ -21,7 +21,7 @@ class BaseServiceController extends Controller
         // $baseServices = BaseService::all();
 
         if ($request->ajax()) {
-            $data = BaseService::all();
+            $data = BaseService::latest()->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('category_service_id',function($row){
@@ -35,6 +35,9 @@ class BaseServiceController extends Controller
                     })
                     ->addColumn('guarantee', function($row){
                         return $row->guarantee==true?'Ya':'Tidak';
+                    })
+                    ->addColumn('updated_at', function($row){
+                        return $row->created_at->format('d-m-Y')."<br>".$row->created_at->format('H:i:s');
                     })
                     ->addColumn('action', function($row){
                         
@@ -50,7 +53,7 @@ class BaseServiceController extends Controller
                         ';
                         return $btn;
                     })
-                    ->rawColumns(['action','status'])
+                    ->rawColumns(['action','status','updated_at'])
                     ->make(true);
         }
 
@@ -112,12 +115,6 @@ class BaseServiceController extends Controller
                 $insert->save();
             }
         
-            $causer = auth()->user();
-
-            activity('add_base_service')->performedOn($insert)
-                        ->causedBy($causer)
-                        ->log('Data berhasil ditambahkan');
-
             toast('Data berhasil ditambah','success');
                         
             return redirect()->route('base_services.index');
@@ -203,12 +200,6 @@ class BaseServiceController extends Controller
 
             toast('Data berhasil diubah','success');
 
-            $causer = auth()->user();
-
-            activity('update_base_service')->performedOn($update)
-                        ->causedBy($causer)
-                        ->log('Data berhasil diubah');
-
             return redirect()->route('base_services.index');
 
         } catch (\Throwable $th) {
@@ -233,12 +224,6 @@ class BaseServiceController extends Controller
 
             $delete = BaseService::find($id);
             $delete->delete();
-
-            $causer = auth()->user();
-
-            activity('update_base_service')->performedOn($delete)
-                        ->causedBy($causer)
-                        ->log('Data berhasil diubah');
 
             toast('Data berhasil dihapus','success');
 

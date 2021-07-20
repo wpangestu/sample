@@ -105,7 +105,10 @@ class CategoryServiceController extends Controller
                 'icon' => $icon
             ];
 
+            // activity()->disableLogging();
             CategoryService::create($data);
+            // activity()->enableLogging();
+
 
             toast('Data berhasil ditambah','success');
 

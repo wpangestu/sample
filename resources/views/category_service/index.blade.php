@@ -12,10 +12,10 @@
             <h1 class="m-0 text-dark">Kategori Jasa</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item active">Kategori Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -34,7 +34,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('service_category.create')}}" class="btn btn-primary mb-3">Tambah</a>
+                <a href="{{route('service_category.create')}}" class="btn btn-sm btn-primary mb-3">Tambah</a>
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">

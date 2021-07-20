@@ -110,8 +110,8 @@
                             <div class="form-group row">
                                 <label for="inputStatus" class="col-sm-3 col-form-label"></label>
                                 <div class="col-sm-9">
-                                    <button class="btn btn-primary">Simpan</button>
-                                    <a href="{{ route('base_services.index') }}" class="btn btn-secondary">Kembali</a>
+                                    <button class="btn btn-sm btn-primary">Simpan</button>
+                                    <a href="{{ route('base_services.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
                                 </div>
                             </div>
                         </form>

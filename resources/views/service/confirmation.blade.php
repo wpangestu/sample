@@ -12,10 +12,11 @@
             <h1 class="m-0 text-dark">Service</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Home</a></li>
+              <!-- <li class="breadcrumb-item"><a href="{{ route('services.index') }}">Ko</a></li> -->
+              <li class="breadcrumb-item active">Konfirmasi Jasa</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -59,6 +60,7 @@
                     <th>Kategori</th>
                     <th>Teknisi</th>
                     <th>Status</th>
+                    <th>Update</th>
                     <th>Aksi</th>
                   </tr>
                   </thead>
@@ -101,6 +103,7 @@
                 {data: 'service_category_id', name: 'service_category_id'},
                 {data: 'engineer', name: 'engineer'},
                 {data: 'status', name: 'status', orderable: false, searchable: false},
+                {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

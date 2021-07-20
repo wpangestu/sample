@@ -62,14 +62,19 @@
                   <dt class="col-sm-3">Nama Teknisi</dt>
                   <dd class="col-sm-8">: <a href="{{ route('engineer.show',$service->engineer->userid) }}" target="_blank">{{ $service->engineer->name??'-' }}</a></dd>
                   <dt class="col-sm-3">Nama Jasa</dt>
-                  <dd class="col-sm-8">: {{ $service->name??'-' }}</dd>
+                  <dd class="col-sm-8">: {{ $service->base_service->name??'-' }}</dd>
                   <dt class="col-sm-3">Kategori</dt>
-                  <dd class="col-sm-8">: {{ $service->service_category->name??'-' }}</dd>
+                  <dd class="col-sm-8">: {{ $service->base_service->service_category->name??'-' }}</dd>
                   <dt class="col-sm-3">Harga (IDR)</dt>
-                  <dd class="col-sm-8">: {{ rupiah($service->price??0) }}</dd>
-
+                  <dd class="col-sm-8">: {{ rupiah($service->base_service->price??0) }}</dd>
+                  <dt class="col-sm-3">Fee Teknisi (IDR)</dt>
+                  <dd class="col-sm-8">: {{ rupiah($service->base_service->price_receive??0) }}</dd>
                   <dt class="col-sm-3">Deskripsi</dt>
-                  <dd class="col-sm-8"><textarea class="form-control" readonly rows="4">{{ $service->description }}</textarea></dd>
+                  <dd class="col-sm-8"><textarea class="form-control" readonly rows="4">{{ $service->base_service->description }}</textarea></dd>
+                  <dt class="col-sm-3">Gambar Jasa</dt>
+                  <dd class="col-sm-8"><img src="{{ $service->base_service->image }}" height="180px"></dd>
+                  <dt class="col-sm-3">Gambar Sertifikat Jasa</dt>
+                  <dd class="col-sm-8"><img src="{{ $service->sertification_image }}" height="180px"></dd>
                   <dt class="col-sm-3">Skill</dt>
                   <dd class="col-sm-8">
                     <select multiple class="form-control" id="skill">
@@ -78,12 +83,6 @@
                         @endforeach
                     </select>
                   </dd>
-
-                  <dt class="col-sm-3">Gambar Jasa</dt>
-                  <dd class="col-sm-8"><img src="{{ $service->image }}" height="180px"></dd>
-                  <dt class="col-sm-3">Gambar Sertifikat Jasa</dt>
-                  <dd class="col-sm-8"><img src="{{ $service->sertification_image }}" height="180px"></dd>
-
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $service->created_at }}
                   </dd>

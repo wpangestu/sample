@@ -35,8 +35,8 @@ class ServiceController extends Controller
                 ->addColumn('engineer_id', function ($row) {
                     return $row->engineer->name ?? '-';
                 })
-                ->addColumn('price', function ($row) {
-                    return "Rp " . number_format($row->base_service->price??0, 0, ',', '.');
+                ->addColumn('updated_at', function ($row) {
+                    return $row->updated_at->format('d-m-Y')."<br>".$row->updated_at->format('H:i:s');
                 })
                 ->addColumn('status', function ($row) {
                     if ($row->status === "active") {
@@ -60,7 +60,7 @@ class ServiceController extends Controller
                         ';
                     return $btn;
                 })
-                ->rawColumns(['action', 'status'])
+                ->rawColumns(['action', 'status','updated_at'])
                 ->make(true);
         }
 
@@ -116,26 +116,22 @@ class ServiceController extends Controller
             'sertification_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = [
-            "name" => "",
-            "price" => 0,
-            "engineer_id"           => $request->engineer_id,
-            "skill"                 => $request->skill,
-            "description"           => $request->description,
-            'base_service_id'       => $request->base_service_id
-        ];
-
-        $service = Service::create($data);
-
+        $sertificate_image = null;
         if ($request->hasFile('sertification_image')) {
-
             $uploadFolder = 'teknisi/service/certificate';
             $photo = $request->file('sertification_image');
             $photo_path_sertificate = $photo->store($uploadFolder, 'public');
-            // dd($photo_path_sertificate);
-            $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
-            $service->save();
+            $sertificate_image = Storage::disk('public')->url($photo_path_sertificate);
         }
+
+        $data = [
+            "engineer_id"           => $request->engineer_id,
+            "skill"                 => $request->skill,
+            'base_service_id'       => $request->base_service_id,
+            'sertification_image'   => $sertificate_image
+        ];
+
+        $service = Service::create($data);
 
         if ($service) {
             return redirect()->route('services.confirmation')
@@ -171,6 +167,7 @@ class ServiceController extends Controller
         //
         $categoryServices = CategoryService::where('status', 1)->get();
         $service = Service::find($id);
+        // dd($categoryServices);
         return view('service.edit', compact('categoryServices', 'service'));
     }
 
@@ -187,11 +184,13 @@ class ServiceController extends Controller
             //code...
             DB::beginTransaction();
 
+            activity()->disableLogging();
             $service = Service::find($id);
             $service->status = 'active';
             $service->verified_by = auth()->user()->id;
             $service->verified_at = date("Y-m-d H:i:s");
             $service->save();
+            activity()->enableLogging();
 
             $title = "Jasa: " . $service->base_service->name;
 
@@ -213,11 +212,15 @@ class ServiceController extends Controller
                         'body' => 'Telah Aktif',
                     ])
                     ->send();
-
+            $properties = [
+                'old'=>['status'=>'review'],
+                'attributes'=>['status'=>'active']
+            ];
             $causer = auth()->user();
             activity('confirm_service')->performedOn($service)
                 ->causedBy($causer)
-                ->log('Pengguna melakukan konfirmasi ACC Jasa');
+                ->withProperties($properties)
+                ->log('Pengguna melakukan konfirmasi ACC Jasa #:subject.id');
 
             DB::commit();
 
@@ -236,13 +239,13 @@ class ServiceController extends Controller
         try {
             //code...
             DB::beginTransaction();
-
+            activity()->disableLogging();
             $service = Service::find($id);
             $service->status = 'danied';
             $service->verified_by = auth()->user()->id;
             $service->verified_at = date("Y-m-d H:i:s");
             $service->save();
-
+            activity()->enableLogging();
             $title = "Jasa: " . $service->base_service->name;
 
             Notification::create([
@@ -299,25 +302,29 @@ class ServiceController extends Controller
                 ->addColumn('engineer', function ($row) {
                     return $row->engineer->name??'-';
                 })
+                ->addColumn('updated_at', function ($row) {
+                    return $row->updated_at->format('d-m-Y')."<br>".$row->updated_at->format('H:i:s');
+                })
                 ->addColumn('status', function ($row) {
                     if ($row->status === "review") {
-                        $status = "<span class='badge badge-warning'>Menunggu Kofirmasi</span>";
+                        $status = "<span class='badge badge-warning'>Menunggu<br>Kofirmasi</span>";
                     } else {
                         $status = "<span class='badge badge-danger'>Ditolak</span>";
                     }
                     return $status;
                 })
                 ->addColumn('action', function ($row) {
-
-                    // $btn = '<a href="'.route('services.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-
-                    $btn = ' <a href="' . route('services.confirmation.detail', $row->id) . '" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
-
-                    // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
-
+                    $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            Aksi
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="' . route('services.confirmation.detail', $row->id) . '" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        </ul>
+                    ';
                     return $btn;
                 })
-                ->rawColumns(['action', 'status'])
+                ->rawColumns(['action', 'status','updated_at'])
                 ->make(true);
         }
 
@@ -335,20 +342,15 @@ class ServiceController extends Controller
     {
         //
         $request->validate([
-            'category_service_id' => 'required|integer',
             'skill' => 'required',
             'sertification_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         try {
 
             $service = Service::find($id);
 
-            $service->category_service_id = $request->category_service_id;
-            $service->price = $request->price;
             $service->skill = $request->skill;
-            $service->description = $request->description;
 
             if ($request->hasFile('sertification_image')) {
 
@@ -357,15 +359,6 @@ class ServiceController extends Controller
                 $photo_path_sertificate = $photo->store($uploadFolder, 'public');
 
                 $service->sertification_image = Storage::disk('public')->url($photo_path_sertificate);
-            }
-
-            if ($request->hasFile('image')) {
-
-                $uploadFolder = 'teknisi/service/images';
-                $photo = $request->file('image');
-                $photo_path = $photo->store($uploadFolder, 'public');
-
-                $service->image = Storage::disk('public')->url($photo_path);
             }
 
             $service->save();
@@ -438,7 +431,9 @@ class ServiceController extends Controller
             DB::beginTransaction();
 
             $notif = Notification::where('service_id', $id)->first();
-            $notif->delete();
+            if(isset($notif)){
+                $notif->delete();
+            }
 
             $delete = Service::find($id)->delete();
 
