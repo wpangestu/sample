@@ -12,10 +12,11 @@
             <h1 class="m-0 text-dark">Pelanggan</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('customer.index') }}">Pelanggan</a></li>
+              <li class="breadcrumb-item active">Import</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -62,6 +63,7 @@
                     <div class="form-group">
                         <label for="inputStatus" class="col-form-label"></label>
                         <button class="btn btn-primary">Simpan</button>
+                        <a href="{{ route('customer.index') }}" class="btn btn-secondary">Kembali</a>
                     </div>
                 </div>
                 <div class="row">

@@ -12,10 +12,11 @@
             <h1 class="m-0 text-dark">Teknisi</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('engineer.index') }}">Teknisi</a></li>
+              <li class="breadcrumb-item active">Ubah</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -188,8 +189,8 @@
 
               </div>
               <div class="card-footer">
-                <a href="{{route('engineer.index')}}" class="btn btn-default float-right mr-1">Kembali</a>
-                <button type="submit" class="btn btn-info float-right mr-1">Ubah</button>
+                <a href="{{route('engineer.index')}}" class="btn btn-secondary float-right mr-1">Kembali</a>
+                <button type="submit" class="btn btn-primary float-right mr-1">Ubah</button>
               </div>
             </form>
               <!-- /.card-body -->

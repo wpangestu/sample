@@ -12,10 +12,10 @@
             <h1 class="m-0 text-dark">Pelanggan</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item active">Pelanggan</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -65,6 +65,7 @@
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>No Hp</th>
+                                <th>Update</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -88,8 +89,8 @@
 
 @section('scripts')
 
+<!-- <script src="{{ asset('plugins/moment/moment.min.js') }}"></script> -->
 <script>
-
     $(document).ready(function(){
 
       $.ajaxSetup({
@@ -108,6 +109,7 @@
                 {data: 'name', name: 'name'},
                 {data: 'email', name: 'email'},
                 {data: 'phone', name: 'phone'},
+                {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

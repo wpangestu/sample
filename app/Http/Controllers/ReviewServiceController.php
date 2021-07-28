@@ -35,24 +35,24 @@ class ReviewServiceController extends Controller
                         return $row->order->customer->name??'-';
                     })
                     ->addColumn('date',function($row){
-                        return Carbon::parse($row->created_at)->format("d/m/Y H:i");
+                        return Carbon::parse($row->created_at)->format("d/m/Y")."<br>".$row->created_at->format('H:i:s');
                         // return $row->service_order->engineer->name??'-';
                     })
                     ->addColumn('action', function($row){
    
                         $btn = '
                         <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-ellipsis-v"></i>
+                            Aksi
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-item"><a href="'.route('review_service.edit',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Ubah</a></li>
-                            <li class="dropdown-item"><a href="'.route('review_service.detail',$row->id).'" data-original-title="Detail" class="Detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        <li class="dropdown-item"><a href="'.route('review_service.detail',$row->id).'" data-original-title="Detail" class="Detail"><i class="fa fa-info-circle"></i> Detail</a></li>
                         ';
+                        // <li class="dropdown-item"><a href="'.route('review_service.edit',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Ubah</a></li>
                         $btn .= '</ul>';
                         return $btn;
 
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','date'])
                     ->make(true);
         }
 

@@ -178,6 +178,17 @@ class WithdrawController extends Controller
                         'body' => $subtitle,
                     ]);            
 
+            $causer = auth()->user();
+            $atribut = ['attributes' => [
+                "withdrawid" => $withdraw->withdraw_id,
+                "status" => "Sukes"
+            ]];
+    
+            activity('withdraw')->performedOn($withdraw)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan konfirmasi Suskes penarikan saldo');
+
             DB::commit();            
 
             toast('Konfirmasi Withdraw Sukses','success');
@@ -226,6 +237,17 @@ class WithdrawController extends Controller
                         'title' => $title,
                         'body' => $subtitle,
                     ]);            
+
+                    $causer = auth()->user();
+                    $atribut = ['attributes' => [
+                        "withdrawid" => $withdraw->withdraw_id,
+                        "status" => "Decline"
+                    ]];
+            
+                    activity('withdraw')->performedOn($withdraw)
+                                ->causedBy($causer)
+                                ->withProperties($atribut)
+                                ->log('Pengguna melakukan konfirmasi Tolak penarikan saldo');
             DB::commit();            
 
             toast('Konfirmasi Withdraw Ditolak','success');

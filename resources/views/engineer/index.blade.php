@@ -12,10 +12,10 @@
             <h1 class="m-0 text-dark">Teknisi</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item active">Teknisi</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -59,7 +59,7 @@
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>No Hp</th>
-                                <!-- <th>Alamat</th> -->
+                                <th>Update</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -103,7 +103,7 @@
                 {data: 'name', name: 'name'},
                 {data: 'email', name: 'email'},
                 {data: 'phone', name: 'phone'},
-                // {data: 'address', name: 'address'},
+                {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

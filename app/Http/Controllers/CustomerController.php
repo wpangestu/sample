@@ -22,18 +22,27 @@ class CustomerController extends Controller
     {
         //
         if ($request->ajax()) {
-            $data = User::latest()->Role('user')->get();
+            $data = User::latest()->Role('user')->latest()->get();
             return Datatables::of($data)
                     ->addIndexColumn()
-                    ->addColumn('action', function($row){
-   
-                            $btn = '<a href="'.route('customer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-                            $btn .= ' <a href="'.route('customer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('customer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
-    
-                            return $btn;
+                    ->addColumn('updated_at', function($row){
+                        return $row->updated_at->format('d-m-Y')."<br>".$row->updated_at->format('H:i:s');
                     })
-                    ->rawColumns(['action'])
+                    ->addColumn('action', function($row){
+
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            Aksi
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item"><a href="'.route('customer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
+                            <li class="dropdown-item"><a href="'.route('customer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                            <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('customer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                        </ul>
+                        ';
+                        return $btn;    
+                    })
+                    ->rawColumns(['action','updated_at'])
                     ->make(true);
         }
 
@@ -94,9 +103,9 @@ class CustomerController extends Controller
         }
 
         $causer = auth()->user();
-        $atribut = [];
+        $atribut = ['attributes' => $data];
 
-        activity('add_customer')->performedOn($insert)
+        activity('customer')->performedOn($insert)
                     ->causedBy($causer)
                     ->withProperties($atribut)
                     ->log('Pengguna melakukan penambahan pelanggan');
@@ -186,6 +195,14 @@ class CustomerController extends Controller
             $user->save();
         }
 
+        $causer = auth()->user();
+        $atribut = ['attributes'=>$data];
+
+        activity('customer')->performedOn($user)
+                    ->causedBy($causer)
+                    ->withProperties($atribut)
+                    ->log('Pengguna melakukan pengubahan pelanggan');
+
         if($update){
             return redirect()->route('customer.index')
                         ->with('success','Data berhasil diubah');            
@@ -209,6 +226,16 @@ class CustomerController extends Controller
         $user->removeRole('user');
 
         $delete = $user->delete();
+
+        $causer = auth()->user();
+        $atribut = ['attributes'=> [
+            "userid" => $user->userid
+        ]];
+
+        activity('customer')->performedOn($user)
+                    ->causedBy($causer)
+                    ->withProperties($atribut)
+                    ->log('Pengguna melakukan penghapusan pelanggan');
 
         return Response()->json($delete);
     }

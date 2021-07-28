@@ -159,7 +159,7 @@ class ChatController extends Controller
 
                 $response = [
                     "id" => $chat->id,
-                    "message" => $chat->message,
+                    "message" => $chat->message??"",
                     "signature" => $signature,
                     "media" => $chat->media,
                     "from" => (int)$chat->from,

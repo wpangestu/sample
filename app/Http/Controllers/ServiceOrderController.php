@@ -32,7 +32,7 @@ class ServiceOrderController extends Controller
 
                         $btn = '
                         <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-ellipsis-v"></i>
+                            Aksi
                         </button>
                         <ul class="dropdown-menu">
                             <li class="dropdown-item"><a href="'.route('service_order.show',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
@@ -86,7 +86,7 @@ class ServiceOrderController extends Controller
                         }
                     })
                     ->addColumn('created_at', function($row){
-                        return Carbon::parse($row->created_at)->format("d/m/Y H:i");
+                        return $row->created_at->format("d/m/Y")."<br>".$row->created_at->format('H:i');
                     })
                     ->addColumn('customer_id', function($row){
                         return $row->customer->name;
@@ -94,7 +94,7 @@ class ServiceOrderController extends Controller
                     ->addColumn('engineer_id', function($row){
                         return $row->engineer->name??'-';
                     })
-                    ->rawColumns(['action','order_status'])
+                    ->rawColumns(['action','order_status','created_at'])
                     ->make(true);
         }
 

@@ -36,16 +36,24 @@ class EnginnerController extends Controller
             $data = User::latest()->Role('teknisi')->where('verified',true)->get();
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('updated_at', function($row){
+                        return $row->updated_at->format('d-m-Y')."<br>".$row->updated_at->format('H:i:s');
+                    })
                     ->addColumn('action', function($row){
    
-                            $btn = '<a href="'.route('engineer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-                            $btn .= ' <a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-warning btn-sm">Detail</a>';
-   
-                            $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
-    
-                            return $btn;
+                            $btn = '
+                            <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                Aksi
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item"><a href="'.route('engineer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
+                                <li class="dropdown-item"><a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                                <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                            </ul>
+                            ';
+                            return $btn;    
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','updated_at'])
                     ->make(true);
         }
 
@@ -64,6 +72,9 @@ class EnginnerController extends Controller
                             ->get();
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('updated_at', function($row){
+                        return $row->updated_at->format('d-m-Y')."<br>".$row->updated_at->format('H:i:s');
+                    })
                     ->addColumn('status', function($row){
                             if($row->engineer==null){
                                 $badge = 'null';
@@ -80,15 +91,40 @@ class EnginnerController extends Controller
                             return $badge;
                     })
                     ->addColumn('action', function($row){
+
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
+                            Aksi
+                        </button>
+                        <ul class="dropdown-menu">
+                        ';
+                        //     <li class="dropdown-item"><a href="'.route('engineer.edit',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Edit</a></li>
+                        //     <li class="dropdown-item"><a href="'.route('engineer.show',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                        //     <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                        // </ul>
+                        // ';
+
                             if($row->engineer==null){
-                                $btn = ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                                $btn .= ' 
+                                <li class="dropdown-item">
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn_delete">Delete</a>
+                                </li>
+                                    ';
                             }else{
-                                $btn = ' <a href="'.route('engineer.confirm.detail',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit btn btn-info btn-sm">Detail</a>';
-                                $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                                $btn .= ' 
+                                <li class="dropdown-item">
+                                    <a href="'.route('engineer.confirm.detail',$row->userid).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Detail" class="edit"><i class="fa fa-info-circle"></i> Detail</a>
+                                </li>    
+                                ';
+                                $btn .= '
+                                <li class="dropdown-item">
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('engineer.delete.ajax',$row->userid).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a>
+                                </li>';
                             }
+                            $btn .= '</ul>';
                             return $btn;
                     })
-                    ->rawColumns(['action','status'])
+                    ->rawColumns(['action','status','updated_at'])
                     ->make(true);        
         }
         return view('engineer.index_confirm');
@@ -311,6 +347,14 @@ class EnginnerController extends Controller
                 $engineer->save();
             }
 
+            $causer = auth()->user();
+            $atribut = ['attributes' => $data];
+    
+            activity('customer')->performedOn($engineer)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan penambahan teknisi');
+
             DB::commit();
 
             if($insert){
@@ -431,6 +475,14 @@ class EnginnerController extends Controller
             $user->save();
         }
 
+        $causer = auth()->user();
+        $atribut = ['attributes' => $data];
+
+        activity('customer')->performedOn($user)
+                    ->causedBy($causer)
+                    ->withProperties($atribut)
+                    ->log('Pengguna melakukan pengubahan teknisi');
+
         if($update){
             return redirect()->route('engineer.index')
                         ->with('success','Data berhasil diubah');            
@@ -459,6 +511,16 @@ class EnginnerController extends Controller
 
             $user->engineer->delete();
             $delete = $user->delete();
+
+            $causer = auth()->user();
+            $atribut = ['attributes' => [
+                "userid" => $user->userid
+            ]];
+    
+            activity('customer')->performedOn($user)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan pengubahan teknisi');
 
             DB::commit();
             return Response()->json($delete);

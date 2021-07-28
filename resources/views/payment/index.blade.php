@@ -12,10 +12,10 @@
             <h1 class="m-0 text-dark">Konfirmasi Pembayaran</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-            <!-- <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol> -->
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item active">Konfirmasi Pembayaran</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -89,7 +89,7 @@
                             </td>
                             <td>
                               <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
-                                  <i class="fa fa-ellipsis-v"></i>
+                                  Aksi
                               </button>
                               <ul class="dropdown-menu">
                                   <li class="dropdown-item"><a href="{{ route('payment.order.detail',$val->id) }}" title="Detail"><i class="fa fa-info-circle"></i> Detail</a></li>

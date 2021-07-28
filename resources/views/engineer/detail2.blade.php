@@ -12,7 +12,11 @@
             <h1 class="m-0 text-dark">Teknisi</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
-
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{{ route('engineer.index') }}">Teknisi</a></li>
+              <li class="breadcrumb-item active">Detail</li>
+            </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
@@ -161,6 +165,9 @@
                                         </dl>
                                         <div id="map" style="width:100%;height:220px;">
                                             {!! Mapper::render() !!}
+                                        </div>
+                                        <div>
+                                            <a class="btn btn-secondary" href="{{ route('engineer.index') }}">Kembali</a>
                                         </div>
                                     </div>
                                     <!-- /.tab-pane -->

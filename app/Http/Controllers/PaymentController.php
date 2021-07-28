@@ -179,11 +179,13 @@ class PaymentController extends Controller
                     "created_by" => auth()->user()->id
                 ]);
             }
+
             $causer = auth()->user();
-            $atribut = [
-
-            ];
-
+            $atribut = ['attributes' => [
+                "status" => "success",
+                "paymentid" => $payment->paymentid
+            ]];
+    
             $token[] = $user->fcm_token;
             fcm()->to($token)
                     ->priority('high')
@@ -241,9 +243,10 @@ class PaymentController extends Controller
                     ]);
 
             $causer = auth()->user();
-            $atribut = [
-
-            ];
+            $atribut = ['attributes' => [
+                "status" => "decline",
+                "paymentid" => $payment->paymentid
+            ]];
 
             activity('confirm_payment')->performedOn($payment)
                         ->causedBy($causer)

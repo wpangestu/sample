@@ -114,6 +114,17 @@ class BalanceController extends Controller
                 "description" => $description,
                 "created_by" => auth()->user()->id
             ]);
+
+            $causer = auth()->user();
+            $atribut = ['attributes' => [
+                "userid" => $user->userid,
+                "amount" => $amount
+            ]];
+    
+            activity('balance')->performedOn($user)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan penambahan saldo');
             
             DB::commit();
 
@@ -150,6 +161,17 @@ class BalanceController extends Controller
                 "description" => $description,
                 "created_by" => auth()->user()->id
             ]);
+
+            $causer = auth()->user();
+            $atribut = ['attributes' => [
+                "userid" => $user->userid,
+                "amount" => $amount
+            ]];
+    
+            activity('balance')->performedOn($user)
+                        ->causedBy($causer)
+                        ->withProperties($atribut)
+                        ->log('Pengguna melakukan pengurangan saldo');
             
             DB::commit();
 
