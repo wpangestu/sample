@@ -23,7 +23,7 @@ class ReviewServiceController extends Controller
 
         if ($request->ajax()) {
             $data = ReviewService::latest()->get();
-            return Datatables::of($data)
+            return Datatables::of($data->load('order.engineer','order.customer'))
                     ->addIndexColumn()
                     ->addColumn('service_id',function($row){
                         return $row->order_number_id??'-';

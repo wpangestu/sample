@@ -17,15 +17,19 @@ class WithdrawController extends Controller
     {
         $data = Withdraw::whereHas('user',function($query){
             $query->Role('teknisi')->where('verified',true);
-        })->get();
+        })
+        ->get();
         if ($request->ajax()) {
-            return Datatables::of($data)
+            // return Datatables::of($data)
+            return Datatables::of($data->load(['user' => function($query){
+                $query->Role('teknisi')->where('verified',true);
+            }]))
                     ->addIndexColumn()
                     ->addColumn('created_at',function($row){
                         return $row->created_at->format('d/m/Y')."<br>".$row->created_at->format('H:i:s');
                     })
                     ->addColumn('name',function($row){
-                        return $row->user->name;
+                        return $row->user->name??'-';
                     })
                     ->addColumn('amount',function($row){
                         return rupiah( $row->amount);

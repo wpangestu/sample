@@ -17,12 +17,9 @@ class BaseServiceController extends Controller
      */
     public function index(Request $request)
     {
-        //
-        // $baseServices = BaseService::all();
-
         if ($request->ajax()) {
             $data = BaseService::latest()->get();
-            return Datatables::of($data)
+            return Datatables::of($data->load('service_category'))
                     ->addIndexColumn()
                     ->addColumn('category_service_id',function($row){
                         return $row->service_category->name??'-';

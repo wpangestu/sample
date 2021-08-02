@@ -30,7 +30,17 @@
     @yield('css')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
-
+@php
+  $get_confirm_engineer = get_confirm_engineer();
+  $get_confirm_service = get_confirm_service();
+  $get_new_chat_engineer = get_new_chat_engineer();
+  $get_new_chat_customer = get_new_chat_customer();
+  $get_payment_check = get_payment_check();
+  $get_withdraw_technician_check = get_withdraw_technician_check();
+  $get_withdraw_customer_check = get_withdraw_customer_check();
+  $get_all_notif_chat = $get_new_chat_engineer+$get_new_chat_customer;
+  $get_all_notification = $get_confirm_engineer+$get_confirm_service;
+@endphp
 <div class="wrapper">
     @include('include.navbar')
     @include('include.sidebar')

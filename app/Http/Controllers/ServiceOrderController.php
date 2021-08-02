@@ -26,7 +26,7 @@ class ServiceOrderController extends Controller
         //
         if ($request->ajax()) {
             $data = Order::latest()->get();
-            return Datatables::of($data)
+            return Datatables::of($data->load('customer','engineer'))
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
 

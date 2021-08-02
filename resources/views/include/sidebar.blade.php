@@ -40,7 +40,7 @@
               <p>
                 Master Jasa
                 <i class="fas fa-angle-left right"></i>
-                @if(get_confirm_service()>0)
+                @if( $get_confirm_service>0)
                 <i class="fas text-info fa-circle right"></i>
                 @endif
               </p>
@@ -68,8 +68,8 @@
                 <a href="{{ route('services.confirmation') }}" class="nav-link {{ request()->routeIs('services.confirmation*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Konfirmasi Jasa</p>
-                  @if(get_confirm_service()>0)
-                    <span class="right badge badge-info">{{ get_confirm_service() }}</span>
+                  @if($get_confirm_service>0)
+                    <span class="right badge badge-info">{{ $get_confirm_service }}</span>
                   @endif
                 </a>
               </li>
@@ -98,7 +98,7 @@
                 Teknisi
                 <i class="fas fa-angle-left right"></i>
 
-                @if(get_confirm_engineer()>0)
+                @if($get_confirm_engineer>0)
                 <i class="fas text-info fa-circle right"></i>
                 @endif
               </p>
@@ -114,8 +114,8 @@
                 <a href="{{ route('engineer.confirm.index') }}" class="nav-link {{ request()->routeIs('engineer.confirm.index')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Konfirmasi Teknisi</p>
-                  @if(get_confirm_engineer()>0)
-                    <span class="right badge badge-info">{{ get_confirm_engineer() }}</span>
+                  @if($get_confirm_engineer>0)
+                    <span class="right badge badge-info">{{ $get_confirm_engineer }}</span>
                   @endif
                 </a>
               </li>
@@ -170,8 +170,8 @@
               <i class="nav-icon fas fa-money-bill-wave"></i>
               <p>
                 Konfirm Pembayaran
-                @if(get_payment_check()>0)
-                    <span class="right badge badge-info">{{ get_payment_check() }}</span>
+                @if($get_payment_check>0)
+                    <span class="right badge badge-info">{{ $get_payment_check }}</span>
                   @endif
               </p>
             </a>
@@ -205,7 +205,7 @@
               <p>
                 Withdraw
                 <i class="fas fa-angle-left right"></i>
-                @if(get_withdraw_customer_check()+get_withdraw_technician_check() > 0)
+                @if($get_withdraw_customer_check+$get_withdraw_technician_check > 0)
                 <i class="fas text-info fa-circle right"></i>
                 @endif
               </p>
@@ -215,8 +215,8 @@
                 <a href="{{ route('withdraw.customer.index') }}" class="nav-link {{ request()->routeIs('withdraw.customer.*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Customer</p>
-                  @if(get_withdraw_customer_check()>0)
-                    <span class="right badge badge-info">{{ get_withdraw_customer_check() }}</span>
+                  @if($get_withdraw_customer_check>0)
+                    <span class="right badge badge-info">{{ $get_withdraw_customer_check }}</span>
                   @endif
                 </a>
               </li>
@@ -224,8 +224,8 @@
                 <a href="{{ route('withdraw.technician.index') }}" class="nav-link {{ request()->routeIs('withdraw.technician.*')?'active':'' }}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Teknisi</p>
-                  @if(get_withdraw_technician_check()>0)
-                    <span class="right badge badge-info">{{ get_withdraw_technician_check() }}</span>
+                  @if($get_withdraw_technician_check>0)
+                    <span class="right badge badge-info">{{ $get_withdraw_technician_check }}</span>
                   @endif
                 </a>
               </li>

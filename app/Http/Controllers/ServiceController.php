@@ -24,7 +24,7 @@ class ServiceController extends Controller
         //
         if ($request->ajax()) {
             $data = Service::where('status', 'active')->orWhere('status', 'non_active')->latest()->get();
-            return Datatables::of($data)
+            return Datatables::of($data->load('base_service','engineer','base_service.service_category'))
                 ->addIndexColumn()
                 ->addColumn('service_category_id', function ($row) {
                     return $row->base_service->service_category->name ?? '-';
@@ -288,7 +288,7 @@ class ServiceController extends Controller
         // dd('ke');
         if ($request->ajax()) {
             $data = Service::where('status', 'review')->orWhere('status', 'danied')->latest()->get();
-            return Datatables::of($data)
+            return Datatables::of($data->load('base_service','engineer','base_service.service_category'))
                 ->addIndexColumn()
                 ->addColumn('service_category_id', function ($row) {
                     return $row->base_service->service_category->name ?? '-';
