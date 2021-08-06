@@ -57,12 +57,6 @@
                                     <input type="text" name="name" id="inputName" value="{{ old('name',$data->name) }}" class="form-control">
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="inputNoAccount" class="col-sm-3 col-form-label">No Rekening*</label>
-                                <div class="col-sm-9">
-                                    <input type="text" name="account_number" value="{{ old('account_number',$data->account_number) }}" id="inputNoAccount" class="form-control">
-                                </div>
-                            </div>
                             @isset($data->logo)
                             <div class="form-group row">
                                 <label for="inputNoAccount" class="col-sm-3 col-form-label">Logo Sebelum</label>

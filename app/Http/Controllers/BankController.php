@@ -28,6 +28,13 @@ class BankController extends Controller
                     ->addColumn('updated_at', function($row){   
                         return $row->updated_at->format('d/m/Y')."<br>".$row->updated_at->format('H:i:s');
                     })
+                    ->addColumn('is_active', function($row){   
+                        if($row->is_active){
+                            return "<span class='badge badge-success'>Aktif</span>";
+                        }else{
+                            return "<span class='badge badge-secondary'>Non Aktif</span>";
+                        }
+                    })
                     ->addColumn('logo', function($row){   
                         return '<img src="'.$row->logo.'" class="img-fluid">';
                     })
@@ -38,14 +45,14 @@ class BankController extends Controller
                         </button>
                         <ul class="dropdown-menu">
                             <li class="dropdown-item"><a href="'.route('banks.edit',$row->id).'" data-toggle="tooltip" data-original-title="Ubah"><i class="fa fa-edit"></i> Ubah</a></li>
-                            <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('banks.destroy',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times"></i> Hapus</a></li>
                         </ul>
                         ';
+                        // <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('banks.destroy',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times"></i> Hapus</a></li>
                         return $btn;
                             // $btn = '<a href="#" data-toggle="tooltip" data-balance="'.$row->balance.'" data-name="'.$row->name.'" data-id="'.$row->userid.'" data-original-title="Edit" class="btn btn-primary btn-sm btn_change">Ubah Saldo</a>';    
                             // $btn .= '<a href="#" data-toggle="tooltip" data-balance="'.$row->balance.'" data-name="'.$row->name.'" data-id="'.$row->userid.'" data-original-title="Edit" class="btn btn-primary btn-sm btn_change">Ubah Saldo</a>';
                     })
-                    ->rawColumns(['action','logo','created_at','updated_at'])
+                    ->rawColumns(['action','logo','created_at','updated_at','is_active'])
                     ->make(true);
         }
 
@@ -74,7 +81,6 @@ class BankController extends Controller
         //
         $request->validate([
             'name' => 'required',
-            'account_number' => 'required',
             'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -82,12 +88,11 @@ class BankController extends Controller
             //code...
             $data = [
                 "name" => $request->input('name'),
-                "account_number" => $request->input('account_number'),
-                // 'image' => $request->input('price'),
             ];
 
             $insert = Bank::create($data);
 
+            activity()->disableLogging();
             if ($request->hasFile('logo')) {
 
                 $uploadFolder = 'bank/image';
@@ -97,12 +102,7 @@ class BankController extends Controller
                 $insert->logo = Storage::disk('public')->url($photo_path);
                 $insert->save();
             }
-
-            $causer = auth()->user();
-
-            activity('add_bank')->performedOn($insert)
-                        ->causedBy($causer)
-                        ->log('Data berhasil ditambahkan');
+            activity()->enableLogging();
 
             toast('Data berhasil ditambah','success');
                         
@@ -154,13 +154,11 @@ class BankController extends Controller
         //
         $request->validate([
             'name' => 'required',
-            'account_number' => 'required',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $data = [
             "name" => $request->input('name'),
-            "account_number" => $request->input('account_number'),
         ];
 
         try {
@@ -168,6 +166,7 @@ class BankController extends Controller
             $bank = Bank::find($id);
             $bank->update($data);
 
+            activity()->disableLogging();
             if ($request->hasFile('logo')) {
 
                 $uploadFolder = 'bank/image';
@@ -177,12 +176,7 @@ class BankController extends Controller
                 $bank->logo = Storage::disk('public')->url($photo_path);
                 $bank->save();
             }
-
-            $causer = auth()->user();
-
-            activity('edit_bank')->performedOn($bank)
-                        ->causedBy($causer)
-                        ->log('Data berhasil diubah');
+            activity()->enableLogging();
 
             toast('Data berhasil diubah','success');
                         
@@ -207,12 +201,6 @@ class BankController extends Controller
 
             $delete = Bank::find($id);
             $delete->delete();
-
-            $causer = auth()->user();
-
-            activity('delete_bank')->performedOn($delete)
-                        ->causedBy($causer)
-                        ->log('Data berhasil dihapus');
 
             toast('Data berhasil dihapus','success');
 

@@ -57,12 +57,6 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="inputNoAccount" class="col-sm-3 col-form-label">No Rekening*</label>
-                                <div class="col-sm-9">
-                                    <input type="text" name="account_number" value="{{ old('account_number') }}" id="inputNoAccount" class="form-control">
-                                </div>
-                            </div>
-                            <div class="form-group row">
                                 <label for="inputIcon" class="col-sm-3 col-form-label">Logo</label>
                                 <div class="col-sm-9">
                                     <input type="file" name="logo" id="inputIcon" class="form-control">

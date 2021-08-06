@@ -30,7 +30,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Bank Transfer</h3>
+                    <h3 class="card-title">Master Bank</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -61,7 +61,7 @@
                                     <th>No</th>
                                     <th>Logo</th>
                                     <th>Nama Bank</th>
-                                    <th>No Rekening</th>
+                                    <th>Status</th>
                                     <th>Di Buat</th>
                                     <th>Di Update</th>
                                     <th>Aksi</th>
@@ -113,7 +113,7 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex',orderable: false, searchable: false,width:'5%'},
                 {data: 'logo', name: 'logo',orderable: false, searchable: false},
                 {data: 'name', name: 'name'},
-                {data: 'account_number', name: 'account_number'},
+                {data: 'is_active', name: 'is_active'},
                 {data: 'created_at', name: 'created_at'},
                 {data: 'updated_at', name: 'updated_at'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
