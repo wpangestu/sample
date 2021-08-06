@@ -1042,7 +1042,7 @@ class UserController extends Controller
                 "description" => json_decode($order->address)->description ?? '',
                 "note" => json_decode($order->address)->notes ?? '',
             ];
-
+ 
             $technician = null;
             if (isset($order->engineer)) {
                 $technician = [
@@ -1354,7 +1354,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'amount' => 'required',
-            'note' => 'required',
+            'account_number' => 'required',
         ]);
 
         if ($validator->fails()) {
