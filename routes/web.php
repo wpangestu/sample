@@ -163,6 +163,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::resource('banks', BankController::class);
     Route::resource('bank_payments', BankPaymentController::class);
     Route::resource('promos', PromoController::class);
+    Route::get('banks/tes', [BankController::class,'tes']);
     
     Route::get('chat/tes', [ChatController::class,'tes']);
     Route::get('chat/engineer', [ChatController::class,'index'])->name('chat.index.engineer');

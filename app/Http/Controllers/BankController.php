@@ -4,11 +4,20 @@ namespace App\Http\Controllers;
 
 use DataTables;
 use App\Models\Bank;
+use App\Services\MapServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BankController extends Controller
 {
+    protected $mapService;
+
+    public function __construct(MapServices $mapService)
+    {
+        // $origin = "-7.419444, 109.137216";
+        // $destination = "-7.4045455600670715, 109.14025366026557";
+        // dd($mapService->getDistant($destination,$origin));      
+    }
     /**
      * Display a listing of the resource.
      *
@@ -126,6 +135,7 @@ class BankController extends Controller
     public function show($id)
     {
         //
+
     }
 
     /**
@@ -216,5 +226,11 @@ class BankController extends Controller
             //throw $th;
         }
 
+    }
+
+    public function tes(){
+        $origin = "-7.419444, 109.137216";
+        $destination = "-7.4045455600670715, 109.14025366026557";
+        $this->mapService->getDistant($destination,$origin);
     }
 }
