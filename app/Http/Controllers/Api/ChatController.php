@@ -269,7 +269,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "name" => $name,
                         "unread_count" => (int)$unread_message,
-                        "avatar" => "",
+                        "avatar" => $chatroom->user_1==$user_id?$chatroom->user_2_data->profile_photo_path??'-':$chatroom->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
                         "last_message" => $last_chat_data
                     ];
@@ -336,7 +336,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "name" => $name,
                         "unread_count" => $unread_message,
-                        "avatar" => "",
+                        "avatar" => $chatroom->user_1==$user_id?$chatroom->user_2_data->profile_photo_path??'-':$chatroom->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
                         "last_message" => $chat_data
                     ];
@@ -437,7 +437,7 @@ class ChatController extends Controller
                     $t_data = [
                         "id" => $value->id,
                         "message" => $value->message,
-                        "media" => "",
+                        "media" => $value->media??'',
                         "from" => $value->from,
                         "is_me" => $value->from==$user_id?true:false,
                         "created_at" => $value->created_at
@@ -626,7 +626,7 @@ class ChatController extends Controller
                         $chat_arr[] = [
                             "id" => $value->id,
                             "message" => $value->message,
-                            "media" => $value->media,
+                            "media" => $value->media??'',
                             "from" => $value->from,
                             "is_me" => $value->from === auth()->user()->id ? true:false,
                             "created_at" => $value->created_at
