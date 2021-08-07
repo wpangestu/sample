@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\BankController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PromoController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\PaymentController;
@@ -12,15 +13,15 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnginnerController;
+use App\Http\Controllers\WithdrawController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\BankPaymentController;
+use App\Http\Controllers\BaseServiceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\CategoryServiceController;
-use App\Http\Controllers\BaseServiceController;
-use App\Http\Controllers\PromoController;
-use App\Http\Controllers\WithdrawController;
 use App\Http\Livewire\Members; //Load class Members 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +161,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
 
     // Route::get('setting/bank', [BankController::class,'index'])->name('setting.bank.index');
     Route::resource('banks', BankController::class);
+    Route::resource('bank_payments', BankPaymentController::class);
     Route::resource('promos', PromoController::class);
     
     Route::get('chat/tes', [ChatController::class,'tes']);

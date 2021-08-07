@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use DataTables;
 use App\Models\Bank;
+use App\Models\BankPayment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\DataTables;
 
-class BankController extends Controller
+class BankPaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +17,8 @@ class BankController extends Controller
     public function index(Request $request)
     {
         //
-
         if ($request->ajax()) {
-            $data = Bank::latest()->get();
+            $data = BankPayment::latest('updated_at')->with('bank')->get();
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('created_at', function($row){   
@@ -28,6 +27,9 @@ class BankController extends Controller
                     ->addColumn('updated_at', function($row){   
                         return $row->updated_at->format('d/m/Y')."<br>".$row->updated_at->format('H:i:s');
                     })
+                    ->addColumn('name', function($row){   
+                        return $row->bank->name;
+                    })
                     ->addColumn('is_active', function($row){   
                         if($row->is_active){
                             return "<span class='badge badge-success'>Aktif</span>";
@@ -35,16 +37,13 @@ class BankController extends Controller
                             return "<span class='badge badge-secondary'>Non Aktif</span>";
                         }
                     })
-                    ->addColumn('logo', function($row){   
-                        return '<img src="'.$row->logo.'" class="img-fluid">';
-                    })
                     ->addColumn('action', function($row){   
                         $btn = '
                         <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown">
                             Aksi
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-item"><a href="'.route('banks.edit',$row->id).'" data-toggle="tooltip" data-original-title="Ubah"><i class="fa fa-edit"></i> Ubah</a></li>
+                            <li class="dropdown-item"><a href="'.route('bank_payments.edit',$row->id).'" data-toggle="tooltip" data-original-title="Ubah"><i class="fa fa-edit"></i> Ubah</a></li>
                         </ul>
                         ';
                         // <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('banks.destroy',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times"></i> Hapus</a></li>
@@ -56,7 +55,7 @@ class BankController extends Controller
                     ->make(true);
         }
 
-        return view('bank.index');        
+        return view('bank_payment.index');        
     }
 
     /**
@@ -67,7 +66,8 @@ class BankController extends Controller
     public function create()
     {
         //
-        return view('bank.create');
+        $banks = Bank::where('is_active',true)->get();
+        return view('bank_payment.create',compact('banks'));
     }
 
     /**
@@ -80,41 +80,30 @@ class BankController extends Controller
     {
         //
         $request->validate([
-            'name' => 'required',
-            'logo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'bank' => 'required',
+            'account_number' => 'required',
         ]);
 
         try {
             //code...
-            $data = [
-                "name" => $request->input('name'),
-            ];
 
-            $insert = Bank::create($data);
-
-            activity()->disableLogging();
-            if ($request->hasFile('logo')) {
-
-                $uploadFolder = 'bank/image';
-                $photo = $request->file('logo');
-                $photo_path = $photo->store($uploadFolder, 'public');
-    
-                $insert->logo = Storage::disk('public')->url($photo_path);
-                $insert->save();
-            }
-            activity()->enableLogging();
+            BankPayment::create([
+                'bank_id' => $request->input('bank'),
+                'account_number' => $request->input('account_number')
+            ]);
 
             toast('Data berhasil ditambah','success');
                         
-            return redirect()->route('banks.index');
+            return redirect()->route('bank_payments.index');
+
 
         } catch (\Throwable $th) {
             //throw $th;
-            // dd($th->getMessage());
             toast('Maaf terjadi kesalahan','error');
                         
-            return redirect()->route('bank.create');
-        }        
+            return redirect()->back()->withInput();
+        }
+
     }
 
     /**
@@ -137,9 +126,9 @@ class BankController extends Controller
     public function edit($id)
     {
         //
-        $data = Bank::find($id);
-        return view('bank.edit',compact('data'));
-
+        $bankPayment = BankPayment::find($id);
+        $banks = Bank::where('is_active',true)->get();
+        return view('bank_payment.edit',compact('bankPayment','banks'));
     }
 
     /**
@@ -153,40 +142,29 @@ class BankController extends Controller
     {
         //
         $request->validate([
-            'name' => 'required',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'bank' => 'required',
+            'account_number' => 'required',
             'inputStatus' => 'required'
         ]);
 
-        $data = [
-            "name" => $request->input('name'),
-            "is_active" => $request->input('inputStatus')=="on"?1:0
-        ];
-
         try {
             //code...
-            $bank = Bank::find($id);
-            $bank->update($data);
-
-            activity()->disableLogging();
-            if ($request->hasFile('logo')) {
-
-                $uploadFolder = 'bank/image';
-                $photo = $request->file('logo');
-                $photo_path = $photo->store($uploadFolder, 'public');
-    
-                $bank->logo = Storage::disk('public')->url($photo_path);
-                $bank->save();
-            }
-            activity()->enableLogging();
+            $bankPayment = BankPayment::find($id);
+            $bankPayment->update([
+                'bank_id' => $request->input('bank'),
+                'account_number' => $request->input('account_number'),
+                'is_active' => $request->input('inputStatus')=="on"?true:false
+            ]);
 
             toast('Data berhasil diubah','success');
                         
-            return redirect()->route('banks.index');
-            
+            return redirect()->route('bank_payments.index');
+
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
+            toast('Terjadi kesalahan','error');
+                        
+            return redirect()->route('bank_payments.index');
         }
     }
 
@@ -199,22 +177,5 @@ class BankController extends Controller
     public function destroy($id)
     {
         //
-        try {
-
-            $delete = Bank::find($id);
-            $delete->delete();
-
-            toast('Data berhasil dihapus','success');
-
-            return redirect()->back();
-
-        } catch (\Throwable $th) {
-            // dd($th->getMessage());
-            toast('Maaf terjadi kesalahan','error');
-
-            return redirect()->back();
-            //throw $th;
-        }
-
     }
 }

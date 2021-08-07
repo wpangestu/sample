@@ -1,5 +1,5 @@
 @extends('layouts.app_layout')
-@section('title','Edit Bank')
+@section('title','Tambah Bank')
 @section('content')
 
   <!-- Content Wrapper. Contains page content -->
@@ -31,7 +31,7 @@
 
           <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Ubah Bank</h3>
+                <h3 class="card-title">Tambah Bank Pembayaran</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -48,46 +48,30 @@
                         </div>
                     @endif
 
-                        <form action="{{route('banks.update',$data->id)}}" method="post" enctype="multipart/form-data">
-                            @method('put')
+                        <form action="{{route('bank_payments.store')}}" method="post">
                             @csrf
                             <div class="form-group row">
-                                <label for="inputName" class="col-sm-3 col-form-label">Nama Bank*</label>
+                                <label for="inputName" class="col-sm-3 col-form-label">Master Bank*</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="name" id="inputName" value="{{ old('name',$data->name) }}" class="form-control">
-                                </div>
-                            </div>
-                            @isset($data->logo)
-                            <div class="form-group row">
-                                <label for="inputNoAccount" class="col-sm-3 col-form-label">Logo Sebelum</label>
-                                <div class="col-sm-9">
-                                    <!-- <input type="text" name="account_number" value="{{ old('account_number',$data->account_number) }}" id="inputNoAccount" class="form-control"> -->
-                                    <img src="{{ $data->logo }}" height="100px" alt="">
-                                </div>
-                            </div>
-                            @endisset
-                            <div class="form-group row">
-                                <label for="inputIcon" class="col-sm-3 col-form-label">Logo</label>
-                                <div class="col-sm-9">
-                                    <input type="file" name="logo" id="inputIcon" class="form-control">
-                                    <span class="text-muted text-sm"><i>format: jpeg, png, jpg | max: 2048kb</i></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="inputStatus" class="col-sm-3 col-form-label">Status</label>
-                                <div class="col-sm-9">
-                                  <select required name="inputStatus" class="form-control">
-                                    <option value="">Pilih</option>
-                                    <option value="on" {{ $data->is_active?'selected':'' }}>Aktif</option>
-                                    <option value="off" {{ !($data->is_active)?'selected':'' }}>Non Aktif</option>
+                                  <select class="form-control" name="bank" required id="bank_id">
+                                    <option value="">PILIH</option>
+                                    @foreach ($banks as $value)
+                                      <option value="{{ $value->id }}" {{ old('bank')==$value->id?'selected':'' }}>{{ $value->name }}</option>
+                                    @endforeach
                                   </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputIcon" class="col-sm-3 col-form-label">No Rekening *</label>
+                                <div class="col-sm-9">
+                                  <input type="text" name="account_number" value="{{ old('account_number') }}" id="account_number" class="form-control">
                                 </div>
                             </div>
                             <div class="form-group row">
                                 <label for="inputStatus" class="col-sm-3 col-form-label"></label>
                                 <div class="col-sm-9">
                                     <button class="btn btn-primary">Simpan</button>
-                                    <a href="{{ route('banks.index') }}" class="btn btn-secondary">Kembali</a>
+                                    <a href="{{ route('bank_payments.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
                             </div>
                         </form>
@@ -113,7 +97,7 @@
 
   <script>
     $(document).ready(function(){
-    //   $('#inputCatSer').select2();
+      $('#bank_id').select2();
     })
   </script>
 

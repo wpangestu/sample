@@ -13,6 +13,7 @@ class Bank extends Model
     protected $fillable = [
         'name',
         'logo',
+        'is_active'
     ];
 
     protected static $logAttributes = ['name','created_at'];
