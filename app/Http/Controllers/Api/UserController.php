@@ -449,7 +449,7 @@ class UserController extends Controller
                 "address" => $user->address,
                 "userid" => $user->userid,
                 "email_verified_at" => $user->email_verified_at,
-                "profile_photo" => $user->profile_photo_path,
+                "profile_photo" => $user->profile_photo_path??'',
                 "is_active" => $user->is_active,
                 "lat" => (float)$user->lat,
                 "lng" => (float)$user->lng,

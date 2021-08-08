@@ -820,7 +820,7 @@ class UserController extends Controller
                     "technician_id" => (int)$engineer->userid ?? 0,
                     "name" => $engineer->name ?? '',
                     "media" => $engineer->profile_photo_path ?? '',
-                    "rating" => 0
+                    "rating" => $engineer->rating??0
                 ];
 
                 $origin = [
@@ -1049,7 +1049,7 @@ class UserController extends Controller
                     "technician_id" => (int)$order->engineer->id,
                     "name" => $order->engineer->name,
                     "media" => $order->engineer->profile_photo_path ?? '',
-                    "rating" => 0
+                    "rating" => $order->engineer->rating??0
                 ];
             }
 
@@ -1258,7 +1258,7 @@ class UserController extends Controller
                     "technician_id" => (int)$value->engineer->id,
                     "name" => $value->engineer->name,
                     "media" => $value->engineer->profile_photo_path ?? '',
-                    "rating" => 0
+                    "rating" => $value->engineer->rating??0
                 ];
             }
 
@@ -1567,14 +1567,23 @@ class UserController extends Controller
             //code...
             DB::beginTransaction();
 
+            $rating = $request->get('rating');
+
             $review = ReviewService::create([
                 "order_number_id" => $request->get('order_id'),
-                "ratings" => $request->get('rating'),
+                "ratings" => $rating,
                 "liked" => $request->get('likes') ?? [],
                 "description" => $request->get('review_reason')
             ]);
 
             $order = Order::where('order_number', $request->get('order_id'))->first();
+
+            $rating_engineer = $order->engineer->rating;
+            $counter_engineer = $order->engineer->counter;
+
+            $order->engineer->rating = ($rating_engineer+$rating)/($counter_engineer+1);
+            $order->engineer->counter = $counter_engineer+1;
+            $order->engineer->save();
 
             $title = auth()->user()->name . " telah memberikan rating";
 
