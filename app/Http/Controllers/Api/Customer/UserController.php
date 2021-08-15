@@ -978,15 +978,16 @@ class UserController extends Controller
 
             if ($payment_type == "saldo") {
 
-                if ($customer->balance >= $total_price) {
-                    $order->order_status = "payment_success";
-                    $order->save();
+                return response()->json(["message" => "Maaf transaksi ini tidak bisa menggunakan saldo"], 422);
 
-                    $customer->balance -= $total_price;
-                    $customer->save();
-                } else {
-                    return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
-                }
+                // if ($customer->balance >= $total_price) {
+                //     $order->order_status = "payment_success";
+                //     $order->save();
+                //     $customer->balance -= $total_price;
+                //     $customer->save();
+                // } else {
+                //     return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
+                // }
             }
 
             $engineer_data = null;
