@@ -176,6 +176,8 @@
               </p>
             </a>
           </li>
+          @endhasanyrole
+          @hasanyrole('superadmin')
           <li class="nav-item has-treeview {{ request()->routeIs('balance*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-wallet"></i>
@@ -231,6 +233,31 @@
               </li>
             </ul>
           </li>
+          <li class="nav-item has-treeview {{ request()->routeIs('bank*')?'menu-open':'' }}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-landmark"></i>
+              <p>
+                Bank
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('banks.index') }}" class="nav-link {{ request()->routeIs('banks*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Master Bank</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('bank_payments.index') }}" class="nav-link {{ request()->routeIs('bank_payments*')?'active':'' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Bank Pembayaran</p>
+                </a>
+              </li>
+            </ul>
+          </li>          
+          @endhasanyrole
+          @hasanyrole('admin|superadmin')
           <li class="nav-item has-treeview {{ request()->routeIs('setting*')?'menu-open':'' }}">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>
