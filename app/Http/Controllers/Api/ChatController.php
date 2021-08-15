@@ -223,11 +223,13 @@ class ChatController extends Controller
 
             $chatroom = Chatroom::where(function($query) use($user_id) {
                                         $query->where('user_1', $user_id)
-                                              ->Where('user_2','<>', 1);
+                                              ->Where('user_2','<>', 1)
+                                              ->where('open',1);
                                     })
                                     ->orWhere(function($query) use($user_id) {
                                         $query->where('user_2', $user_id)
-                                              ->Where('user_1','<>', 1);
+                                              ->Where('user_1','<>', 1)
+                                              ->where('open',1);
                                     });
     
             $page = $request->has('page') ? $request->get('page') : 1;
@@ -269,7 +271,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "name" => $name,
                         "unread_count" => (int)$unread_message,
-                        "avatar" => $chatroom->user_1==$user_id?$chatroom->user_2_data->profile_photo_path??'-':$chatroom->user_1_data->profile_photo_path??'-',
+                        "avatar" => $value->user_1==$user_id?$value->user_2_data->profile_photo_path??'-':$value->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
                         "last_message" => $last_chat_data
                     ];
@@ -299,8 +301,16 @@ class ChatController extends Controller
             
             $user_id = auth()->user()->id;
 
-            $chatroom = Chatroom::where('open',0);
-            // $chatroom->where('user_1',$user_id)->orWhere('user_2',$user_id);
+            $chatroom = Chatroom::where(function($query) use($user_id) {
+                $query->where('user_1', $user_id)
+                      ->Where('user_2','<>', 1)
+                      ->where('open',0);
+            })
+            ->orWhere(function($query) use($user_id) {
+                $query->where('user_2', $user_id)
+                      ->Where('user_1','<>', 1)
+                      ->where('open',0);
+            });
     
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
@@ -336,7 +346,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "name" => $name,
                         "unread_count" => $unread_message,
-                        "avatar" => $chatroom->user_1==$user_id?$chatroom->user_2_data->profile_photo_path??'-':$chatroom->user_1_data->profile_photo_path??'-',
+                        "avatar" => $value->user_1==$user_id?$value->user_2_data->profile_photo_path??'-':$value->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
                         "last_message" => $chat_data
                     ];

@@ -17,6 +17,9 @@ function get_confirm_engineer()
     $confirm_engineer = User::with(['engineer' => function($query){
                                     $query->where('status','pending');
                                 }])
+                                ->whereHas('engineer',function($query){
+                                    $query->where('status','pending');
+                                })
                                 ->Role('teknisi')
                                 ->where('verified',0)
                                 ->count();
@@ -35,10 +38,10 @@ function get_new_chat_engineer()
 
     $unread_message = Chat::where('to',1)
                         ->where('read',false)
-                        ->with(['user_from' => function ($query){
+                        ->whereHas('user_from',function($query){
                             $query->where('verified',true);
                             $query->Role('teknisi');
-                        }])
+                        })
                         ->count();
     return $unread_message;
 }
@@ -46,10 +49,10 @@ function get_new_chat_engineer()
 function get_new_chat_customer(){
     $unread_message = Chat::where('to',1)
                             ->where('read',false)
-                            ->with(['user_from'=>function($query){
+                            ->whereHas('user_from', function($query){
                                 $query->Role('user');
                                 $query->where('is_active',true);
-                            }])
+                            })
                             ->count();
     return $unread_message;
 }
@@ -63,9 +66,10 @@ function get_payment_check()
 function get_withdraw_technician_check()
 {
     $data = Withdraw::where('status','pending')
-                    ->with(['user'=>function($query){
+                    ->whereHas('user',function($query){
                         $query->Role('teknisi')->where('verified',true);
-                    }])
+                    })    
+                    ->with('user')
                     ->count();
     return $data;    
 }
@@ -73,9 +77,10 @@ function get_withdraw_technician_check()
 function get_withdraw_customer_check()
 {
     $data = Withdraw::where('status','pending')
-                    ->with(['user'=>function($query){
+                    ->whereHas('user',function($query){
                         $query->Role('user');
-                    }])
+                    })
+                    ->with('user')
                     ->count();
     return $data;    
 }
