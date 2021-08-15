@@ -484,6 +484,18 @@ class TransactionController extends Controller
             $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
 
+            $user_1 = $order->engineer->id;
+            $user_2 = $order->customer->id;
+            $chatroom = Chatroom::where('user_1',$user_1)->where('user_2',$user_2);
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',$user_2)->where('user_2',$user_1);
+            }
+            if($chatroom->count() > 0){
+                $chatroom = $chatroom->first();
+                $chatroom->open = 0;
+                $chatroom->save();
+            }
+
             $user = User::find($order->engineer_id);
             $fee_technician = 0;
             if($order->order_type=="regular"){
@@ -546,6 +558,18 @@ class TransactionController extends Controller
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
+
+            $user_1 = $order->engineer->id;
+            $user_2 = $order->customer->id;
+            $chatroom = Chatroom::where('user_1',$user_1)->where('user_2',$user_2);
+            if($chatroom->count() == 0){
+                $chatroom = Chatroom::where('user_1',$user_2)->where('user_2',$user_1);
+            }
+            if($chatroom->count() > 0){
+                $chatroom = $chatroom->first();
+                $chatroom->open = 0;
+                $chatroom->save();
+            }
 
             $user = User::find($order->engineer_id);
             $fee_technician = 0;

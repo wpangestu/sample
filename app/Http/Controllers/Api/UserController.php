@@ -72,7 +72,7 @@ class UserController extends Controller
 
             $data['success'] = true;
             $data['message'] = "Login successfully";
-            $data['data'] = $user;
+            // $data['data'] = $user;
             $data['token'] = $token;
             // $data['time1'] = $currentDateTime->format('Y-m-d H:i:s');
             $data['valid_until'] = $newDateTime->format('Y-m-d H:i:s');
