@@ -176,6 +176,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ route('promos.index') }}" class="nav-link {{ request()->routeIs('promos*')?'active':'' }}">
+              <i class="nav-icon fa fa-bullhorn"></i>
+              <p>
+                Promo
+              </p>
+            </a>
+          </li>
           @endhasanyrole
           @hasanyrole('superadmin')
           <li class="nav-item has-treeview {{ request()->routeIs('balance*')?'menu-open':'' }}">

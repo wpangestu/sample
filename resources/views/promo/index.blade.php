@@ -34,7 +34,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="{{route('base_services.create')}}" class="btn btn-sm btn-primary mb-3">Tambah</a>
+                <a href="{{route('promos.create')}}" class="btn btn-sm btn-primary mb-3">Tambah</a>
                 
                 @if ($message = Session::get('success'))
                 <div class="alert alert-success alert-dismissible">
