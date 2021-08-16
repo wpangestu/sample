@@ -355,16 +355,16 @@ class TransactionController extends Controller
             $order->save();
 
             $chatroom = Chatroom::where('user_1',$order->customer_id)
-                                    ->where('user_2',$order->engineer_id)
-                                    ->where('open',1);
+                                    ->where('user_2',$order->engineer_id);
             if($chatroom->count() == 0){
                 $chatroom = Chatroom::where('user_1',$order->engineer_id)
-                                        ->where('user_2',$order->customer_id)
-                                        ->where('open',1);
+                                        ->where('user_2',$order->customer_id);
             }
 
             if($chatroom->count() > 0){
                 $chatroom = $chatroom->first();
+                $chatroom->open = 1;
+                $chatroom->save();
             }else{
                 $chatroom = Chatroom::create([
                     "user_1" => $order->engineer_id,
