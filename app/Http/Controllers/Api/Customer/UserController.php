@@ -1356,6 +1356,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'amount' => 'required',
             'account_number' => 'required',
+            'account_name' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -1375,8 +1376,9 @@ class UserController extends Controller
             Withdraw::create([
                 "user_id" => auth()->user()->id,
                 "amount" => $amount,
-                "note" => $request->note,
-                "withdraw_id" => "W" . uniqid()
+                "withdraw_id" => "W" . uniqid(),
+                "account_number" => $request->account_number,
+                "account_holder" => $request->account_name
             ]);
 
             $user->balance = $user->balance - $amount;
