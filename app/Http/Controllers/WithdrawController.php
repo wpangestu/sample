@@ -15,7 +15,7 @@ class WithdrawController extends Controller
     //
     public function index_engineer(Request $request)
     {
-        $data = Withdraw::whereHas('user',function($query){
+        $data = Withdraw::latest()->whereHas('user',function($query){
             $query->Role('teknisi')->where('verified',true);
         })
         ->get();
@@ -65,7 +65,7 @@ class WithdrawController extends Controller
 
     public function index_customer(Request $request)
     {
-        $data = Withdraw::whereHas('user',function($query){
+        $data = Withdraw::latest()->whereHas('user',function($query){
             $query->Role('user');
         })->get();
 

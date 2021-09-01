@@ -58,7 +58,7 @@
                     <th>Tanggal</th>
                     <th>ID Withdraw</th>
                     <th>Jumlah</th>
-                    <th>Teknisi</th>
+                    <th>Customer</th>
                     <th>Status</th>
                     <th>Aksi</th>
                   </tr>

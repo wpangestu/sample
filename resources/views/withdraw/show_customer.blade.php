@@ -70,8 +70,6 @@
                   <dd class="col-sm-8">: {{$data->withdraw_id}}</dd>
                   <dt class="col-sm-3">Total Penarikan</dt>
                   <dd class="col-sm-8">: {{ rupiah($data->amount??0) }}
-                  <dt class="col-sm-3">Note</dt>
-                  <dd class="col-sm-8">: {{ $data->note }}
                   <hr>
                   </dd>
                   <dt class="col-sm-3">Saldo Sebelum Penarikan </dt>
@@ -81,16 +79,13 @@
                     <hr>
                   </dd>
                   <dt class="col-sm-3">Rekening Customer</dt>
-                  <dd class="col-sm-8">
-                      <ul class="inline">
-                         @forelse ($bank_accounts as $val)
-                            <li>{{ $val->bank->name??'' }} {{$val->account_number??0}} - {{$val->account_holder??''}}</li>
-                            @empty
-                            -
-                        @endforelse
-                      </ul>                    
-                        <hr>
+                  <dd class="col-sm-8">: {{ $data->account_number??'-' }}</dd>
+                  <dt class="col-sm-3">Rekening Nama</dt>
+                  <dd class="col-sm-8">: {{ $data->account_holder??'-' }}
+
+                  <hr>
                   </dd>
+
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $data->created_at }}
                   </dd>
