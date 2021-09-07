@@ -63,6 +63,8 @@ Route::get('/migrate', function(){
     }
 });
 
+Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
+
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/dashboard', [DashboardController::class,'index'])->name('dashboard');
     Route::get('/dashboard/statistik_engineer', [DashboardController::class,'get_statistik_engineer_register'])->name('dashboard.statistik.engineer.register');
@@ -173,7 +175,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('chat/engineer/{id?}', [ChatController::class,'show'])->name('chat.engineer.show');
     Route::post('chat/engineer/update_user_chat', [ChatController::class,'update_list_user_chat'])->name('ajax.chat.update.list_user');
     
-    Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
+    // Route::get('notification/test', [NotificationController::class,'test'])->name('notofication.test');
     Route::post('notification/save_token_to_server', [NotificationController::class,'saveTokenToServer'])->name('notofication.update.token');
     
     Route::post('chat_user', [ChatController::class,'get_user_chat'])->name('chat.user');

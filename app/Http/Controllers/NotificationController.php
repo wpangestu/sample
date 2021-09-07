@@ -14,21 +14,19 @@ class NotificationController extends Controller
                             ->where('verified',true)
                             ->whereNotNull('fcm_token')
                             ->get();
-        dd($users->pluck('fcm_token')->toArray());
-        $recipients[] = 'e1AKEDODSwyl-l_5eY0Lth:APA91bEeL6PxE10INn2Mvy5Oz7TofhrdULlGvuFcLSqViHPQldg_ZyrOr6UkapBKQZL0teupH-_u6P9csj6NSIsBdNYhBBTgCUL5CmRLjbq_4vAyoroBp66qtvhaz5Hukx80Ecp5f4kf';
-        $recipients[] = '123';
-        dd($recipients);
+        $recipients[] = 'ehXgXLoXTICtMPz5IlEfSW:APA91bGoVKrrKj96UMRUtqkFWi5PniF0ngk3T4rt8VP0ez3M0qmRTISCParwVRBvIzb32AyhprSd_CaCpmTNUp0qQ2DkTDv2XD28M5bVFurcQ-LQQaO0Ag4sL0t88siYc1d0G2qeeci1';
         
         try {
             //code...
             $cek = fcm()->to($recipients)
                     ->priority('high')
                     ->timeToLive(60)
-                    ->data([
-                        'title' => 'New Message',
-                        'body' => 'ini body',
+                    ->notification([
+                        'title' => 'Test FCM',
+                        'body' => 'This is a test of FCM',
                     ])
                     ->send();
+            echo "sukses";
             // return redirect()->route('service_category.index');
         } catch (\Throwable $th) {
             //throw $th;

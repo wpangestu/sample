@@ -374,8 +374,8 @@ class ChatController extends Controller
                 ->priority('high')
                 ->timeToLive(60)
                 ->notification([
-                    'title' => 'Notifikasi',
-                    'body' => 'Chat Baru',
+                    'title' => 'Pesan Baru',
+                    'body' => 'Anda mendapat pesan baru',
                 ])
                 ->data([ 
                     "click_action" => "FLUTTER_NOTIFICATION_CLICK",

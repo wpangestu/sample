@@ -71,7 +71,9 @@
                   <dt class="col-sm-3">Id Pembayaran</dt>
                   <dd class="col-sm-8">: {{$payment->paymentid}}</dd>
                   <dt class="col-sm-3">Total</dt>
-                  <dd class="col-sm-8">: {{ rupiah($payment->amount+($payment->convenience_fee??0)) }}</dd>
+                  <dd class="col-sm-8">: {{ rupiah($payment->amount) }}</dd>
+                  <dt class="col-sm-3">Kode Unik</dt>
+                  <dd class="col-sm-8">: {{ rupiah($payment->convenience_fee??0) }}</dd>
                   <dt class="col-sm-3">Tipe Pembayaran</dt>
                   <dd class="col-sm-8">: {{ ucfirst($payment->type_payment) }} / (#{{$payment->data_id}})</dd>
                   <dt class="col-sm-3">Pembayaran Tujuan</dt>

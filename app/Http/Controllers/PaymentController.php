@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\HistoryBalance;
 use Illuminate\Support\Facades\DB;
@@ -166,9 +167,11 @@ class PaymentController extends Controller
             $amount = $payment->amount;
             $description = "";            
             if($payment->type_payment=="order"){
-                $description = "Pemabayaran Order #".$payment->data_id;
+                $description = "Pemabayaran Order sebesar ".rupiah($amount);
+                $body = "Telah berhasil";
             }else{
-                $description = "Pemabayaran Deposit #".$payment->data_id;
+                $description = "Pemabayaran Deposit sebesar ".rupiah($amount);
+                $body = "Berhasil ditambahkan ke saldo";
                 $user->balance = $user->balance+$amount;
                 $user->save();
     
@@ -179,6 +182,18 @@ class PaymentController extends Controller
                     "created_by" => auth()->user()->id
                 ]);
             }
+
+            Notification::create([
+                "title" => $description,
+                "type" => "customer",
+                "user_id" => $user->id,
+                "read" => false,
+                "id_data" => $payment->id,
+                "id_data_string" => $payment->paymentid,
+                "subtitle" => $body,
+                "subtitle_color" => "#27AE60",
+                "action" => "OPEN_TRANSFER_DETAIL"
+            ]);
 
             $causer = auth()->user();
             $atribut = ['attributes' => [
@@ -192,8 +207,9 @@ class PaymentController extends Controller
                     ->timeToLive(60)
                     ->notification([
                         'title' => $description,
-                        'body' => "Berhasil diterima oleh admin",
-                    ]);            
+                        'body' => $body,
+                    ])
+                    ->send();            
             
             DB::commit();
 
@@ -226,12 +242,26 @@ class PaymentController extends Controller
 
             $description = "";            
             if($payment->type_payment=="order"){
-                $description = "Pemabayaran Order #".$payment->data_id;
+                $description = "Pemabayaran Order sebesar ".rupiah($payment->amount);
+                $body = "Gagal diterima oleh admin";
             }else{
-                $description = "Pemabayaran Deposit #".$payment->data_id;
+                $description = "Pemabayaran Deposit ".rupiah($payment->amount);
+                $body = "Gagal diterima oleh admin";
             }
 
             $user = User::find($payment->customer_id);
+
+            Notification::create([
+                "title" => $description,
+                "type" => "customer",
+                "user_id" => $user->id,
+                "read" => false,
+                "id_data" => $payment->id,
+                "id_data_string" => $payment->paymentid,
+                "subtitle" => $body,
+                "subtitle_color" => "#FF0000",
+                "action" => "OPEN_TRANSFER_DETAIL"
+            ]);
 
             $token[] = $user->fcm_token;
             fcm()->to($token)
@@ -239,8 +269,9 @@ class PaymentController extends Controller
                     ->timeToLive(60)
                     ->notification([
                         'title' => $description,
-                        'body' => "Gagal diterima oleh admin",
-                    ]);
+                        'body' => $body,
+                    ])
+                    ->send();
 
             $causer = auth()->user();
             $atribut = ['attributes' => [

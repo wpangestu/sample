@@ -93,8 +93,8 @@ class ChatController extends Controller
                         'role' => $role
                     ])
                     ->notification([
-                        'title' => 'Notifikasi',
-                        'body' => 'Pesan Baru',
+                        'title' => 'Pesan Baru',
+                        'body' => 'Anda mendapat pesan baru',
                     ])
                     ->send();
 
