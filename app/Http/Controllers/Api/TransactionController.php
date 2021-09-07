@@ -346,7 +346,7 @@ class TransactionController extends Controller
 
             $order = Order::where('order_number',$id)->first();
             if(!is_null($order->engineer_id)){
-                return response()->json(["message" => "Pesanan sudah ada yang mengambil"], 422);                
+                return response()->json(["message" => "Order sudah ada yang mengambil"], 422);                
             }
 
             $order->order_status = "accepted";
@@ -399,23 +399,29 @@ class TransactionController extends Controller
                 "subtitle" => $subtitle
             ]);
 
-            // $token[] = $order->engineer->fcm_token;
-            // fcm()->to($token)
-            //         ->priority('high')
-            //         ->timeToLive(60)
-            //         ->notification([
-            //             'title' => $title,
-            //             'body' => $subtitle,
-            //         ]);            
+            $title = "Kami menemukan teknisi terbaik untuk kamu";
+            $body = $order->order_detail[0]->name??"";
+
+            Notification::create([
+                "title" => $title,
+                "type" => "customer",
+                "user_id" => $order->customer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $body,
+                "action" => "OPEN_ORDER_DETAIL"
+            ]);
 
             $token[] = $order->customer->fcm_token;
-            fcm()->to($token)
-                    ->priority('high')
-                    ->timeToLive(60)
-                    ->notification([
-                        'title' => "Order #".$order->order_number,
-                        'body' => "Berhasil mendapat teknisi",
-                    ]);            
+                fcm()
+                ->to($token)
+                ->priority('high')
+                ->timeToLive(60)
+                ->notification([
+                    'title' => $title,
+                    'body' => $body,
+                ])
+                ->send();
 
             DB::commit();
             
@@ -449,6 +455,31 @@ class TransactionController extends Controller
             $order = Order::where('order_number',$id)->first();
             $order->order_status = "processed";
             $order->save();
+
+            $title = "Teknisi sedang melakukan repairmen";
+            $body = $order->order_detail[0]->name??"";
+
+            $user = User::find($order->customer_id);
+
+            Notification::create([
+                "title" => $title,
+                "type" => "customer",
+                "user_id" => $order->customer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $body,
+                "action" => "OPEN_ORDER_DETAIL"
+            ]);
+
+            $token[] = $user->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $body,
+                    ])
+                    ->send();
             
             return response()->json(["message" => "Order Process"]);            
             
@@ -528,7 +559,33 @@ class TransactionController extends Controller
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,
-                    ]);            
+                    ]);
+
+            
+            $title = "Teknisi berhasil melakukan repairmen";
+            $body = $order->order_detail[0]->name??"";
+
+            $user = User::find($order->customer_id);
+
+            Notification::create([
+                "title" => $title,
+                "type" => "customer",
+                "user_id" => $order->customer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $body,
+                "action" => "OPEN_ORDER_DETAIL"
+            ]);
+
+            $token[] = $user->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $body,
+                    ])
+                    ->send();
 
             DB::commit();
 
@@ -633,6 +690,31 @@ class TransactionController extends Controller
             $order->order_status = "extend";
             $order->is_extend = true;
             $order->save();
+
+            $title = "Teknisi melakukan perpanjangan waktu";
+            $body = $order->order_detail[0]->name??"";
+
+            $user = User::find($order->customer_id);
+
+            Notification::create([
+                "title" => $title,
+                "type" => "customer",
+                "user_id" => $order->customer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $body,
+                "action" => "OPEN_ORDER_DETAIL"
+            ]);
+
+            $token[] = $user->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $body,
+                    ])
+                    ->send();
             
             return response()->json(["message" => "Order Extend"]);            
             
