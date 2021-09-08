@@ -14,4 +14,8 @@ class Notification extends Model
     public function service(){
         return $this->belongsTo('App\Models\Service','service_id','id');
     }
+    
+    public function order(){
+        return $this->belongsTo('App\Models\Order','id_data_string','order_number');
+    }
 }

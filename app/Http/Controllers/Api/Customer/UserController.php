@@ -1505,15 +1505,19 @@ class UserController extends Controller
             $total = $notif->count();
 
             $datas = $datas->map(function ($data) {
+                $avatar = "";
+                if($data->action=="OPEN_ORDER_DETAIL"){
+                    $avatar = $data->order->engineer->profile_photo_path??'';
+                }
                 return [
                     "id"        => $data->id,
-                    "avatar"    => "",
+                    "avatar"    => $avatar,
                     "unread"    => ($data->read == false ? true : false),
                     "title"     => $data->title,
                     "subtitle"  => $data->subtitle,
                     "subtitle_color" => $data->subtitle_color == null ? "" : $data->subtitle_color,
                     "caption" => $data->caption,
-                    "id_data" => $data->id ?? '',
+                    "id_data" => $data->id_data_string ?? '',
                     "action"    => $data->action,
                     "created_at" => $data->created_at
                 ];
