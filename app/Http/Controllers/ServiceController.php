@@ -199,6 +199,7 @@ class ServiceController extends Controller
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
                 "id_data" => $service->id,
+                "id_data_string" => $service->id,
                 "service_status" => "active",
                 "subtitle"=> $body,
                 "subtitle_color" => "#27AE60"
@@ -256,6 +257,7 @@ class ServiceController extends Controller
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
                 "id_data" => $service->id,
+                "id_data_string" => $service->id,
                 "service_status" => "danied",
                 "subtitle"=> $body,
                 "subtitle_color" => "#FF0000"

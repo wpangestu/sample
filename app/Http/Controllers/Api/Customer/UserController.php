@@ -1599,7 +1599,8 @@ class UserController extends Controller
                 "type" => "review",
                 "user_id" => $order->engineer_id,
                 "id_data" => $review->id,
-                "id_data_string" => $order->order_number
+                "id_data_string" => $order->order_number,
+                "subtitle" => "Rating : ".$request->get('rating')
             ]);
 
             $technician = User::find($order->engineer_id);
@@ -1607,7 +1608,7 @@ class UserController extends Controller
             fcm()->to($fcm_token)
                 ->priority('high')
                 ->timeToLive(60)
-                ->data([
+                ->notification([
                     'title' => $title,
                     'body' => "Rating : " . $request->get('rating'),
                 ])
