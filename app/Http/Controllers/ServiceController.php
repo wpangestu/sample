@@ -193,13 +193,15 @@ class ServiceController extends Controller
             activity()->enableLogging();
 
             $title = "Jasa: " . $service->base_service->name;
-
+            $body = "Telah aktif";
             Notification::create([
                 "title" => $title,
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
                 "id_data" => $service->id,
-                "service_status" => "active"
+                "service_status" => "active",
+                "subtitle"=> $body,
+                "subtitle_color" => "#27AE60"
             ]);
 
             $technician = User::find($service->engineer_id);
@@ -207,9 +209,9 @@ class ServiceController extends Controller
             fcm()->to($token)
                     ->priority('high')
                     ->timeToLive(60)
-                    ->data([
+                    ->notification([
                         'title' => $title,
-                        'body' => 'Telah Aktif',
+                        'body' => $body,
                     ])
                     ->send();
             $properties = [
@@ -246,26 +248,30 @@ class ServiceController extends Controller
             $service->verified_at = date("Y-m-d H:i:s");
             $service->save();
             activity()->enableLogging();
-            $title = "Jasa: " . $service->base_service->name;
 
+            $title = "Jasa: " . $service->base_service->name;
+            $body = "Telah ditolak";
             Notification::create([
                 "title" => $title,
                 "type" => "service_info",
                 "user_id" => $service->engineer_id,
                 "id_data" => $service->id,
-                "service_status" => "denied"
+                "service_status" => "danied",
+                "subtitle"=> $body,
+                "subtitle_color" => "#FF0000"
             ]);
 
             $technician = User::find($service->engineer_id);
-
-            fcm()->to($technician->fcm_token)
+            $token[] = $technician->fcm_token; 
+            fcm()->to($token)
                     ->priority('high')
                     ->timeToLive(60)
-                    ->data([
+                    ->notification([
                         'title' => $title,
-                        'body' => 'Telah Ditolak',
+                        'body' => $body,
                     ])
                     ->send();
+
 
             $causer = auth()->user();
             activity('confirm_service')->performedOn($service)

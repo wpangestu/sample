@@ -1516,9 +1516,9 @@ class UserController extends Controller
                     "title"     => $data->title,
                     "subtitle"  => $data->subtitle,
                     "subtitle_color" => $data->subtitle_color == null ? "" : $data->subtitle_color,
-                    "caption" => $data->caption,
+                    "caption" => $data->caption??'',
                     "id_data" => $data->id_data_string ?? '',
-                    "action"    => $data->action,
+                    "action"    => $data->action??'',
                     "created_at" => $data->created_at
                 ];
             });
