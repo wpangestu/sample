@@ -392,7 +392,7 @@ class TransactionController extends Controller
             }
             Notification::create([
                 "title" => $title,
-                "type" => "order",
+                "type" => "order_ongoing",
                 "user_id" => $order->engineer_id,
                 "id_data" => $order->id,
                 "id_data_string" => $order->order_number,
@@ -455,6 +455,15 @@ class TransactionController extends Controller
             $order = Order::where('order_number',$id)->first();
             $order->order_status = "processed";
             $order->save();
+
+            Notification::create([
+                "title" => "Sedang proses Repairmen",
+                "type" => "order_ongoing",
+                "user_id" => $order->engineer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $order->order_detail[0]->name??""
+            ]);
 
             $title = "Teknisi sedang melakukan repairmen";
             $body = $order->order_detail[0]->name??"";
@@ -540,11 +549,11 @@ class TransactionController extends Controller
             $user->balance = $user->balance+$fee_technician;
             $user->save();
 
-            $title = "Order #".$order->order_number." telah selesai";
-            $subtitle = "Saldo ".rupiah($fee_technician)." telah masuk ke saldo anda";
+            $title = "Berhasil menyelesaikan Repairmen";
+            $subtitle = $order->order_detail[0]->name??"";
             Notification::create([
                 "title" => $title,
-                "type" => "order",
+                "type" => "order_done",
                 "user_id" => $order->engineer_id,
                 "read" => false,
                 "subtitle" => $subtitle,
@@ -615,6 +624,43 @@ class TransactionController extends Controller
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
             $order->save();
+
+            $title = "Berhasil menyelesaikan Repairmen";
+            $subtitle = $order->order_detail[0]->name??"";
+            Notification::create([
+                "title" => $title,
+                "type" => "order_done",
+                "user_id" => $order->engineer_id,
+                "read" => false,
+                "subtitle" => $subtitle,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number
+            ]);
+
+            $title = "Teknisi berhasil melakukan repairmen";
+            $body = $order->order_detail[0]->name??"";
+
+            $user_c = User::find($order->customer_id);
+
+            Notification::create([
+                "title" => $title,
+                "type" => "customer",
+                "user_id" => $order->customer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $body,
+                "action" => "OPEN_ORDER_DETAIL"
+            ]);
+
+            $token[] = $user_c->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => $title,
+                        'body' => $body,
+                    ])
+                    ->send();
 
             $user_1 = $order->engineer->id;
             $user_2 = $order->customer->id;
@@ -690,6 +736,15 @@ class TransactionController extends Controller
             $order->order_status = "extend";
             $order->is_extend = true;
             $order->save();
+
+            Notification::create([
+                "title" => "Take away disetujui",
+                "type" => "order_ongoing",
+                "user_id" => $order->engineer_id,
+                "id_data" => $order->id,
+                "id_data_string" => $order->order_number,
+                "subtitle" => $order->order_detail[0]->name??""
+            ]);
 
             $title = "Teknisi melakukan perpanjangan waktu";
             $body = $order->order_detail[0]->name??"";
