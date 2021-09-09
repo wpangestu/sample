@@ -1512,6 +1512,7 @@ class UserController extends Controller
                 return [
                     "id"        => $data->id,
                     "avatar"    => $avatar,
+                    "image"     => $avatar,
                     "unread"    => ($data->read == false ? true : false),
                     "title"     => $data->title,
                     "subtitle"  => $data->subtitle,

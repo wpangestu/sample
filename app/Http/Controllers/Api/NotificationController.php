@@ -59,6 +59,7 @@ class NotificationController extends Controller
                             "rating" => (int)$review->ratings
                         ];
                     }
+                    $response_data['image'] = $review->order->customer->profile_photo_path??'';
                     $response_data = array_merge($response_data, $extra);
     
                 }elseif($val->type==="wallet"){
@@ -79,9 +80,10 @@ class NotificationController extends Controller
                     }
                     $response_data = array_merge($response_data, $extra);
     
-                }elseif($val->type==="order"){
+                }elseif($val->type==="order_done" || $val->type==="order_ongoing" || $val->type==="order"){
     
                     $order = Order::find($val->id_data);
+                    $response_data['image'] = $order->customer->profile_photo_path??'';
                     if(is_null($order)){
                         $extra['order'] = [
                             "name" => null,
@@ -90,7 +92,7 @@ class NotificationController extends Controller
                     }else{
                         if($order->order_type==="custom"){
                             $extra['order'] = [
-                                "name" => "Custom Order",
+                                "name" => "Custom Order ".$order->order_detail[0]->name??'',
                                 "total_service" => 1
                             ];
                         }else{

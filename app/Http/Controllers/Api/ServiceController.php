@@ -31,13 +31,15 @@ class ServiceController extends Controller
                 });
             });
             $filter = $request->get('filter');
-            $data->when($filter, function ($query, $filter) {
-                return $query->whereHas('base_service', function ($query) use ($filter) {
-                    return $query->whereHas('service_category', function ($query2) use ($filter) {
-                        return $query2->where('slug', $filter);
+            if($filter != "all"){
+                $data->when($filter, function ($query, $filter) {
+                    return $query->whereHas('base_service', function ($query) use ($filter) {
+                        return $query->whereHas('service_category', function ($query2) use ($filter) {
+                            return $query2->where('slug', $filter);
+                        });
                     });
                 });
-            });
+            }
             
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
