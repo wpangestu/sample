@@ -1369,7 +1369,7 @@ class UserController extends Controller
             $user = User::find(auth()->user()->id);
 
             if ($amount > $user->balance) {
-                return response()->json(["message" => "Tidak dapat di proses"]);
+                return response()->json(["message" => "Tidak dapat di proses"],422);
             }
 
             DB::beginTransaction();

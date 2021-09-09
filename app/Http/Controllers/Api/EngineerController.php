@@ -32,6 +32,17 @@ class EngineerController extends Controller
         
         try {
             //code...
+
+            $amount = $request->amount;
+            $user = User::find(auth()->user()->id);
+
+            if ($amount > $user->balance) {
+                return response()->json(["message" => "Tidak dapat di proses"],422);
+            }
+
+            $user->balance = $user->balance - $amount;
+            $user->save();
+
             Withdraw::create([
                 "user_id" => auth()->user()->id,
                 "amount" => $request->amount,

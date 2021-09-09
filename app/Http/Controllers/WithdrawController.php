@@ -180,7 +180,8 @@ class WithdrawController extends Controller
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,
-                    ]);            
+                    ])
+                    ->send();            
 
             $causer = auth()->user();
             $atribut = ['attributes' => [
@@ -240,7 +241,8 @@ class WithdrawController extends Controller
                     ->notification([
                         'title' => $title,
                         'body' => $subtitle,
-                    ]);            
+                    ])
+                    ->send();            
 
                     $causer = auth()->user();
                     $atribut = ['attributes' => [
