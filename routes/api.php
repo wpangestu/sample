@@ -195,6 +195,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('transaction/ongoing',[CustomerUserController::class,'transaction_on_going']);
         
         Route::post('wallet/withdraw',[CustomerUserController::class,'withdraw']);
+        Route::get('wallet/deposit/{id}',[CustomerUserController::class,'show_deposit']);
         Route::post('wallet/deposit',[CustomerUserController::class,'deposit']);
         Route::post('wallet/deposit/cancel/{id}',[CustomerUserController::class,'destroy_deposit']);
         

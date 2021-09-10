@@ -1433,6 +1433,28 @@ class UserController extends Controller
         }
     }
 
+    public function show_deposit($id)
+    {
+        try {
+            //code...
+
+            $deposit = Deposit::where('transfer_id',$id)->first();
+
+            $response = [
+                "transfer_id" => $deposit->transfer_id,
+                "expired_date" => $deposit->expired_date,
+                "amount" => $deposit->amount,
+                "unique_code" => $deposit->unique_code,
+                "total_amount" => $deposit->total_amount
+            ];
+
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
+    }
+
     public function destroy_deposit($id)
     {
 
