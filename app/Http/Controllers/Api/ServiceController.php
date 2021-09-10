@@ -286,4 +286,36 @@ class ServiceController extends Controller
         }
     }
 
+    public function show_service($id)
+    {
+        try {
+            //code...
+
+            $service = Service::find($id);
+
+            $response = [
+                "id" => $service->id,
+                "name" => $service->base_service->name??'-',
+                "media" => $service->base_service->image??'',
+                "price" => (int)$service->base_service->price??0,
+                "guarantee" => (int)$service->base_service->long_guarantee??0,
+                "weight" => 100,
+                "condition" => "new",
+                "description" => $service->base_service->description,
+                "category" => [
+                    "id" => $service->base_service->service_category->id,
+                    "slug" => $service->base_service->service_category->slug,
+                    "label" => $service->base_service->service_category->name,
+                    "icon" => $service->base_service->service_category->icon??''
+                ]
+            ];
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
+        }
+    }
+
 }

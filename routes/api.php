@@ -70,6 +70,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     //Service
     Route::get('teknisi/service',[ServiceController::class,'index']);
 
+    Route::get('teknisi/service-detail/{id}',[ServiceController::class,'show_service']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
     Route::put('teknisi/service/{id}',[ServiceController::class,'update']);
     Route::get('teknisi/service/price-category',[ServiceController::class,'price_category']);
