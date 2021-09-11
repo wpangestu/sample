@@ -184,7 +184,7 @@ class PaymentController extends Controller
                     "created_by" => auth()->user()->id
                 ]);
                 $action = "OPEN_TRANSFER_WALLET_DETAIL";
-                $id_data_string = $payment->paymentid;
+                $id_data_string = $payment->data_id;
             }
 
             Notification::create([

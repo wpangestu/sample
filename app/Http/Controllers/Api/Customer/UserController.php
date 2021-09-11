@@ -1443,9 +1443,9 @@ class UserController extends Controller
             $response = [
                 "transfer_id" => $deposit->transfer_id,
                 "expired_date" => $deposit->expired_date,
-                "amount" => $deposit->amount,
-                "unique_code" => $deposit->unique_code,
-                "total_amount" => $deposit->total_amount
+                "amount" => (int)$deposit->amount,
+                "unique_code" => (int)$deposit->unique_code,
+                "total_amount" => (int)$deposit->total_amount
             ];
 
             return response()->json($response);
