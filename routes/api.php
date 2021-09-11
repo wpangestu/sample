@@ -66,8 +66,11 @@ Route::get('teknisi/bank-account/bank', [BankController::class,'index']);
 
 Route::middleware(['jwt.verify'])->group(function () {
 
-    # TEKNISI
+    Route::get('teknisi/user/check-valid',[CustomerUserController::class,'check_valid']);
+
     //Service
+    # TEKNISI
+
     Route::get('teknisi/service',[ServiceController::class,'index']);
 
     Route::get('teknisi/service-detail/{id}',[ServiceController::class,'show_service']);
@@ -145,6 +148,8 @@ Route::middleware(['jwt.verify'])->group(function () {
 
     
     Route::prefix('customer')->group(function () {
+
+        Route::get('/user/check-valid',[CustomerUserController::class,'check_valid']);
 
         Route::get('/user', [CustomerUserController::class,'showUser']);
         // Route::get('/user​', [CustomerUserController::class,'showUser']);

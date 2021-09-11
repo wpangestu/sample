@@ -107,6 +107,7 @@ class UserController extends Controller
 
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
+            'device_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -137,6 +138,9 @@ class UserController extends Controller
                 $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
                 $user->last_login = date('Y-m-d H:i:s');
+                if(is_null($user->device_id)){
+                    $user->device_id = $request->device_id;
+                }
                 $user->save();
 
                 $data['message'] = "Login successfully";
@@ -199,6 +203,16 @@ class UserController extends Controller
             return response()->json($data);
         } else {
             return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
+        }
+    }
+
+    public function check_valid(Request $request)
+    {   
+        $device_id = $request->device_id;
+        if($device_id === auth()->user->device_id){
+            return response()->json(['message' => 'Device id correct'], 200);
+        }else{
+            return response()->json(['message' => 'You have logged in other device'], 422);
         }
     }
 
