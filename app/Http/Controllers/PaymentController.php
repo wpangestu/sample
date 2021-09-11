@@ -170,6 +170,7 @@ class PaymentController extends Controller
                 $description = "Pemabayaran Order sebesar ".rupiah($amount);
                 $body = "Telah berhasil";
                 $action = "OPEN_TRANSFER_DETAIL";
+                $id_data_string = $payment->data_id;
             }else{
                 $description = "Pemabayaran Deposit sebesar ".rupiah($amount);
                 $body = "Berhasil ditambahkan ke saldo";
@@ -183,6 +184,7 @@ class PaymentController extends Controller
                     "created_by" => auth()->user()->id
                 ]);
                 $action = "OPEN_TRANSFER_WALLET_DETAIL";
+                $id_data_string = $payment->paymentid;
             }
 
             Notification::create([
@@ -191,7 +193,7 @@ class PaymentController extends Controller
                 "user_id" => $user->id,
                 "read" => false,
                 "id_data" => $payment->id,
-                "id_data_string" => $payment->paymentid,
+                "id_data_string" => $id_data_string,
                 "subtitle" => $body,
                 "subtitle_color" => "#27AE60",
                 "action" => $action
