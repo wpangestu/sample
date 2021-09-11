@@ -246,9 +246,11 @@ class PaymentController extends Controller
             if($payment->type_payment=="order"){
                 $description = "Pemabayaran Order sebesar ".rupiah($payment->amount);
                 $body = "Gagal diterima oleh admin";
+                $action = "OPEN_TRANSFER_DETAIL";
             }else{
                 $description = "Pemabayaran Deposit ".rupiah($payment->amount);
                 $body = "Gagal diterima oleh admin";
+                $action = "OPEN_TRANSFER_WALLET_DETAIL";
             }
 
             $user = User::find($payment->customer_id);
@@ -262,7 +264,7 @@ class PaymentController extends Controller
                 "id_data_string" => $payment->paymentid,
                 "subtitle" => $body,
                 "subtitle_color" => "#FF0000",
-                "action" => "OPEN_TRANSFER_DETAIL"
+                "action" => $action
             ]);
 
             $token[] = $user->fcm_token;

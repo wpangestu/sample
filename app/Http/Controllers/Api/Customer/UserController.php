@@ -1623,7 +1623,8 @@ class UserController extends Controller
                 "user_id" => $order->engineer_id,
                 "id_data" => $review->id,
                 "id_data_string" => $order->order_number,
-                "subtitle" => "Rating : ".$request->get('rating')
+                "subtitle" => "Rating : ".$request->get('rating'),
+                "action" => "OPEN_REVIEW_SCREEN"
             ]);
 
             $technician = User::find($order->engineer_id);

@@ -202,7 +202,8 @@ class ServiceController extends Controller
                 "id_data_string" => $service->id,
                 "service_status" => "active",
                 "subtitle"=> $body,
-                "subtitle_color" => "#27AE60"
+                "subtitle_color" => "#27AE60",
+                "action" => "OPEN_SERVICE_DETAIL"
             ]);
 
             $technician = User::find($service->engineer_id);
@@ -260,7 +261,8 @@ class ServiceController extends Controller
                 "id_data_string" => $service->id,
                 "service_status" => "danied",
                 "subtitle"=> $body,
-                "subtitle_color" => "#FF0000"
+                "subtitle_color" => "#FF0000",
+                "action" => "OPEN_SERVICE_DETAIL"
             ]);
 
             $technician = User::find($service->engineer_id);
