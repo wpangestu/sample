@@ -1532,7 +1532,7 @@ class UserController extends Controller
 
             $user = auth()->user();
             $data = Notification::where('type', 'customer')
-                ->where('user_id', $user->id);
+                ->where('user_id', $user->id)->latest();
 
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
