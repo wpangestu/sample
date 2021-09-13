@@ -63,10 +63,11 @@ Route::get('teknisi/service/list',[ServiceController::class,'get_base_service_by
 Route::get('/teknisi/address/recommendation', [UserAddressController::class, 'recommendation']);
 
 Route::get('teknisi/bank-account/bank', [BankController::class,'index']);
+Route::get('customer/bank-account/bank', [BankController::class,'index']);
 
 Route::middleware(['jwt.verify'])->group(function () {
 
-    Route::get('teknisi/user/check-valid',[CustomerUserController::class,'check_valid']);
+    Route::post('teknisi/user/check-valid',[CustomerUserController::class,'check_valid']);
 
     //Service
     # TEKNISI
@@ -149,7 +150,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     
     Route::prefix('customer')->group(function () {
 
-        Route::get('/user/check-valid',[CustomerUserController::class,'check_valid']);
+        Route::post('/user/check-valid',[CustomerUserController::class,'check_valid']);
 
         Route::get('/user', [CustomerUserController::class,'showUser']);
         // Route::get('/user​', [CustomerUserController::class,'showUser']);

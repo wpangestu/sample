@@ -190,6 +190,9 @@ class UserController extends Controller
             $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
             $user->last_login = date('Y-m-d H:i:s');
+            if(is_null($user->device_id)){
+                $user->device_id = $request->device_id;
+            }
             $user->save();
 
             $data['message'] = "Login successfully";
@@ -197,8 +200,6 @@ class UserController extends Controller
             $data['token'] = $token;
             $data['valid_until'] = $expires_at;
             $data['token_type'] = "Bearer";
-
-
 
             return response()->json($data);
         } else {
@@ -208,11 +209,16 @@ class UserController extends Controller
 
     public function check_valid(Request $request)
     {   
-        $device_id = $request->device_id;
-        if($device_id === auth()->user->device_id){
-            return response()->json(['message' => 'Device id correct'], 200);
-        }else{
-            return response()->json(['message' => 'You have logged in other device'], 422);
+        try{            
+            $device_id = $request->device_id;
+            if($device_id === auth()->user()->device_id){
+                return response()->json(['message' => 'Device id correct'], 200);
+            }else{
+                return response()->json(['message' => 'You have logged in other device'], 422);
+            }
+        
+        } catch (\Throwable $th) {
+                return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 
