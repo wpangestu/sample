@@ -59,7 +59,8 @@ class NotificationController extends Controller
                             "rating" => (int)$review->ratings
                         ];
                     }
-                    $response_data['image'] = $review->order->customer->profile_photo_path??'';
+                    $order = Order::where('order_number',$val->id_data_string)->first();
+                    $response_data['image'] = $order->customer->profile_photo_path??'';
                     $response_data = array_merge($response_data, $extra);
     
                 }elseif($val->type==="wallet"){

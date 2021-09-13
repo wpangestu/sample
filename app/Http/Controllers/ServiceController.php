@@ -281,9 +281,6 @@ class ServiceController extends Controller
             activity('confirm_service')->performedOn($service)
                 ->causedBy($causer)
                 ->log('Pengguna melakukan konfirmasi Tolak Jasa');
-            
-            $service->delete();
-
             DB::commit();
 
             return redirect()->route('services.confirmation')
