@@ -291,7 +291,8 @@ class ServiceOrderController extends Controller
         elseif($order->order_status=="done") {
             $status =  '<badge class="badge badge-success">Selesai</badge>';
         }
-        return view('service_order.detail',compact('order','status'));
+        $payment = Payment::where('type_payment','order')->where('data_id',$order->order_number)->first();
+        return view('service_order.detail',compact('order','status','payment'));
     }
 
     /**
@@ -334,7 +335,7 @@ class ServiceOrderController extends Controller
             return redirect()->route('service_order.index')
                         ->with('success','Data berhasil diubah');
         }else{
-            return redirect()->route('service_ordeSSSr.index')
+            return redirect()->route('service_order.index')
                         ->with('error','Opps, Terjadi kesalahan.');
         }
     }
@@ -390,6 +391,25 @@ class ServiceOrderController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["success"=>false,"message"=>$th->getMessage()]);
+        }
+    }
+
+    public function cancel_order(Request $request,$id)
+    {
+        try {
+            //code...
+            $order = Order::find($id);
+            $order->order_status = "canceled";
+            $order->is_extend = 0;
+            $order->save();
+
+            toast('Order berhasil di cancel','success');
+
+            return redirect()->route('service_order.show',$id);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
         }
     }
 }

@@ -115,6 +115,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('service_order/{id}/update_waiting_order', [ServiceOrderController::class,'update_waiting_order'])->name('service_order.update_waiting_order');
     Route::resource('service_order', ServiceOrderController::class);
     Route::post('service_order/{id}/delete', [ServiceOrderController::class,'destroy'])->name('service_order.delete.ajax');;
+    Route::put('service_order/{id}/cancel', [ServiceOrderController::class,'cancel_order'])->name('service_order.cancel.order');;
 
     // Review Service
     // Route::resource('review_service', ReviewServiceController::class);

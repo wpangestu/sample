@@ -95,3 +95,19 @@ function rupiah($val)
     return "Rp ".number_format($val,0,',','.');
 }
 
+function label_payment($status){
+    if($status === 'check'){
+        return '<span class="badge badge-info">Menunggu Konfirmasi</span>';
+    }
+    elseif($status === 'pending'){
+      return '<span class="badge badge-warning">Menunggu Pembayaran</span>';
+    }
+    elseif($status === 'decline'){
+        return '<span class="badge badge-danger">Ditolak</span>';
+    }
+    elseif($status === 'success'){
+        return '<span class="badge badge-success">Sukses</span>';
+    }else{
+        return "-";        
+    }
+}

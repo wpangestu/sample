@@ -60,6 +60,17 @@
                       <input type="text" readonly value="{{ $order->created_at }}" class="form-control"> 
                     </div>                    
                   </div>                
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="">Pembayaran</label>
+                      <br>
+                      {!! label_payment($payment->status??'') !!}
+                      @isset($payment->status)
+                        
+                      / PaymentId : <a href="{{ route('payment.order.detail',$order->id) }}" target="_blank" rel="noopener noreferrer">{{ $payment->paymentid }}</a>
+                      @endisset
+                    </div>                    
+                  </div>                
                 </div>
 
                 <div class="row">
@@ -83,31 +94,18 @@
                       <div class="form-group">
                         <label for="">Aksi</label><br>
                         <button class="btn btn-sm btn-info" id="btn_search_technician"><i class="fa fa-search"></i> Mencari Teknisi</button>
-                          <!-- <a onclick="return confirm('Apa anda yakin?')" href="#" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi</a> -->
                       </div>
                       @endif
-                      @if($order->order_status === "accepted")
+                      @if($order->order_status === "accepted"||$order->order_status === "processed"||$order->order_status === "extend")
                       <div class="form-group">
-                      <!-- <label for="">Diterima Teknisi</label><br> -->
-                        <!-- <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'processed']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Proses Order</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'decline']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Tolak Order</a> -->
+                      <label for="">Aksi</label><br>
+                        <button id="btn_cancel_order" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Cancel Order</button>
                       </div>
                       @endif
-                      @if($order->order_status === "processed")
+                      @if($order->order_status === "canceled")
                       <div class="form-group">
-                      <!-- <label for="">Sedang diproses Teknisi</label><br> -->
-                        <!-- <label for="">Aksi</label><br>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline',['orderid'=>$order->order_number,'status'=>'take-away']) }}" class="btn btn-sm btn-info"><i class="fa fa-hands-helping"></i> Extend</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a> -->
-                      </div>
-                      @endif
-                      @if($order->order_status === "extend")
-                      <div class="form-group">
-                      <!-- <label for="">Pengerjaan di perpanjang</label><br> -->
-                        <!-- <label for="">Aksi</label><br>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'done']) }}" class="btn btn-sm btn-success"><i class="fa fa-check-circle"></i> Selesai</a>
-                        <a onclick="return confirm('Apa anda yakin?')" href="{{ route('service_order.process_decline', ['orderid'=>$order->order_number,'status'=>'canceled']) }}" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Dibatalkan</a> -->
+                        <label for="">Aksi</label><br>
+                        <button id="btn_search_technician" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi Lain</button>
                       </div>
                       @endif
                       @if($order->order_status === "done")
@@ -225,6 +223,18 @@
   </div>
   <!-- /.content-wrapper -->
 
+  <x-modal id="md_cancel_order" title="Cancel Order">
+    <p>Apa anda yakin membatalkan pesanan ini?</p>
+    <form action="{{ route('service_order.cancel.order',$order->id) }}" method="post">
+      @csrf
+      @method('put')
+      <div class="text-right">
+        <button class="btn btn-primary" type="submit">Ya</button>
+        <button class="btn btn-secondary" data-dismiss="modal" type="button">Batal</button>
+      </div>
+    </form>
+  </x-modal>
+
 @endsection
 
 @section('scripts')
@@ -263,6 +273,10 @@
             }
         });
       });
+
+      $('#btn_cancel_order').on('click',function(){
+        $('#md_cancel_order').modal('show');
+      })
 
     });
 </script>
