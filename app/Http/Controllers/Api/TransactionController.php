@@ -372,10 +372,11 @@ class TransactionController extends Controller
                 ]);
             }
 
+            $message_chat = "Perkenalkan Saya ".$order->engineer->name.", saya teknisi yang akan menangani orderan anda.";
             $chat = Chat::create([
                 "to" => $order->customer_id,
                 "from" => $order->engineer_id,
-                "message" => "Perkenalkan Saya ".$order->engineer->name.", saya teknisi yang akan menangani orderan anda.",
+                "message" => $message_chat,
                 "chatroom_id" => $chatroom->id,
                 "media" => null
             ]);
@@ -420,6 +421,16 @@ class TransactionController extends Controller
                 ->notification([
                     'title' => $title,
                     'body' => $body,
+                ])
+                ->send();
+
+            fcm()
+                ->to($token)
+                ->priority('high')
+                ->timeToLive(60)
+                ->notification([
+                    'title' => "New Message : ".$order->engineer->name,
+                    'body' => $message_chat,
                 ])
                 ->send();
 
