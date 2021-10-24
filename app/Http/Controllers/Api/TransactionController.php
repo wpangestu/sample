@@ -352,7 +352,9 @@ class TransactionController extends Controller
             $order->order_status = "accepted";
             $order->engineer_id = auth()->user()->id;
             $order->origin = json_encode($origin);
+            $order->engineer->on_progress = true;
             $order->save();
+            $order->engineer->save();
 
             $chatroom = Chatroom::where('user_1',$order->customer_id)
                                     ->where('user_2',$order->engineer_id);
@@ -533,7 +535,9 @@ class TransactionController extends Controller
             $order = Order::where('order_number',$id)->first();
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
+            $order->engineer->on_progress = false;
             $order->save();
+            $order->engineer->save();
 
             $user_1 = $order->engineer->id;
             $user_2 = $order->customer->id;
@@ -634,7 +638,9 @@ class TransactionController extends Controller
             $order = Order::where('order_number',$id)->first();
             $order->order_status = "done";
             $order->photo = Storage::disk('public')->url($photo_path);
+            $order->engineer->on_progess = false;
             $order->save();
+            $order->engineer->save();
 
             $title = "Berhasil menyelesaikan Repairmen";
             $subtitle = $order->order_detail[0]->name??"";

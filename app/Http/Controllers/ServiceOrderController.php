@@ -364,6 +364,7 @@ class ServiceOrderController extends Controller
             $users = User::Role('teknisi')
                                 ->where('verified',true)
                                 ->whereNotNull('fcm_token')
+                                ->where('on_progress',false)
                                 ->get();
 
             $token_technician = $users->pluck('fcm_token')->toArray();
@@ -401,7 +402,9 @@ class ServiceOrderController extends Controller
             $order = Order::find($id);
             $order->order_status = "canceled";
             $order->is_extend = 0;
+            $order->engineer->on_progress = false;
             $order->save();
+            $order->engineer->save();
 
             toast('Order berhasil di cancel','success');
 

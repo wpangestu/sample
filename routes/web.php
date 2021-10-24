@@ -37,9 +37,15 @@ use App\Http\Livewire\Members; //Load class Members
 Route::get('/', function () {
     return redirect('login');
 });
-Route::get('/cek', function () {
-    dd(activity());
-});
+// Route::get('/cek', function () {
+//     try {
+//         //code...
+//     } catch (\Throwable $th) {
+//         //throw $th;
+//         dd($th);
+//     }
+
+// });
 
 Route::get('/symlink', function(){
     try {
