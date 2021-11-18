@@ -151,6 +151,8 @@ class WithdrawController extends Controller
             $withdraw->status = "success";
             $withdraw->verified_by = auth()->user()->id;
             $withdraw->verified_at = date('Y-m-d H:i:s');
+            $withdraw->user->balance -= $withdraw->amount;
+            $withdraw->user->save();
             $withdraw->save();
 
             HistoryBalance::create([
@@ -218,7 +220,6 @@ class WithdrawController extends Controller
             $withdraw->status = "decline";
             $withdraw->verified_by = auth()->user()->id;
             $withdraw->verified_at = date('Y-m-d H:i:s');
-            $withdraw->user->balance = $withdraw->user->balance+
             $withdraw->save();
 
             $title = "Penarikan saldo sebesar ".rupiah($withdraw->amount);

@@ -73,9 +73,7 @@
                   <hr>
                   </dd>
                   <dt class="col-sm-3">Saldo Sebelum Penarikan </dt>
-                  <dd class="col-sm-8">: {{ rupiah($data->user->balance+$data->amount??0) }}</dd>
-                  <dt class="col-sm-3">Saldo Setelah Penarikan </dt>
-                  <dd class="col-sm-8">: {{ rupiah($data->user->balance??0) }}
+                  <dd class="col-sm-8">: {{ rupiah($data->balance_before??0) }}</dd>
                     <hr>
                   </dd>
                   <dt class="col-sm-3">Rekening Customer</dt>

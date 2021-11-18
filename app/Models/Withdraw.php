@@ -14,7 +14,8 @@ class Withdraw extends Model
         'withdraw_id',
         'note',
         'account_holder',
-        'account_number'
+        'account_number',
+        'balance_before'
     ];
 
     public function user()

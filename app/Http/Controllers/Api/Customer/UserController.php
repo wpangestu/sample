@@ -1384,10 +1384,18 @@ class UserController extends Controller
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
         }
 
+        $user = User::find(auth()->user()->id);
+
+        $check = Withdraw::where('user_id',$user->id)
+                            ->where('status','pending')
+                            ->get();
+        if($check->isNotEmpty()){
+            return response()->json(["message" => "Mohon tunggu pengajuan sebelumnya terkonfirmasi"], 422);
+        }
+
         try {
             //code...
             $amount = $request->amount;
-            $user = User::find(auth()->user()->id);
 
             if ($amount > $user->balance) {
                 return response()->json(["message" => "Tidak dapat di proses"],422);
@@ -1399,11 +1407,12 @@ class UserController extends Controller
                 "amount" => $amount,
                 "withdraw_id" => "W" . uniqid(),
                 "account_number" => $request->account_number,
-                "account_holder" => $request->account_name
+                "account_holder" => $request->account_name,
+                "balance_before" => $user->balance
             ]);
 
-            $user->balance = $user->balance - $amount;
-            $user->save();
+            // $user->balance = $user->balance - $amount;
+            // $user->save();
 
             DB::commit();
 
