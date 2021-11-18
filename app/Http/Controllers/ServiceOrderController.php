@@ -26,76 +26,71 @@ class ServiceOrderController extends Controller
         //
         if ($request->ajax()) {
             $data = Order::latest()->get();
-            return Datatables::of($data->load('customer','engineer'))
-                    ->addIndexColumn()
-                    ->addColumn('action', function($row){
+            return Datatables::of($data->load('customer', 'engineer'))
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
 
-                        $btn = '
+                    $btn = '
                         <button type="button" class="btn btn-xs btn-secondary dropdown-toggle" data-toggle="dropdown">
                             Aksi
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="dropdown-item"><a href="'.route('service_order.show',$row->id).'" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
+                            <li class="dropdown-item"><a href="' . route('service_order.show', $row->id) . '" data-original-title="Edit" class="edit"><i class="fa fa-edit"></i> Detail</a></li>
                             ';
-                            if($row->order_status ==="pending"){
-                                $btn .= '<li class="dropdown-item"><a href="'.route('payment.order.edit',$row->payment_id??'!#').'" data-original-title="Buat Pembayaran"><i class="fa fa-money-bill"></i> Buat Pembayaran</a></li>';
-                            }
-                        $btn .= '</ul>';
-                        // <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
-                        // <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
-                        // $btn = '<a href="'.route('service_order.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
-   
-                        // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_order.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
+                    if ($row->order_status === "pending") {
+                        $btn .= '<li class="dropdown-item"><a href="' . route('payment.order.edit', $row->payment_id ?? '!#') . '" data-original-title="Buat Pembayaran"><i class="fa fa-money-bill"></i> Buat Pembayaran</a></li>';
+                    }
+                    $btn .= '</ul>';
+                    // <li class="dropdown-item"><a href="'.route('services.show',$row->id).'" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detail" class="detail"><i class="fa fa-info-circle"></i> Detail</a></li>
+                    // <li class="dropdown-item"><a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service.delete.ajax',$row->id).'" data-original-title="Delete" class="btn_delete"><i class="fa fa-times-circle"></i> Delete</a></li>
+                    // $btn = '<a href="'.route('service_order.edit',$row->id).'" data-toggle="tooltip"  data-id="'.$row->userid.'" data-original-title="Edit" class="edit btn btn-info btn-sm">Edit</a>';
 
-                        // return $btn;
+                    // $btn .= ' <a href="javascript:void(0)" data-toggle="tooltip" data-url="'.route('service_order.delete.ajax',$row->id).'" data-original-title="Delete" class="btn btn-danger btn-sm btn_delete">Delete</a>';
 
-                            // $btn = '<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                            //             <span class="sr-only">Toggle Dropdown</span>
-                            //                 Aksi 
-                            //             <div class="dropdown-menu" role="menu">
-                            //                 <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'"><i class="fa fa-edit"></i> Ubah</a>
-                            //                 <a class="dropdown-item btn_delete" data-url="'.route('service_order.delete.ajax',$row->id).'" href="'.route('dashboard').'"><i class="fa fa-times"></i> Hapus</a>
-                            //             </div>
-                            //         </button>';
-                            return $btn;
-                    })
-                    ->addColumn('order_status',function($row){
-                        if($row->order_status==null){
-                            return "-";
-                        }elseif($row->order_status=="waiting_payment"){
-                            return '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
-                        }elseif ($row->order_status=="payment_success") {
-                            return '<badge class="badge badge-info">Pembayaran Sukses</badge>';
-                        }elseif ($row->order_status=="waiting_order") {
-                            return '<badge class="badge bg-indigo">Mencari Teknisi</badge>';
-                        }
-                        elseif($row->order_status=="accepted") {
-                            return '<badge class="badge bg-teal">Diterima Teknisi</badge>';
-                        }
-                        elseif($row->order_status=="processed") {
-                            return '<badge class="badge bg-lime">Diproses</badge>';
-                        }
-                        elseif($row->order_status=="extend") {
-                            return '<badge class="badge bg-olive">Extend</badge>';
-                        }
-                        elseif($row->order_status=="canceled") {
-                            return '<badge class="badge badge-danger">Dibatalkan</badge>';
-                        }
-                        elseif($row->order_status=="done") {
-                            return '<badge class="badge badge-success">Selesai</badge>';
-                        }
-                    })
-                    ->addColumn('created_at', function($row){
-                        return $row->created_at->format("d/m/Y")."<br>".$row->created_at->format('H:i');
-                    })
-                    ->addColumn('customer_id', function($row){
-                        return $row->customer->name;
-                    })
-                    ->addColumn('engineer_id', function($row){
-                        return $row->engineer->name??'-';
-                    })
-                    ->rawColumns(['action','order_status','created_at'])
-                    ->make(true);
+                    // return $btn;
+
+                    // $btn = '<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    //             <span class="sr-only">Toggle Dropdown</span>
+                    //                 Aksi 
+                    //             <div class="dropdown-menu" role="menu">
+                    //                 <a class="dropdown-item" href="'.route('service_order.edit',$row->id).'"><i class="fa fa-edit"></i> Ubah</a>
+                    //                 <a class="dropdown-item btn_delete" data-url="'.route('service_order.delete.ajax',$row->id).'" href="'.route('dashboard').'"><i class="fa fa-times"></i> Hapus</a>
+                    //             </div>
+                    //         </button>';
+                    return $btn;
+                })
+                ->addColumn('order_status', function ($row) {
+                    if ($row->order_status == null) {
+                        return "-";
+                    } elseif ($row->order_status == "waiting_payment") {
+                        return '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
+                    } elseif ($row->order_status == "payment_success") {
+                        return '<badge class="badge badge-info">Pembayaran Sukses</badge>';
+                    } elseif ($row->order_status == "waiting_order") {
+                        return '<badge class="badge bg-indigo">Mencari Teknisi</badge>';
+                    } elseif ($row->order_status == "accepted") {
+                        return '<badge class="badge bg-teal">Diterima Teknisi</badge>';
+                    } elseif ($row->order_status == "processed") {
+                        return '<badge class="badge bg-lime">Diproses</badge>';
+                    } elseif ($row->order_status == "extend") {
+                        return '<badge class="badge bg-olive">Extend</badge>';
+                    } elseif ($row->order_status == "canceled") {
+                        return '<badge class="badge badge-danger">Dibatalkan</badge>';
+                    } elseif ($row->order_status == "done") {
+                        return '<badge class="badge badge-success">Selesai</badge>';
+                    }
+                })
+                ->addColumn('created_at', function ($row) {
+                    return $row->created_at->format("d/m/Y") . "<br>" . $row->created_at->format('H:i');
+                })
+                ->addColumn('customer_id', function ($row) {
+                    return $row->customer->name;
+                })
+                ->addColumn('engineer_id', function ($row) {
+                    return $row->engineer->name ?? '-';
+                })
+                ->rawColumns(['action', 'order_status', 'created_at'])
+                ->make(true);
         }
 
         return view('service_order.index');
@@ -109,12 +104,12 @@ class ServiceOrderController extends Controller
     public function create()
     {
         //
-        $customers = User::Role('user')->where('is_active',1)->get();
-        $engineers = User::Role('teknisi')->where('verified',true)->get();
-        $category_services = CategoryService::where('status',true)->get();
+        $customers = User::Role('user')->where('is_active', 1)->get();
+        $engineers = User::Role('teknisi')->where('verified', true)->get();
+        $category_services = CategoryService::where('status', true)->get();
         $services = Service::all();
-        $status = ['pending','process','finish'];
-        return view('service_order.create',compact('customers','engineers','services','status','category_services'));
+        $status = ['pending', 'process', 'finish'];
+        return view('service_order.create', compact('customers', 'engineers', 'services', 'status', 'category_services'));
     }
 
     /**
@@ -129,7 +124,7 @@ class ServiceOrderController extends Controller
         $request->validate([
             'customer_id' => 'required|integer',
             'service_id' => 'required',
-            'payment_gateway'=>'required'
+            'payment_gateway' => 'required'
         ]);
 
         // dd($request->all());
@@ -139,10 +134,10 @@ class ServiceOrderController extends Controller
             DB::beginTransaction();
 
             $service_input = $request->service_id[0];
-            $service_input = explode("_",$service_input);
-    
+            $service_input = explode("_", $service_input);
+
             $order_id = uniqid();
-    
+
             $service = Service::find($service_input[0]);
             $shipping = $request->shipping;
             $data = [
@@ -155,9 +150,9 @@ class ServiceOrderController extends Controller
                 "shipping" => $shipping,
                 "note" => $request->description
             ];
-            
+
             $order = Order::create($data);
-            
+
             $data_service = [
                 "order_id" => $order->id,
                 "name" => $service->name,
@@ -165,12 +160,12 @@ class ServiceOrderController extends Controller
                 "price" => $service->price
             ];
 
-            $total_payment = $service->price+$shipping;
-    
+            $total_payment = $service->price + $shipping;
+
             $order_detail = OrderDetail::create($data_service);
-    
+
             $address = [];
-            if($request->has('latitude') && $request->has('longitude')){
+            if ($request->has('latitude') && $request->has('longitude')) {
                 $address = [
                     "name" => $request->map_address,
                     "lat" => $request->latitude,
@@ -189,7 +184,7 @@ class ServiceOrderController extends Controller
             $data_payment = [
                 "customer_id" => $order->customer->id,
                 "amount" => $total_payment,
-                "paymentid" => "P".uniqid(),
+                "paymentid" => "P" . uniqid(),
                 "type" => $request->input('payment_gateway'),
                 "orders" => $list_order,
             ];
@@ -202,15 +197,13 @@ class ServiceOrderController extends Controller
             DB::commit();
 
             return redirect()->route('service_order.index')
-                        ->with('success','Data berhasil ditambahkan');
-
+                ->with('success', 'Data berhasil ditambahkan');
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
             dd($th->getMessage());
             return redirect()->route('service_order.index')
-            ->with('error','Opps, Terjadi kesalahan.');
-
+                ->with('error', 'Opps, Terjadi kesalahan.');
         }
 
         // $insert = ServiceOrder::create($data);
@@ -238,25 +231,24 @@ class ServiceOrderController extends Controller
         $orderid = $request->get('orderid');
         $status = $request->get('status');
 
-        if(empty($orderid) || empty($status)){
-            return redirect()->back()->with('error','Terjadi kesalahan');
+        if (empty($orderid) || empty($status)) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan');
         }
 
         try {
             //code...
-            $order = Order::where('order_number',$orderid)->first();
+            $order = Order::where('order_number', $orderid)->first();
 
             // dd($status);
 
             $order->order_status = $status;
             $order->save();
-            
-            return redirect()->back()->with('success','Order berhasil diupdate');
-            
+
+            return redirect()->back()->with('success', 'Order berhasil diupdate');
         } catch (\Throwable $th) {
             //throw $th;
             dd($th->getMessage());
-            return redirect()->back()->with('error','Terjadi kesalahan data');
+            return redirect()->back()->with('error', 'Terjadi kesalahan data');
         }
     }
 
@@ -264,35 +256,30 @@ class ServiceOrderController extends Controller
     {
         //
         $order = Order::find($id);
-        if(is_null($order)){
-            return redirect()->back()->with('error','Data tidak ditemukan');
+        if (is_null($order)) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
-        if($order->order_status==null){
+        if ($order->order_status == null) {
             $status = "-";
-        }elseif($order->order_status=="waiting_payment"){
+        } elseif ($order->order_status == "waiting_payment") {
             $status = '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
-        }elseif ($order->order_status=="payment_success") {
+        } elseif ($order->order_status == "payment_success") {
             $status = '<badge class="badge badge-info">Pembayaran Sukses</badge>';
-        }elseif ($order->order_status=="waiting_order") {
+        } elseif ($order->order_status == "waiting_order") {
             $status =  '<badge class="badge badge-info">Cari Teknisi</badge>';
-        }
-        elseif($order->order_status=="accepted") {
+        } elseif ($order->order_status == "accepted") {
             $status =  '<badge class="badge badge-primary">Diterima Teknisi</badge>';
-        }
-        elseif($order->order_status=="processed") {
+        } elseif ($order->order_status == "processed") {
             $status =  '<badge class="badge bg-indigo">Diproses</badge>';
-        }
-        elseif($order->order_status=="extend") {
+        } elseif ($order->order_status == "extend") {
             $status =  '<badge class="badge bg-navy">Extend</badge>';
-        }
-        elseif($order->order_status=="canceled") {
+        } elseif ($order->order_status == "canceled") {
             $status =  '<badge class="badge badge-danger">Dibatalkan</badge>';
-        }
-        elseif($order->order_status=="done") {
+        } elseif ($order->order_status == "done") {
             $status =  '<badge class="badge badge-success">Selesai</badge>';
         }
-        $payment = Payment::where('type_payment','order')->where('data_id',$order->order_number)->first();
-        return view('service_order.detail',compact('order','status','payment'));
+        $payment = Payment::where('type_payment', 'order')->where('data_id', $order->order_number)->first();
+        return view('service_order.detail', compact('order', 'status', 'payment'));
     }
 
     /**
@@ -308,8 +295,8 @@ class ServiceOrderController extends Controller
         $customers = User::Role('user')->get();
         $engineers = User::Role('teknisi')->get();
         $services = Service::all();
-        $status = ['pending','process','finish'];
-        return view('service_order.edit',compact('customers','engineers','services','service_order','status'));
+        $status = ['pending', 'process', 'finish'];
+        return view('service_order.edit', compact('customers', 'engineers', 'services', 'service_order', 'status'));
     }
 
     /**
@@ -331,12 +318,12 @@ class ServiceOrderController extends Controller
 
         $update = ServiceOrder::find($id)->update($request->all());
 
-        if($update){
+        if ($update) {
             return redirect()->route('service_order.index')
-                        ->with('success','Data berhasil diubah');
-        }else{
+                ->with('success', 'Data berhasil diubah');
+        } else {
             return redirect()->route('service_order.index')
-                        ->with('error','Opps, Terjadi kesalahan.');
+                ->with('error', 'Opps, Terjadi kesalahan.');
         }
     }
 
@@ -354,7 +341,8 @@ class ServiceOrderController extends Controller
         return Response()->json($delete);
     }
 
-    public function update_waiting_order($order_id){
+    public function update_waiting_order($order_id)
+    {
         try {
             //code...
             $order = Order::find($order_id);
@@ -362,56 +350,64 @@ class ServiceOrderController extends Controller
             $order->save();
 
             $users = User::Role('teknisi')
-                                ->where('verified',true)
-                                ->whereNotNull('fcm_token')
-                                ->where('on_progress',false)
-                                ->get();
+                ->where('verified', true)
+                ->whereNotNull('fcm_token')
+                ->where('on_progress', false)
+                ->get();
 
             $token_technician = $users->pluck('fcm_token')->toArray();
 
             fcm()->to($token_technician)
-            ->priority('high')
-            ->timeToLive(60)
-            ->data([
-                'click_action' => "FLUTTER_NOTIFICATION_CLICK",
-                'main_click_action' => "OPEN_INCOMING_ORDER",
-                'action_data' => [
-                    "task" => "SHOW_INCOMING_ORDER",
-                    "order_id" => $order->order_number,
-                    "duration" => 30
-                ]
-            ])
-            ->notification([
-                'title' => 'New Order',
-                'body' => ucfirst($order->order_type)." Order",
-            ])
-            ->send();
-            
-            return response()->json(["success"=>true,"message"=>"update successfully"]);
+                ->priority('high')
+                ->timeToLive(60)
+                ->data([
+                    'click_action' => "FLUTTER_NOTIFICATION_CLICK",
+                    'main_click_action' => "OPEN_INCOMING_ORDER",
+                    'action_data' => [
+                        "task" => "SHOW_INCOMING_ORDER",
+                        "order_id" => $order->order_number,
+                        "duration" => 30
+                    ]
+                ])
+                ->notification([
+                    'title' => 'New Order',
+                    'body' => ucfirst($order->order_type) . " Order",
+                ])
+                ->send();
 
+            return response()->json(["success" => true, "message" => "update successfully"]);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["success"=>false,"message"=>$th->getMessage()]);
+            return response()->json(["success" => false, "message" => $th->getMessage()]);
         }
     }
 
-    public function cancel_order(Request $request,$id)
+    public function cancel_order(Request $request, $id)
     {
         try {
             //code...
+
+            DB::beginTransaction();
+
             $order = Order::find($id);
-            $order->order_status = "canceled";
+
+            $engineers = User::find($order->engineer_id);
+            $engineers->on_progress = false;
+            $engineers->save();
+
             $order->is_extend = 0;
-            $order->engineer->on_progress = false;
+            $order->order_status = "canceled";
+            $order->engineer_id = null;
             $order->save();
-            $order->engineer->save();
 
-            toast('Order berhasil di cancel','success');
+            DB::commit();
 
-            return redirect()->route('service_order.show',$id);
+            toast('Order berhasil di cancel', 'success');
 
+            return redirect()->route('service_order.show', $id);
         } catch (\Throwable $th) {
             //throw $th;
+            DB::rollback();
             dd($th->getMessage());
         }
     }

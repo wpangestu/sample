@@ -67,7 +67,7 @@
                       {!! label_payment($payment->status??'') !!}
                       @isset($payment->status)
                         
-                      / PaymentId : <a href="{{ route('payment.order.detail',$order->id) }}" target="_blank" rel="noopener noreferrer">{{ $payment->paymentid }}</a>
+                      <!-- / PaymentId : <a href="{{ route('payment.order.detail',$payment->id) }}" target="_blank" rel="noopener noreferrer">{{ $payment->paymentid }}</a> -->
                       @endisset
                     </div>                    
                   </div>                
