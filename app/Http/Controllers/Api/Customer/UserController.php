@@ -1085,13 +1085,15 @@ class UserController extends Controller
 
             $review = [
                 "value" => 0,
-                "liked" => []
+                "liked" => [],
+                "review_reason" => ""
             ];
             $reviewData = ReviewService::where('order_number_id', $order->order_number)->first();
             if (isset($reviewData)) {
                 $review = [
                     "value" => (float)$reviewData->ratings ?? 0,
-                    "liked" => $reviewData->liked
+                    "liked" => $reviewData->liked??[],
+                    "review_reason" => $reviewData->description??""
                 ];
             }
 

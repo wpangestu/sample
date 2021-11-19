@@ -165,7 +165,8 @@ class TransactionController extends Controller
                 ],
                 "review" => [
                     "value" => $order->review->ratings??0,
-                    "liked" => $order->review->liked??[]
+                    "liked" => $order->review->liked??[],
+                    "review_reason" => $order->review->description??"",
                 ],
                 "address" => [
                     "latitude" => (float)json_decode($order->address)->latitude??0,
