@@ -462,6 +462,30 @@ class TransactionController extends Controller
         }
     }
 
+    public function cancel_order($id){
+        try {
+            //code...
+            $order = Order::where('order_number',$id)->first();
+
+            DB::beginTransaction();
+            $engineers = User::find($order->engineer_id);
+            $engineers->on_progress = false;
+            $engineers->save();
+
+            $order->is_extend = 0;
+            $order->order_status = "canceled";
+            $order->engineer_id = null;
+            $order->save();
+            DB::commit();
+
+            return response()->json(["message" => "Order Canceled"]);            
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
+        }
+    }
+
     public function order_process($id){
         try {
             //code...
