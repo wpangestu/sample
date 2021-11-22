@@ -190,6 +190,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::post('/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
         Route::get('/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
         
+        
         Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
         Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
         Route::post('order/checkout/custom', [CustomerUserController::class, 'custom_order_checkout']);
