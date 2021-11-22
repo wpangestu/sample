@@ -197,6 +197,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::post('order/payment-approval/{id}', [CustomerUserController::class, 'payment_approval_store']);
         Route::get('order/{id}', [CustomerUserController::class, 'order']);
         
+        Route::post('user/change-password',[UserController::class,'change_password_user']);
         Route::post('user/change-profile-photo',[UserController::class,'update_user_profile']);
 
         Route::get('transaction',[CustomerUserController::class,'transaction']);
