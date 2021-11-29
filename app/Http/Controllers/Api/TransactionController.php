@@ -11,6 +11,7 @@ use App\Models\Chatroom;
 use App\Models\BaseService;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\ReviewService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -152,6 +153,21 @@ class TransactionController extends Controller
             }
 
             $order = Order::where('order_number',$id)->first();
+            
+            $review = [
+                "value" => 0,
+                "liked" => [],
+                "review_reason" => ""
+            ];
+
+            $reviewData = ReviewService::where('order_number_id', $order->order_number)->first();
+            if (isset($reviewData)) {
+                $review = [
+                    "value" => (float)$reviewData->ratings ?? 0,
+                    "liked" => $reviewData->liked??[],
+                    "review_reason" => $reviewData->description??""
+                ];
+            }
 
             $response = [
                 "id" => $order->order_number,
@@ -163,11 +179,7 @@ class TransactionController extends Controller
                     "name" => $order->customer->name,
                     "avatar" => $order->customer->profile_photo_path??""
                 ],
-                "review" => [
-                    "value" => (float)$order->review->ratings??0,
-                    "liked" => $order->review->liked??[],
-                    "review_reason" => $order->review->description??"",
-                ],
+                "review" => $review,
                 "address" => [
                     "latitude" => (float)json_decode($order->address)->latitude??0,
                     "longitude" => (float)json_decode($order->address)->longitude??0,
