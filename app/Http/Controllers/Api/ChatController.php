@@ -338,7 +338,7 @@ class ChatController extends Controller
                     $chat_data = [
                         "message" => $chat->message,
                         "media" => $chat->media,
-                        "from" => $chat->from,
+                        "from" => (int)$chat->from,
                         "is_me" => $user_id==$chat->from?true:false,
                         "created_at" => $chat->created_at
                     ];
@@ -397,7 +397,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "message" => $value->message,
                         "media" => $value->media??"",
-                        "from" => $value->from,
+                        "from" => (int)$value->from,
                         "is_me" => $value->from==$user_id?true:false,
                         "created_at" => $value->created_at
                     ];
@@ -448,7 +448,7 @@ class ChatController extends Controller
                         "id" => $value->id,
                         "message" => $value->message,
                         "media" => $value->media??'',
-                        "from" => $value->from,
+                        "from" => (int)$value->from,
                         "is_me" => $value->from==$user_id?true:false,
                         "created_at" => $value->created_at
                     ];
@@ -637,7 +637,7 @@ class ChatController extends Controller
                             "id" => $value->id,
                             "message" => $value->message,
                             "media" => $value->media??'',
-                            "from" => $value->from,
+                            "from" => (int)$value->from,
                             "is_me" => $value->from === auth()->user()->id ? true:false,
                             "created_at" => $value->created_at
                         ];
