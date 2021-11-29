@@ -417,8 +417,8 @@ class UserController extends Controller
                     "address" => $val->address,
                     "description" => $val->note,
                     "geometry" => [
-                        "lat" => $val->lat,
-                        "lng" => $val->lng
+                        "lat" => (float)$val->lat,
+                        "lng" => (float)$val->lng
                     ]
                 ];
             }
@@ -598,8 +598,8 @@ class UserController extends Controller
 
                 $address = [
                     "name" => $user_address->address,
-                    "lat" => $user_address->lat,
-                    "lng" => $user_address->lng,
+                    "lat" => (float)$user_address->lat,
+                    "lng" => (float)$user_address->lng,
                     "notes" => $user_address->note
                 ];
             } else {
