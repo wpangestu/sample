@@ -33,8 +33,8 @@ class UserAddressController extends Controller
                 "address" => $val->address,
                 "description" => $val->note,
                 "geometry" => [
-                    "lat" => $val->lat,
-                    "lng" => $val->lng
+                    "lat" => (float)$val->lat,
+                    "lng" => (float)$val->lng
                 ]
             ];
         }
