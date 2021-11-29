@@ -242,7 +242,7 @@ class ChatController extends Controller
             if($total > 0){
                 foreach ($data as $key => $value) {
                     # code...
-                    if($value->user_1 === $user_id){
+                    if($value->user_1 == $user_id){
                         $name = $value->user_2_data->name??"";
                         $pinned = $value->pinned_user_1;
                     }else{
@@ -269,7 +269,7 @@ class ChatController extends Controller
                     }
                     $chatroom_t = [
                         "id" => $value->id,
-                        "name" => $name,
+                        "name" => $value->user_1==$user_id?$value->user_2_data->name:$value->user_1_data->name,
                         "unread_count" => (int)$unread_message,
                         "avatar" => $value->user_1==$user_id?$value->user_2_data->profile_photo_path??'-':$value->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
@@ -322,7 +322,7 @@ class ChatController extends Controller
             if($total > 0){
                 foreach ($data as $key => $value) {
                     # code...
-                    if($value->user_1 === $user_id){
+                    if($value->user_1 == $user_id){
                         $name = $value->user_2_data->name??"";
                         $pinned = $value->pinned_user_1;
                     }else{
@@ -638,7 +638,7 @@ class ChatController extends Controller
                             "message" => $value->message,
                             "media" => $value->media??'',
                             "from" => (int)$value->from,
-                            "is_me" => $value->from === auth()->user()->id ? true:false,
+                            "is_me" => $value->from == auth()->user()->id ? true:false,
                             "created_at" => $value->created_at
                         ];
                     }
