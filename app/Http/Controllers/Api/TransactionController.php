@@ -164,7 +164,7 @@ class TransactionController extends Controller
                     "avatar" => $order->customer->profile_photo_path??""
                 ],
                 "review" => [
-                    "value" => $order->review->ratings??0,
+                    "value" => (float)$order->review->ratings??0,
                     "liked" => $order->review->liked??[],
                     "review_reason" => $order->review->description??"",
                 ],

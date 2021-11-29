@@ -840,7 +840,7 @@ class UserController extends Controller
                     "technician_id" => (int)$engineer->userid ?? 0,
                     "name" => $engineer->name ?? '',
                     "media" => $engineer->profile_photo_path ?? '',
-                    "rating" => $engineer->rating??0
+                    "rating" => (float)$engineer->rating??0
                 ];
 
                 $origin = [
@@ -1070,7 +1070,7 @@ class UserController extends Controller
                     "technician_id" => (int)$order->engineer->id,
                     "name" => $order->engineer->name,
                     "media" => $order->engineer->profile_photo_path ?? '',
-                    "rating" => $order->engineer->rating??0
+                    "rating" => (float)$order->engineer->rating??0
                 ];
             }
 
@@ -1282,7 +1282,7 @@ class UserController extends Controller
                     "technician_id" => (int)$value->engineer->id,
                     "name" => $value->engineer->name,
                     "media" => $value->engineer->profile_photo_path ?? '',
-                    "rating" => $value->engineer->rating??0
+                    "rating" => (float)$value->engineer->rating??0
                 ];
             }
 
