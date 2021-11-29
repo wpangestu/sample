@@ -269,7 +269,7 @@ class ChatController extends Controller
                     }
                     $chatroom_t = [
                         "id" => $value->id,
-                        "name" => $value->user_1==$user_id?$value->user_2_data->name:$value->user_1_data->name,
+                        "name" => $name,
                         "unread_count" => (int)$unread_message,
                         "avatar" => $value->user_1==$user_id?$value->user_2_data->profile_photo_path??'-':$value->user_1_data->profile_photo_path??'-',
                         "pinned" => (boolean)$pinned,
@@ -380,6 +380,10 @@ class ChatController extends Controller
             $chatroom = Chatroom::find($id);
             $page = $request->has('page') ? $request->get('page') : 1;
             $limit = $request->has('size') ? $request->get('size') : 10;
+
+            Chat::where('chatroom_id',$chatroom->id)
+                        ->where('to',$user_id)
+                        ->update(['read'=>true]);
             
             $new_data = [];
             if(!empty($chatroom)){
@@ -390,7 +394,7 @@ class ChatController extends Controller
                 $data = $chat_data->get();
                 $total = $chat_data->count();
                 
-    
+                
                 foreach ($data as $key => $value) {
                     # code...
                     $t_data = [
