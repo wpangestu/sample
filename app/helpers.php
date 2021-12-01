@@ -108,6 +108,6 @@ function label_payment($status){
     elseif($status === 'success'){
         return '<span class="badge badge-success">Sukses</span>';
     }else{
-        return "-";        
+        return '<span class="badge badge-secondary">Tidak Ada Pembayaran</span>';
     }
 }

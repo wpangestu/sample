@@ -102,7 +102,7 @@
                         <button id="btn_cancel_order" class="btn btn-sm btn-danger"><i class="fa fa-times-circle"></i> Cancel Order</button>
                       </div>
                       @endif
-                      @if($order->order_status === "canceled")
+                      @if($order->order_status === "canceled" && ($payment->status??"-") === "success" )
                       <div class="form-group">
                         <label for="">Aksi</label><br>
                         <button id="btn_search_technician" class="btn btn-sm btn-info"><i class="fa fa-search"></i> Cari Teknisi Lain</button>
