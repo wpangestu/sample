@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Customer;
 
 use JWTAuth;
+use Exception;
 use Carbon\Carbon;
 use App\Models\Bank;
 use App\Models\User;
@@ -19,6 +20,7 @@ use App\Models\UserAddress;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ReviewService;
+use App\Services\AuthService;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -26,12 +28,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     //
+
+    protected $authService;
+
+    public function __construct(AuthService $authService){
+        $this->authService = $authService;
+    } 
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -102,109 +111,36 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request)
-    {
-
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
-            'device_id' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->all()[0]], 422);
-        }
-
-        $email_check = User::where('email', $request->get('email'))->first();
-
-        if ($request->has('id_google')) {
-
-            $id_google = $request->get('id_google');
-            $email = $request->get('email');
-
-            $user = User::where('id_google', $id_google)->where('email', $email)->first();
-            if (is_null($user) && is_null($email_check)) {
-                return response()->json(["message" => "Akun belum terdaftar"], 424);
-            } elseif (is_null($user)) {
-                return response()->json(["message" => "Akun tidak ditemukan"], 425);
-            } else {
-
-                try {
-                    $token = JWTAuth::fromUser($user);
-                } catch (JWTException $e) {
-                    return response()->json(['error' => 'could_not_create_token'], 422);
-                }
-
-                $payload = JWTAuth::setToken($token)->getPayload();
-                $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
-
-                $user->last_login = date('Y-m-d H:i:s');
-                if(is_null($user->device_id)){
-                    $user->device_id = $request->device_id;
-                }
-                $user->save();
-
-                $data['message'] = "Login successfully";
-                // $data['data'] = $user;
-                $data['token'] = $token;
-                $data['valid_until'] = $expires_at;
-                $data['token_type'] = "Bearer";
-
-                return response()->json($data);
-            }
-        } else {
-
-            if (is_null($email_check)) {
-                return response()->json(['message' => 'Email belum terdaftar'], 423);
-            }
-
-            $validator = Validator::make($request->all(), [
-                'password' => 'required|string|min:6',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(["message" => $validator->errors()->all()[0]], 422);
-            }
-            $credentials = $request->only('email', 'password');
-        }
+    public function login(Request $request){
 
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
+            //code...
+            if ($request->has('id_google')) {
+
+                $requestLogin = $request->only(['email','id_google','device_id']);
+                $userLogin = $this->authService->loginByGoogleId($requestLogin);
+    
+            }else{
+    
+                $requestLogin = $request->only(['email','password','device_id']);
+                $userLogin = $this->authService->login($requestLogin);
             }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 422);
-        }
-
-        $user = $email_check;
-
-        if ($user && Hash::check($credentials['password'], $user->password)) {
-
-            if ($user->hasRole('teknisi')) {
-                return response()->json(['message' => 'Akun anda terdaftar sebagai akun teknisi, gunakan aplikasi Benerin teknisi'], 422);
-            }
-            if ($user->hasAnyRole(['admin', 'superadmin', 'cs'])) {
-                return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
-            }
-
-            $payload = JWTAuth::setToken($token)->getPayload();
-            $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
-
-            $user->last_login = date('Y-m-d H:i:s');
-            if(is_null($user->device_id)){
-                $user->device_id = $request->device_id;
-            }
-            $user->save();
-
+    
+            $tokenUser = $this->authService->generateToken($userLogin);
+    
             $data['message'] = "Login successfully";
-            // $data['data'] = $user;
-            $data['token'] = $token;
-            $data['valid_until'] = $expires_at;
-            $data['token_type'] = "Bearer";
-
+            $data['token'] = $tokenUser['token'];
+            $data['valid_until'] = $tokenUser['expired_at'];
+            $data['token_type'] = $tokenUser['token_type'];
+            $data['nice'] = "from new function";
+    
             return response()->json($data);
-        } else {
-            return response()->json(['message' => 'Opps... email atau kata sandi salah'], 422);
+
+        } catch (Exception $e) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
         }
+
     }
 
     public function check_valid(Request $request)
