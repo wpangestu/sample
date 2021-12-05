@@ -7,26 +7,24 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Bank;
 use App\Models\User;
-use App\Mail\OtpMail;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Deposit;
 use App\Models\Payment;
-use App\Models\Service;
 use App\Models\Withdraw;
+use App\Jobs\SendEmailJob;
 use App\Models\BaseService;
 use App\Models\OrderDetail;
 use App\Models\UserAddress;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Jobs\SendEmailOtpJob;
 use App\Models\ReviewService;
 use App\Services\AuthService;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
@@ -39,76 +37,29 @@ class UserController extends Controller
 
     public function __construct(AuthService $authService){
         $this->authService = $authService;
-    } 
+    }
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'phone' => 'required',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'id_google' => 'nullable'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->all()[0]], 422);
-        }
-
-        $otp = mt_rand(1000, 9999);
-
-        $cek = true;
-        while ($cek) {
-            # code...
-            $userid = mt_rand(100000, 999999);
-            $cek_id = User::where('userid', $userid)->first();
-            if (empty($cek_id)) {
-                $cek = false;
-            }
-        }
-
         try {
-            //code...
+            $requestRegister = $request->only(['name','email','phone','password','id_google']);
+            $userRegister = $this->authService->registerCustomer($requestRegister);
+            $tokenUser = $this->authService->generateToken($userRegister);
 
-            DB::beginTransaction();
+            $emailJobs = new SendEmailOtpJob($requestRegister['email'],$userRegister->code_otp);
+            $this->dispatch($emailJobs);
 
-            $user = User::create([
-                'code_otp'          => $otp,
-                'name'              => $request->get('name'),
-                'email'             => $request->get('email'),
-                "phone"             => $request->get('phone'),
-                'userid'            => $userid,
-                'password'          => Hash::make($request->get('password')),
-                'id_google'         => $request->get('id_google') ?? null
-            ]);
-
-            $user->last_login = date('Y-m-d H:i:s');
-            $user->save();
-
-            $user->assignRole('user');
-
-            $credentials = $request->only('email', 'password');
-            $token = JWTAuth::attempt($credentials);
-
-            $payload = JWTAuth::setToken($token)->getPayload();
-            $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
-
-            DB::commit();
-
-            \Mail::to($request->get('email'))
-                ->send(new \App\Mail\OtpMail($otp));
-
-            $data['message'] = "Register berhasil";
-            $data['token'] = $token;
-            $data['token_type'] = "Bearer";
-            $data['valid_until'] = $expires_at;
-
+            $data['message'] = "Register successfully";
+            $data['token'] = $tokenUser['token'];
+            $data['valid_until'] = $tokenUser['expired_at'];
+            $data['token_type'] = $tokenUser['token_type'];
+    
             return response()->json($data, 200);
-        } catch (\Throwable $th) {
-            //throw $th;
-            DB::rollback();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+
+        } catch (Exception $e) {
+            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);   
         }
+
     }
 
     public function login(Request $request){

@@ -17,4 +17,16 @@ class UserRepository
     {
         return $this->user->where('email',$email)->first();
     }
+
+    public function getByUserid($userid): ?User
+    {
+        return $this->user->where('userid',$userid)->first();
+    }
+
+    public function save($data): User
+    {
+        return $this->user->create($data);
+    }
+
+
 }

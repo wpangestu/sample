@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Repositories\UserRepository;
 use Exception;
-use Illuminate\Support\Facades\Validator;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthService
 {
@@ -91,5 +93,68 @@ class AuthService
         ];
     }
 
+    public function registerCustomer($data) : User
+    {
+        $validator = Validator::make($data, [
+            'name' => 'required|string|max:255',
+            'phone' => 'required',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6',
+            'id_google' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first(),422);
+        }
+        
+        try {
+
+            DB::beginTransaction();
+
+            $genereateUniqeUserid = $this->getUniqueUserid();
+
+            $dataUser = [
+                'code_otp'          => mt_rand(1000, 9999),
+                'name'              => $data['name'],
+                'email'             => $data['email'],
+                "phone"             => $data['phone'],
+                'userid'            => $genereateUniqeUserid,
+                'password'          => Hash::make($data['password']),
+                'id_google'         => $data['id_google'] ?? null
+            ];
+
+            $userCustomer = $this->userRepository->save($dataUser);
+
+            $userCustomer->last_login = date('Y-m-d H:i:s');
+            $userCustomer->save();
+            $userCustomer->assignRole('user');
+            
+            DB::commit();
+            
+            return $userCustomer;
+
+        } catch (Exception $e) {
+            //throw $th;
+            DB::rollback();
+            throw new Exception($e->getMessage(),422);
+        }
+
+    }
+
+    public function getUniqueUserid(): int
+    {
+        $check = true;
+
+        while ($check) {
+            # code...
+            $userid = mt_rand(100000, 999999);
+            $checkUser = $this->userRepository->getByUserid($userid);
+            if (empty($checkUser)) {
+                $check = false;
+            }
+        }
+
+        return $userid;
+    }
 
 }

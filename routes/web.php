@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Jobs\SendEmailJob;
+use App\Jobs\SendEmailOtpJob;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\BankController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ReviewServiceController;
 use App\Http\Controllers\CategoryServiceController;
 use App\Http\Livewire\Members; //Load class Members 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,15 +40,10 @@ use App\Http\Livewire\Members; //Load class Members
 Route::get('/', function () {
     return redirect('login');
 });
-// Route::get('/cek', function () {
-//     try {
-//         //code...
-//     } catch (\Throwable $th) {
-//         //throw $th;
-//         dd($th);
-//     }
-
-// });
+Route::get('/cek', function(){
+    // $data = ['email'=>"wahyu@asdasd.com","otp"=>"2121"];
+    dispatch(new SendEmailJob());
+});
 
 Route::get('/symlink', function(){
     try {
