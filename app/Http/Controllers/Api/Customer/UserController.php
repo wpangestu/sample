@@ -112,36 +112,23 @@ class UserController extends Controller
         }
     }
 
-
     public function request_otp(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->all()[0]], 422);
-        }
-
         try {
 
-            $user = User::where('email', $request->get('email'))->first();
+            $requestOtp = $request->only(['email']);
 
-            if (is_null($user)) {
-                $message = 'Email tidak ditemukan';
-                return response()->json(["message" => $message], 422);
-            } else {
-                $newotp = mt_rand(1000, 9999);
-                $user->code_otp = $newotp;
-                $user->save();
+            $otpUser = $this->authService->generateNewOtpUser($requestOtp);
+    
+            $emailJobs = new SendEmailOtpJob($requestOtp['email'],$otpUser);
+            $this->dispatch($emailJobs);
+    
+            $message = "Kode Otp sudah dikirim ke email anda";
+            return response()->json(["message" => $message], 200);
 
-                \Mail::to($request->get('email'))
-                    ->send(new \App\Mail\OtpMail($newotp));
-                $message = "Kode Otp sudah dikirim ke email anda";
-                return response()->json(["message" => $message], 200);
-            }
-        } catch (\Throwable $th) {
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        } catch (Exception $e) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
         }
     }
 

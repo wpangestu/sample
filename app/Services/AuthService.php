@@ -172,4 +172,26 @@ class AuthService
         }
         return false;
     }
+
+    public function generateNewOtpUser($data) : int
+    {
+        $validator = Validator::make($data,[
+            'email' => 'required|email'
+        ]);
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first(),422);
+        }
+
+        $user = $this->userRepository->getByEmail($data['email']);
+
+        if(empty($user)){
+            throw new Exception("Email not found",422);
+        }
+
+        $newOtp = (int)mt_rand(1000, 9999);
+        $user->code_otp = $newOtp;
+        $user->save();
+
+        return $newOtp;
+    }
 }
