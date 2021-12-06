@@ -157,4 +157,19 @@ class AuthService
         return $userid;
     }
 
+    public function checkValidDeviceId($data): bool
+    {
+        $validator = Validator::make($data,[
+            'device_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first(),422);
+        }
+
+        if($data['device_id'] == auth()->user()->device_id){
+            return true;
+        }
+        return false;
+    }
 }

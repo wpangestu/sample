@@ -97,15 +97,18 @@ class UserController extends Controller
     public function check_valid(Request $request)
     {   
         try{            
-            $device_id = $request->device_id;
-            if($device_id === auth()->user()->device_id){
+
+            $requestCheckValid = $request->only(['device_id']);
+            $checkValid = $this->authService->checkValidDeviceId($requestCheckValid);
+
+            if($checkValid){
                 return response()->json(['message' => 'Device id correct'], 200);
             }else{
                 return response()->json(['message' => 'You have logged in other device'], 422);
             }
         
-        } catch (\Throwable $th) {
-                return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        } catch (Exception $e) {
+            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
         }
     }
 
