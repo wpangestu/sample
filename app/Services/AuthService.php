@@ -87,7 +87,7 @@ class AuthService
         $expired_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
         return [
-            "token" => $token,
+            "token"      => $token,
             "expired_at" => $expired_at,
             "token_type" => "Bearer"
         ];
@@ -96,10 +96,10 @@ class AuthService
     public function registerCustomer($data) : User
     {
         $validator = Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'phone' => 'required',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+            'name'      => 'required|string|max:255',
+            'phone'     => 'required',
+            'email'     => 'required|string|email|max:255|unique:users',
+            'password'  => 'required|string|min:6',
             'id_google' => 'nullable'
         ]);
 
@@ -193,5 +193,30 @@ class AuthService
         $user->save();
 
         return $newOtp;
+    }
+
+    public function confirmationOtp($data):bool
+    {
+        $validator = Validator::make($data,[
+            'email' => 'required|email',
+            'code_otp' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first(),422);
+        }
+
+        $user = $this->userRepository->getByEmail($data['email']);
+
+        if(empty($user)){
+            throw new Exception("Email not found", 422);
+        }
+
+        if($user->code_otp == $data['code_otp']){
+            $user->email_verified_at = date('Y-m-d H:i:s');
+            $user->save();
+            return true;
+        }
+        return false;
     }
 }
