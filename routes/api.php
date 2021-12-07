@@ -47,7 +47,7 @@ Route::prefix('customer')->group(function () {
     Route::post('/user/register/request-otp', [CustomerUserController::class,'request_otp']);
     Route::post('/user/register/confirmation-otp', [CustomerUserController::class,'confirmation_otp']);
     Route::post('/user/forgot-password', [UserController::class,'forgot_password']);
-    Route::post('/user/forgot-password/input-otp', [CustomerUserController::class,'forgot_password_input_otp']);
+    Route::post('/user/forgot-password/input-otp', [CustomerUserController::class,'confirmation_otp']);
     Route::put('/user/forgot-password/change-password', [UserController::class,'change_password']);
 
     Route::get('/service/category', [CustomerUserController::class, 'service_category']);

@@ -154,42 +154,10 @@ class UserController extends Controller
         }
     }
 
+    // Same with confirmation otp
     public function forgot_password_input_otp(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'code_otp' => 'required'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->all()[0]], 422);
-        }
-
-        $email = $request->get('email');
-        $code_otp = $request->get('code_otp');
-
-        try {
-            //code...
-            $user = User::where('email', $email)->first();
-
-            if (is_null($user)) {
-                $message = 'Email tidak ditemukan';
-                return response()->json(["message" => $message], 422);
-            } else {
-                if ($user->code_otp === $code_otp) {
-                    $message = 'konfirmasi kode otp berhasil';
-                    $user->save();
-                    $kode = 200;
-                } else {
-                    $message = 'kode otp salah';
-                    $kode = 423;
-                }
-                return response()->json(['message' => $message], $kode);
-            }
-        } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
-        }
+        $this->confirmation_otp($request);
     }
 
     public function show()
