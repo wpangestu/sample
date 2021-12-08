@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Models\UserAddress;
 
 class UserRepository
 {
@@ -26,6 +27,20 @@ class UserRepository
     public function save($data): User
     {
         return $this->user->create($data);
+    }
+
+    public function getUserFromToken():User
+    {
+        return auth()->user();
+    }
+
+    public function getUserTopAddress(int $limit)
+    {
+        $user = $this->getUserFromToken();
+        
+        $topAddressUser = UserAddress::where('user_id',$user->id)->limit($limit);
+
+        return $topAddressUser;
     }
 
 

@@ -24,6 +24,7 @@ use App\Services\AuthService;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,140 +33,18 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     //
+    protected $userService;
 
-    protected $authService;
-
-    public function __construct(AuthService $authService){
-        $this->authService = $authService;
-    }
-
-    public function register(Request $request)
-    {
-        try {
-            $requestRegister = $request->only(['name','email','phone','password','id_google']);
-            $userRegister = $this->authService->registerCustomer($requestRegister);
-            $tokenUser = $this->authService->generateToken($userRegister);
-
-            $emailJobs = new SendEmailOtpJob($requestRegister['email'],$userRegister->code_otp);
-            $this->dispatch($emailJobs);
-
-            $data['message'] = "Register successfully";
-            $data['token'] = $tokenUser['token'];
-            $data['valid_until'] = $tokenUser['expired_at'];
-            $data['token_type'] = $tokenUser['token_type'];
-    
-            return response()->json($data, 200);
-
-        } catch (Exception $e) {
-            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);   
-        }
-
-    }
-
-    public function login(Request $request){
-
-        try {
-            //code...
-            if ($request->has('id_google')) {
-
-                $requestLogin = $request->only(['email','id_google','device_id']);
-                $userLogin = $this->authService->loginByGoogleId($requestLogin);
-    
-            }else{
-    
-                $requestLogin = $request->only(['email','password','device_id']);
-                $userLogin = $this->authService->login($requestLogin);
-            }
-    
-            $tokenUser = $this->authService->generateToken($userLogin);
-    
-            $data['message'] = "Login successfully";
-            $data['token'] = $tokenUser['token'];
-            $data['valid_until'] = $tokenUser['expired_at'];
-            $data['token_type'] = $tokenUser['token_type'];
-            $data['nice'] = "from new function";
-    
-            return response()->json($data);
-
-        } catch (Exception $e) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
-        }
-
-    }
-
-    public function check_valid(Request $request)
-    {   
-        try{            
-
-            $requestCheckValid = $request->only(['device_id']);
-            $checkValid = $this->authService->checkValidDeviceId($requestCheckValid);
-
-            if($checkValid){
-                return response()->json(['message' => 'Device id correct'], 200);
-            }else{
-                return response()->json(['message' => 'You have logged in other device'], 422);
-            }
-        
-        } catch (Exception $e) {
-            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
-        }
-    }
-
-    public function request_otp(Request $request)
-    {
-        try {
-
-            $requestOtp = $request->only(['email']);
-
-            $otpUser = $this->authService->generateNewOtpUser($requestOtp);
-    
-            $emailJobs = new SendEmailOtpJob($requestOtp['email'],$otpUser);
-            $this->dispatch($emailJobs);
-    
-            $message = "Kode Otp sudah dikirim ke email anda";
-            return response()->json(["message" => $message], 200);
-
-        } catch (Exception $e) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan : " . $e->getMessage()], $e->getCode()??422);
-        }
-    }
-
-    public function confirmation_otp(Request $request)
-    {
-        $requestConfirmationOtp = $request->only(['email','code_otp']);
-
-        try {
-
-            $confirmationOtp = $this->authService->confirmationOtp($requestConfirmationOtp);
-
-            if($confirmationOtp){
-                $message = "Konfirmasi kode otp berhasil";
-                return response()->json(["message" => $message]);
-            }else{
-                $message = "Kode otp salah";
-                return response()->json(["message" => $message],423);
-            }
-
-        } catch (Exception $e) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $e->getMessage()], $e->getCode()??422);
-        }
-    }
-
-    // Same with confirmation otp
-    public function forgot_password_input_otp(Request $request)
-    {
-        $this->confirmation_otp($request);
+    public function __constructor(UserService $userService){
+        $this->userService = $userService;
     }
 
     public function show()
     {
-        // dd('cek');
+
         try {
             //code...
-            $user = auth()->user();
+            $user = $this->userService->getUserFromToken();
 
             $response = [
                 "id" => $user->id,
@@ -175,13 +54,8 @@ class UserController extends Controller
                 "email" => $user->email
             ];
 
-            // return response()->json($data);
-            // $response->header('Content-Type', 'application/json');
-
-            // return $response;
-
             return response()->json($response);
-        } catch (\Throwable $th) {
+        } catch (Exception $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
@@ -189,26 +63,10 @@ class UserController extends Controller
 
     public function update(Request $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . auth()->user()->id,
-            'phone' => 'required|unique:users,phone,' . auth()->user()->id,
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors()->all()[0]], 422);
-        }
-
+        $requestUpdate = $request->only(['name','email','phone']);
         try {
             //code...
-            $user = auth()->user();
-
-            $user->name = $request->name;
-            $user->phone = $request->phone;
-            $user->email = $request->email;
-
-            $user->save();
+            $this->userService->updateBasicInfoUser($requestUpdate);
 
             return response()->json(["message" => "Data berhasil di update"]);
         } catch (\Throwable $th) {
@@ -221,7 +79,7 @@ class UserController extends Controller
     {
         try {
             //code...
-            $user = auth()->user();
+            $user = $this->userService->getUserFromToken();
 
             $balance = (int)$user->balance;
 
@@ -236,7 +94,7 @@ class UserController extends Controller
     {
         try {
             //code...
-            $data = UserAddress::where('user_id', auth()->user()->id)->latest()->limit(4);
+            $data = $this->userService->getTopUserAddress();
 
             $data_arr = [];
             foreach ($data->get() as $val) {
