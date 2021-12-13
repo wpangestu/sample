@@ -824,6 +824,17 @@ class TransactionController extends Controller
                         'body' => $body,
                     ])
                     ->send();
+
+            $admin = User::find(1);
+            $token_admin[] = $admin->fcm_token;
+            fcm()->to($token)
+                    ->priority('high')
+                    ->timeToLive(60)
+                    ->notification([
+                        'title' => "Order ".$id,
+                        'body' => "Status On Progress 3 Hari",
+                    ])
+                    ->send();
             
             return response()->json(["message" => "Order Extend"]);            
             
