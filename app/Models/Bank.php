@@ -14,7 +14,7 @@ class Bank extends Model
         'name',
         'logo',
         'is_active'
-    ];
+    ]; 
 
     protected static $logAttributes = ['name','created_at'];
     protected static $logName = 'banks';
