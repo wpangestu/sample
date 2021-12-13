@@ -26,7 +26,8 @@ class Payment extends Model
         'account_number',
         'bank_id',
         'type_payment',
-        'data_id'
+        'data_id',
+        'payment_method'
     ];
 
     public function customer(){

@@ -691,6 +691,7 @@ class UserController extends Controller
             $lng = $request->get('lng');
             $notes = $request->get('notes');
             $services = $request->get('services');
+            $payment_type = $request->get('payment_type');
 
             $address = [];
 
@@ -749,8 +750,12 @@ class UserController extends Controller
                 $engineer_id[] = $service->engineer_id;
             }
 
-            $shipping = 12000;
+            $shipping = 0;
             $unique_code = mt_rand(100, 999);
+            
+            if ($payment_type == "saldo") {
+                $unique_code = 0;
+            }
 
             $total_price = $total_service_price + $shipping + $unique_code;
 
@@ -766,7 +771,7 @@ class UserController extends Controller
                 "expired_date" => Carbon::now()->addHour()
             ]);
 
-            $payment_type = $request->get('payment_type');
+
 
             if ($payment_type == "saldo") {
 
@@ -776,6 +781,18 @@ class UserController extends Controller
 
                     $customer->balance -= $total_price;
                     $customer->save();
+
+                    Payment::create([
+                        "customer_id" => $customer->id,
+                        "amount" => $total_service_price,
+                        "paymentid" => "P" . uniqid(),
+                        "status" => "success",
+                        "type" => "saldo",
+                        "orders" => $order->order_number,
+                        "data_id" => $order->order_number,
+                        "payment_method" => "saldo"
+                    ]);
+
                 } else {
                     return response()->json(["message" => "Maaf saldo anda tidak mencukupi"], 422);
                 }
@@ -962,7 +979,7 @@ class UserController extends Controller
                 $total_service_price = $service->price;
             }
 
-            $shipping = 12000;
+            $shipping = 0;
             $unique_code = mt_rand(100, 999);
 
             $total_payment_receive = $service->price_receive;

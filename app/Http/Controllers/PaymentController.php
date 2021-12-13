@@ -20,7 +20,7 @@ class PaymentController extends Controller
     public function index()
     {
         //
-        $payment = Payment::with('customer')->latest()->get();
+        $payment = Payment::with('customer')->where('payment_method','bank-transfer')->latest()->get();
         return view('payment.index',compact('payment'));
     }
 
