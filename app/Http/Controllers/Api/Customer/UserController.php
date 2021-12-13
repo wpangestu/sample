@@ -626,7 +626,7 @@ class UserController extends Controller
                 }
             }
 
-            $shipping = 12000;
+            $shipping = 0;
             $unique_code = mt_rand(100, 999);
 
             $total_price = $total_service_price + $shipping + $unique_code;

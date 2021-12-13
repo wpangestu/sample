@@ -827,7 +827,7 @@ class TransactionController extends Controller
 
             $admin = User::find(1);
             $token_admin[] = $admin->fcm_token;
-            fcm()->to($token)
+            fcm()->to($token_admin)
                     ->priority('high')
                     ->timeToLive(60)
                     ->notification([
