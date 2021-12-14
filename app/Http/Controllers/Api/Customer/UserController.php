@@ -190,9 +190,7 @@ class UserController extends Controller
             $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
             $user->last_login = date('Y-m-d H:i:s');
-            if(is_null($user->device_id)){
-                $user->device_id = $request->device_id;
-            }
+            $user->device_id = $request->device_id;
             $user->save();
 
             $data['message'] = "Login successfully";

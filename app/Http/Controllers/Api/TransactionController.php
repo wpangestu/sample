@@ -826,6 +826,7 @@ class TransactionController extends Controller
                     ->send();
 
             $admin = User::find(1);
+            $token_admin = [];
             $token_admin[] = $admin->fcm_token;
             fcm()->to($token_admin)
                     ->priority('high')
