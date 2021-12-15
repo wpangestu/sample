@@ -49,8 +49,8 @@ class ServiceController extends Controller
 
             $data_map = $data->map(function($item,$key){
                 return [
-                    "id" => $item->id,
-                    "id_base_service" => $item->base_service_id??'',
+                    "id" => (int)$item->id,
+                    "id_base_service" => (int)$item->base_service_id??'',
                     "name" => $item->base_service->name??'',
                     'media' => $item->base_service->image??'',
                     'price' => (int)($item->base_service->price??0),
@@ -86,7 +86,7 @@ class ServiceController extends Controller
 
             $data = $baseService->map(function($item,$key){
                 return [
-                    "id" => $item->id,
+                    "id" => (int)$item->id,
                     "name" => $item->name,
                     "media" => $item->image??'',
                     "price" => (int)$item->price
@@ -243,8 +243,8 @@ class ServiceController extends Controller
             }
 
             $response = [
-                "id" => $data->id,
-                "id_base_service" => $data->base_service->id??'-',
+                "id" => (int)$data->id,
+                "id_base_service" => (int)$data->base_service->id??'-',
                 "name" => $data->base_service->name??'-',
                 "category" => $data->base_service->service_category->name??'-',
                 "skill" => $skill,
@@ -304,7 +304,7 @@ class ServiceController extends Controller
             $service = Service::find($id);
 
             $response = [
-                "id" => $service->id,
+                "id" => (int)$service->id,
                 "name" => $service->base_service->name??'-',
                 "media" => $service->base_service->image??'',
                 "price" => (int)$service->base_service->price??0,
@@ -313,7 +313,7 @@ class ServiceController extends Controller
                 "condition" => "new",
                 "description" => $service->base_service->description,
                 "category" => [
-                    "id" => $service->base_service->service_category->id,
+                    "id" => (int)$service->base_service->service_category->id,
                     "slug" => $service->base_service->service_category->slug,
                     "label" => $service->base_service->service_category->name,
                     "icon" => $service->base_service->service_category->icon??''
