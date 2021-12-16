@@ -173,11 +173,12 @@
 
   messaging.onMessage((payload) => {
     console.log('Message received. ', payload);
-    const action_data = JSON.parse(payload.data.action_data);
-    const type = action_data.data.role;
     const url = window.location.href;
 
     if(url.includes("{{ route('chat.index.engineer') }}")){
+
+      const action_data = JSON.parse(payload.data.action_data);
+      const type = action_data.data.role;
 
       $.ajax({
           url: "{{ route('ajax.chat.update.list_user') }}",
@@ -211,6 +212,10 @@
       }
     }
     else if(url.includes("{{ route('chat.index.customer') }}")){
+
+      const action_data = JSON.parse(payload.data.action_data);
+      const type = action_data.data.role;
+
       $.ajax({
         url: "{{ route('ajax.chat.update.list_user') }}",
         type: "POST",
