@@ -18,7 +18,7 @@ class ServiceController extends Controller
         $this->serviceService = $serviceService;
     }
 
-    public function serviceCategory()
+    public function service_category()
     {
         try {
             $serviceCategory = $this->serviceService->getServiceCategory();
@@ -165,6 +165,43 @@ class ServiceController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json("Terjadi kesalahan " . $th->getMessage(), 422);
+        }
+    }
+
+    public function get_custom_category(Request $request)
+    {
+        try {
+            //code...
+            $data = BaseService::whereHas('service_category', function ($query) {
+                $query->where('name', 'like', '%custom%');
+            });
+
+            $page = $request->has('page') ? $request->get('page') : 1;
+            $limit = $request->has('size') ? $request->get('size') : 10;
+            $service = $data->limit($limit)->offset(($page - 1) * $limit);
+            $datas = $service->get();
+            $total = $service->count();
+
+            $data_arr = [];
+            foreach ($datas as $key => $value) {
+                # code...
+                $data_arr[] = [
+                    "id" => $value->id,
+                    "name" => $value->name,
+                    "item_name" => "",
+                    "media" => $value->image
+                ];
+            }
+
+            $response['page'] = (int)$page;
+            $response['size'] = (int)$limit;
+            $response['total'] = (int)$total;
+            $response['data'] = $data_arr;
+
+            return response()->json($response);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
 }

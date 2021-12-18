@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\TransactionController;
 
+use App\Http\Controllers\Api\Customer\AuthController as CustomerAuthController;
+use App\Http\Controllers\Api\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Api\Customer\UserController as CustomerUserController;
 
 /*
@@ -42,19 +44,19 @@ Route::get('/testing', [UserController::class, 'index'])->name('api.testing');
 Route::get('/testing/email', [UserController::class, 'testing']);
 
 Route::prefix('customer')->group(function () {
-    Route::post('/user/register', [CustomerUserController::class,'register']);
-    Route::post('/user/login', [CustomerUserController::class,'login']);
-    Route::post('/user/register/request-otp', [CustomerUserController::class,'request_otp']);
-    Route::post('/user/register/confirmation-otp', [CustomerUserController::class,'confirmation_otp']);
+    Route::post('/user/register', [CustomerAuthController::class,'register']);
+    Route::post('/user/login', [CustomerAuthController::class,'login']);
+    Route::post('/user/register/request-otp', [CustomerAuthController::class,'request_otp']);
+    Route::post('/user/register/confirmation-otp', [CustomerAuthController::class,'confirmation_otp']);
     Route::post('/user/forgot-password', [UserController::class,'forgot_password']);
-    Route::post('/user/forgot-password/input-otp', [CustomerUserController::class,'confirmation_otp']);
+    Route::post('/user/forgot-password/input-otp', [CustomerAuthController::class,'confirmation_otp']);
     Route::put('/user/forgot-password/change-password', [UserController::class,'change_password']);
 
-    Route::get('/service/category', [CustomerUserController::class, 'service_category']);
     Route::get('/address/recommendation', [UserAddressController::class, 'recommendation']);
     Route::get('/bank/payment', [BankController::class, 'bank_payment']);
     
-    Route::get('/custom/category', [CustomerUserController::class, 'get_custom_category']);
+    Route::get('/service/category', [CustomerServiceController::class, 'service_category']);
+    Route::get('/custom/category', [CustomerServiceController::class, 'get_custom_category']);
 
 });
 
@@ -66,34 +68,22 @@ Route::get('teknisi/bank-account/bank', [BankController::class,'index']);
 Route::get('customer/bank-account/bank', [BankController::class,'index']);
 
 Route::middleware(['jwt.verify'])->group(function () {
-
     Route::post('teknisi/user/check-valid',[CustomerUserController::class,'check_valid']);
-
-    //Service
-    # TEKNISI
-
     Route::get('teknisi/service',[ServiceController::class,'index']);
-
     Route::get('teknisi/service-detail/{id}',[ServiceController::class,'show_service']);
     Route::post('teknisi/service',[ServiceController::class,'store']);
     Route::put('teknisi/service/{id}',[ServiceController::class,'update']);
     Route::get('teknisi/service/price-category',[ServiceController::class,'price_category']);
     Route::get('teknisi/service/{id}',[ServiceController::class,'show']);
     Route::delete('teknisi/service/{id}',[ServiceController::class,'destroy']);
-
-
-    // User
     Route::get('teknisi/user', [UserController::class,'userEngineer']);
     Route::post('teknisi/user', [UserController::class,'updateEngineer']);
     Route::post('teknisi/user/token', [UserController::class,'store_fcm_token']);
     Route::delete('teknisi/user/token', [UserController::class,'delete_fcm_token']);
     Route::get('teknisi/wallet/balance', [UserController::class,'EngineerBalance']);
     Route::post('teknisi/wallet/withdraw', [EngineerController::class,'withdraw']);
-
-
     Route::get('teknisi/bank-account', [BankController::class,'get_user_bank_account']);
     Route::post('teknisi/bank-account', [BankController::class,'store_user_bank_account']);
-
     Route::get('/teknisi/address', [UserAddressController::class, 'index']);
     Route::post('/teknisi/address', [UserAddressController::class, 'store']);
 
@@ -119,17 +109,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/history/chat/delete', [ChatController::class, 'delete_history_chat']);
     Route::post('/teknisi/history/chat/pin', [ChatController::class, 'pinned_history_chat']);
     
-
-    
     Route::post('/teknisi/chat/send', [ChatController::class, 'send_message']);
-    
-    // Route::get('customer/{id}',[CustomerController::class,'show']);
-    // Route::put('customer/{id}/update',[CustomerController::class,'update']);
-    
-    // Route::get('category_service',[CategoryServiceController::class,'index']);
-    // Route::get('service/category_service/{id}',[ServiceController::class,'getServiceByCategoryId']);
-    
-    // Route::get('engineer/{id}',[EngineerController::class,'show']);
     
     Route::get('/teknisi/transaction-summary',[TransactionController::class,'index']);
     Route::get('/teknisi/order/review',[TransactionController::class,'review']);
@@ -147,11 +127,9 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
     Route::post('/teknisi/user/change-profile-photo',[UserController::class,'update_user_profile']);
     
-
-    
     Route::prefix('customer')->group(function () {
 
-        Route::post('/user/check-valid',[CustomerUserController::class,'check_valid']);
+        Route::post('/user/check-valid',[CustomerAuthController::class,'check_valid']);
 
         Route::get('/user', [CustomerUserController::class,'showUser']);
         // Route::get('/user​', [CustomerUserController::class,'showUser']);
@@ -170,10 +148,9 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::put('/address/{id}', [UserAddressController::class, 'update']);
         Route::delete('/address/{id}', [UserAddressController::class, 'destroy']);
         
-        Route::get('/service', [CustomerUserController::class, 'service']);
-
-        Route::get('/service/recommendation', [CustomerUserController::class, 'service_recommendation']);
-        Route::get('/service/{id}', [CustomerUserController::class, 'service_detail']);
+        Route::get('/service', [CustomerServiceController::class, 'service']);
+        Route::get('/service/recommendation', [CustomerServiceController::class, 'service_recommendation']);
+        Route::get('/service/{id}', [CustomerServiceController::class, 'service_detail']);
 
         Route::get('/chat/support', [ChatController::class, 'get_support_chat']);
         Route::post('/chat/support', [ChatController::class, 'send_chat_support']);
