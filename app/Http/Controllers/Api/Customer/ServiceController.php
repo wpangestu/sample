@@ -46,39 +46,26 @@ class ServiceController extends Controller
     public function service_recommendation(Request $request)
     {
         try {
-            $service = BaseService::whereHas('service_category', function (Builder $query) {
-                $query->where('slug', '<>', 'custom');
-            })->latest();
 
-            if ($request->has('query')) {
-                $query = $request->get('query');
-                $service->where('name', 'like', '%' . $query . '%');
-            }
-
-            $page = $request->has('page') ? $request->get('page') : 1;
-            $limit = $request->has('size') ? $request->get('size') : 10;
-            $service = $service->limit($limit)->offset(($page - 1) * $limit);
-            $data = $service->get();
-            $total = $service->count();
-
-            $data_arr = [];
-            foreach ($data as $key => $value) {
-
-                $data_arr[] = [
-                    "id" => $value->id,
-                    "name" => $value->name,
-                    "media" => $value->image,
-                    "price" => (int)$value->price,
-                    "category" => $value->service_category->name
+            $requestServiceRecommendation = $request->only('query','page','size');
+            $serviceRecommendation = $this->serviceService->getServiceRecommendation($requestServiceRecommendation);
+            $data = $serviceRecommendation['data']->map(function ($value) {
+                return [
+                        "id" => $value->id,
+                        "name" => $value->name,
+                        "media" => $value->image,
+                        "price" => (int)$value->price,
+                        "category" => $value->service_category->name
                 ];
-            }
-
-            $response['page'] = (int)$page;
-            $response['size'] = (int)$limit;
-            $response['total'] = (int)$total;
-            $response['data'] = $data_arr;
-
+            });
+            
+            $response['page'] = (int)$serviceRecommendation['page'];
+            $response['size'] = (int)$serviceRecommendation['size'];
+            $response['total'] = (int)$serviceRecommendation['total'];
+            $response['data'] = $data;
+    
             return response()->json($response);
+
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);

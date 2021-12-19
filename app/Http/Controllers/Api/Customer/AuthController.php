@@ -41,7 +41,6 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
-
         try {
             //code...
             if ($request->has('id_google')) {
@@ -50,7 +49,6 @@ class AuthController extends Controller
                 $userLogin = $this->authService->loginByGoogleId($requestLogin);
     
             }else{
-    
                 $requestLogin = $request->only(['email','password','device_id']);
                 $userLogin = $this->authService->login($requestLogin);
             }
@@ -61,7 +59,6 @@ class AuthController extends Controller
             $data['token'] = $tokenUser['token'];
             $data['valid_until'] = $tokenUser['expired_at'];
             $data['token_type'] = $tokenUser['token_type'];
-            $data['nice'] = "from new function";
     
             return response()->json($data);
 

@@ -39,7 +39,7 @@ class AuthService
 
         if(password_verify($data['password'],$user->password)){
 
-            $user->device_id = $data->device_id;
+            $user->device_id = $data['device_id'];
             $user->last_login = date('Y-m-d H:i:s');
             return $user;
         }else{
@@ -68,7 +68,7 @@ class AuthService
         if($user->id_google == $data['id_google']){
 
 
-            $user->device_id = $data->device_id;
+            $user->device_id = $data['device_id'];
             $user->last_login = date('Y-m-d H:i:s');
             $user->save();
 
