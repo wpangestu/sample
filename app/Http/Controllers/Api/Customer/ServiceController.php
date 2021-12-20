@@ -76,47 +76,21 @@ class ServiceController extends Controller
     {
         try {
 
-            $q = $request->get('query');
-            $category = $request->get('category');
-            $sorting = $request->get('sorting');
-
-            $service = BaseService::when($q, function ($query, $q) {
-                return $query->where('name', 'like', '%' . $q . '%');
-            })
-                ->when($category, function ($query, $category) {
-                    return $query->whereHas('service_category', function ($query) use ($category) {
-                        $query->where('slug', $category);
-                    });
-                })
-                ->when($sorting, function ($query, $sorting) {
-                    if ($sorting == "price_asc") {
-                        return $query->orderBy('price', 'asc');
-                    } else {
-                        return $query->orderBy('price', 'desc');
-                    }
-                });
-
-            $page = $request->has('page') ? $request->get('page') : 1;
-            $limit = $request->has('size') ? $request->get('size') : 10;
-            $service = $service->limit($limit)->offset(($page - 1) * $limit);
-            $data = $service->get();
-            $total = $service->count();
-
-            $data_arr = [];
-            foreach ($data as $key => $value) {
-                # code...
-                $data_arr[] = [
-                    "id" => $value->id,
+            $requestService = $request->only('query','page','size','category','sorting');
+            $service = $this->serviceService->getService($requestService);
+            $data = $service['data']->map(function($value){
+                return [
+                    "id" => (int)$value->id,
                     "name" => $value->name,
                     "media" => $value->image,
                     "price" => (int)$value->price
                 ];
-            }
+            });
 
-            $response['page'] = (int)$page;
-            $response['size'] = (int)$limit;
-            $response['total'] = (int)$total;
-            $response['data'] = $data_arr;
+            $response['page'] = (int)$service['page'];
+            $response['size'] = (int)$service['size'];
+            $response['total'] = (int)$service['total'];
+            $response['data'] = $data;
 
             return response()->json($response);
         } catch (\Throwable $th) {
@@ -158,32 +132,22 @@ class ServiceController extends Controller
     public function get_custom_category(Request $request)
     {
         try {
-            //code...
-            $data = BaseService::whereHas('service_category', function ($query) {
-                $query->where('name', 'like', '%custom%');
-            });
 
-            $page = $request->has('page') ? $request->get('page') : 1;
-            $limit = $request->has('size') ? $request->get('size') : 10;
-            $service = $data->limit($limit)->offset(($page - 1) * $limit);
-            $datas = $service->get();
-            $total = $service->count();
-
-            $data_arr = [];
-            foreach ($datas as $key => $value) {
-                # code...
-                $data_arr[] = [
-                    "id" => $value->id,
+            $requestCustomService = $request->only('page','size');
+            $customService = $this->serviceService->getCustomService($requestCustomService);
+            $data = $customService['data']->map(function($value){
+                return [
+                    "id" => (int)$value->id,
                     "name" => $value->name,
                     "item_name" => "",
                     "media" => $value->image
                 ];
-            }
+            });
 
-            $response['page'] = (int)$page;
-            $response['size'] = (int)$limit;
-            $response['total'] = (int)$total;
-            $response['data'] = $data_arr;
+            $response['page'] = (int)$customService['page'];
+            $response['size'] = (int)$customService['size'];
+            $response['total'] = (int)$customService['total'];
+            $response['data'] = $data;            
 
             return response()->json($response);
         } catch (\Throwable $th) {
