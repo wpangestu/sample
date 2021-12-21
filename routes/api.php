@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\Api\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Api\Customer\UserController as CustomerUserController;
+use App\Http\Controllers\Api\Customer\TransactionController as CustomerTransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,7 +169,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::get('/history/chat/{id}', [ChatController::class, 'get_history_message_by_chatroom_id']);
         
         
-        Route::post('order/generate-payment', [CustomerUserController::class, 'order_generate_payment']);
+        Route::post('order/generate-payment', [CustomerTransactionController::class, 'order_generate_payment']);
         Route::post('order/checkout', [CustomerUserController::class, 'order_checkout']);
         Route::post('order/checkout/custom', [CustomerUserController::class, 'custom_order_checkout']);
         Route::post('order/cancel/{id}', [CustomerUserController::class, 'cancel_order']);

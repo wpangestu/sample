@@ -62,4 +62,10 @@ class ServiceRepository {
         return $service;
     }
 
+    public function getPriceByServiceId($id):int
+    {
+        $service = BaseService::find($id);
+        return $service->price;
+    }
+
 }

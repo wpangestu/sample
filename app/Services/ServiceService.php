@@ -68,4 +68,17 @@ class ServiceService {
 
     }
 
+    public function getTotalPriceService(array $service)
+    {
+        $totalPrice = 0;
+        foreach ($service as $key => $value) {
+            $service_id = $value['service_id'];
+            $qty = $value['quantity'];
+
+            $price = $this->serviceRepository->getPriceByServiceId($service_id);
+            $totalPrice += $price * $qty;
+        }
+
+        return $totalPrice;
+    }
 }
