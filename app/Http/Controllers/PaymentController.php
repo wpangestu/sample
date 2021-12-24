@@ -249,6 +249,12 @@ class PaymentController extends Controller
                 $description = "Pemabayaran Order sebesar ".rupiah($payment->amount);
                 $body = "Gagal diterima oleh admin";
                 $action = "OPEN_TRANSFER_DETAIL";
+
+                $order_number = $payment->data_id;
+                $order = Order::where('order_number',$order_number)->first();
+                $order->order_status = "waiting_payment";
+                $order->save();                
+
             }else{
                 $description = "Pemabayaran Deposit ".rupiah($payment->amount);
                 $body = "Gagal diterima oleh admin";
