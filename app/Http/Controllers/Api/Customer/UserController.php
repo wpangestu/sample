@@ -793,6 +793,10 @@ class UserController extends Controller
                     "account_number" => $request->account_number,
                     "bank_id" => $request->get('bank_id')
                 ]);
+
+                $order->order_status = 'waiting_payment_confirmation';
+                $order->save();
+
             } elseif (isset($deposit)) {
                 $payment = Payment::create([
                     "customer_id" => auth()->user()->id,
