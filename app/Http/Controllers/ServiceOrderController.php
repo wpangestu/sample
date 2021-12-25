@@ -64,6 +64,8 @@ class ServiceOrderController extends Controller
                         return "-";
                     } elseif ($row->order_status == "waiting_payment") {
                         return '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
+                    } elseif ($row->order_status == "waiting_payment_confirmation") {
+                        return '<badge class="badge bg-orange">Menunggu Konfirmasi</badge>';
                     } elseif ($row->order_status == "payment_success") {
                         return '<badge class="badge badge-info">Pembayaran Sukses</badge>';
                     } elseif ($row->order_status == "waiting_order") {
@@ -263,6 +265,8 @@ class ServiceOrderController extends Controller
             $status = "-";
         } elseif ($order->order_status == "waiting_payment") {
             $status = '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
+        } elseif ($order->order_status == "waiting_payment_confirmation") {
+            $status = '<badge class="badge bg-orange">Menunggu Konfirmasi</badge>';
         } elseif ($order->order_status == "payment_success") {
             $status = '<badge class="badge badge-info">Pembayaran Sukses</badge>';
         } elseif ($order->order_status == "waiting_order") {
@@ -277,6 +281,8 @@ class ServiceOrderController extends Controller
             $status =  '<badge class="badge badge-danger">Dibatalkan</badge>';
         } elseif ($order->order_status == "done") {
             $status =  '<badge class="badge badge-success">Selesai</badge>';
+        }else{
+            $status = '';
         }
         $payment = Payment::where('type_payment', 'order')->where('data_id', $order->order_number)->first();
         return view('service_order.detail', compact('order', 'status', 'payment'));
