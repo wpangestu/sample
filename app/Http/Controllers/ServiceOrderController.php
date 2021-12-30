@@ -266,7 +266,9 @@ class ServiceOrderController extends Controller
         } elseif ($order->order_status == "waiting_payment") {
             $status = '<badge class="badge badge-warning">Menunggu Pembayaran</badge>';
         } elseif ($order->order_status == "waiting_payment_confirmation") {
-            $status = '<badge class="badge bg-orange">Menunggu Konfirmasi</badge>';
+            $payment = Payment::where('data_id',$order->order_number)->where('payment_method','bank-transfer')->latest()->first();
+            $detail = is_null($payment)?'':'<a href="'.route('payment.order.detail',$payment->id).'">Detail</a>';
+            $status = '<badge class="badge bg-orange">Menunggu Konfirmasi</badge> '.$detail;
         } elseif ($order->order_status == "payment_success") {
             $status = '<badge class="badge badge-info">Pembayaran Sukses</badge>';
         } elseif ($order->order_status == "waiting_order") {
