@@ -128,6 +128,15 @@ class UserController extends Controller
                 return response()->json(["message" => "Akun tidak ditemukan"], 425);
             } else {
 
+                if(!is_null($user->last_login)){
+                    $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+                    $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
+    
+                    if($now->lt($lastLogin)){
+                        return response()->json(["message" => "Sudah login di tempat lain"], 422);
+                    }
+                }
+
                 try {
                     $token = JWTAuth::fromUser($user);
                 } catch (JWTException $e) {
@@ -182,6 +191,15 @@ class UserController extends Controller
             }
             if ($user->hasAnyRole(['admin', 'superadmin', 'cs'])) {
                 return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
+            }
+
+            if(!is_null($user->last_login)){
+                $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+                $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
+
+                if($now->lt($lastLogin)){
+                    return response()->json(["message" => "Sudah login di tempat lain"], 422);
+                }
             }
 
             $payload = JWTAuth::setToken($token)->getPayload();

@@ -68,7 +68,15 @@ class UserController extends Controller
             if($user->hasAnyRole(['admin', 'superadmin','cs'])){
                 return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
             }
+            
+            if(!is_null($user->last_login)){
+                $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+                $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
 
+                if($now->lt($lastLogin)){
+                    return response()->json(["message" => "Sudah login di tempat lain"], 422);
+                }
+            }
             // dd($user);
             // \Carbon\Carbon::setLocale('id');
             // $currentDateTime = Carbon::now();
