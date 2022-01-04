@@ -60,6 +60,14 @@ class ServiceOrderController extends Controller
                     return $btn;
                 })
                 ->addColumn('order_status', function ($row) {
+                    $addThreeDay = $row->created_at->addDays(3);
+                    $now = Carbon::now();
+                    if($now->gt($addThreeDay)){
+                        $i = '<i class="fas fa-exclamation-circle" title="Transaksi Lebih dari 3 Hari"></i>';
+                    }else{
+                        $i = '';
+                    }
+
                     if ($row->order_status == null) {
                         return "-";
                     } elseif ($row->order_status == "waiting_payment") {
@@ -73,9 +81,9 @@ class ServiceOrderController extends Controller
                     } elseif ($row->order_status == "accepted") {
                         return '<badge class="badge bg-teal">Diterima Teknisi</badge>';
                     } elseif ($row->order_status == "processed") {
-                        return '<badge class="badge bg-lime">Diproses</badge>';
+                        return '<badge class="badge bg-lime">Diproses</badge> '.$i;
                     } elseif ($row->order_status == "extend") {
-                        return '<badge class="badge bg-olive">Extend</badge>';
+                        return '<badge class="badge bg-olive">Extend</badge> '.$i;
                     } elseif ($row->order_status == "canceled") {
                         return '<badge class="badge badge-danger">Dibatalkan</badge>';
                     } elseif ($row->order_status == "done") {
