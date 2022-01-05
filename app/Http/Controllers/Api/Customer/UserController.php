@@ -128,8 +128,9 @@ class UserController extends Controller
                 return response()->json(["message" => "Akun tidak ditemukan"], 425);
             } else {
 
+                $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
+
                 if(!is_null($user->last_login)){
-                    $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                     $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
     
                     if($now->lt($lastLogin)){
@@ -146,7 +147,7 @@ class UserController extends Controller
                 $payload = JWTAuth::setToken($token)->getPayload();
                 $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
-                $user->last_login = date('Y-m-d H:i:s');
+                $user->last_login = $now->addMinute();
                 $user->device_id = $request->device_id;
                 $user->save();
 
@@ -193,8 +194,8 @@ class UserController extends Controller
                 return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
             }
 
+            $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
             if(!is_null($user->last_login)){
-                $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                 $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
 
                 if($now->lt($lastLogin)){
@@ -205,7 +206,7 @@ class UserController extends Controller
             $payload = JWTAuth::setToken($token)->getPayload();
             $expires_at = date('Y-m-d H:i:s', $payload->get('exp'));
 
-            $user->last_login = date('Y-m-d H:i:s');
+            $user->last_login = $now->addMinute();
             $user->device_id = $request->device_id;
             $user->save();
 

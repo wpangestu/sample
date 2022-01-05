@@ -69,8 +69,8 @@ class UserController extends Controller
                 return response()->json(['message' => 'Akun anda tidak bisa login'], 422);
             }
             
+            $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
             if(!is_null($user->last_login)){
-                $now = Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'));
                 $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $user->last_login);
 
                 if($now->lt($lastLogin)){
@@ -85,7 +85,7 @@ class UserController extends Controller
             // print_r($currentDateTime);
             // print_r($newDateTime);
 
-            $user->last_login = date('Y-m-d H:i:s');
+            $user->last_login = $now->addMinute();
             $user->device_id = $request->device_id;
             $user->save();
 
