@@ -45,7 +45,7 @@ class ChatController extends Controller
     public function index()
     {
         $user_id = auth()->user()->id;
-        if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+        if(auth()->user()->hasRole(['cs','superadmin'])){
             $user_id = 1;
         }
         $new_chatroom_data = $this->getChatroomNew($user_id,'teknisi');
@@ -66,7 +66,7 @@ class ChatController extends Controller
     {
 
         $user_id = auth()->user()->id;
-        if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+        if(auth()->user()->hasRole(['cs','superadmin'])){
             $user_id = 1;
         }
         $new_chatroom_data = $this->getChatroomNew($user_id,'user');
@@ -88,7 +88,7 @@ class ChatController extends Controller
     {
         $type = $request->input('type');
         $user_id = auth()->user()->id;
-        if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+        if(auth()->user()->hasRole(['cs','superadmin'])){
             $user_id = 1;
         }
 
@@ -179,7 +179,7 @@ class ChatController extends Controller
             //code...
             $user_id = $request->input('user_id');
             $user_admin = auth()->user()->id;
-            if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+            if(auth()->user()->hasRole(['cs','superadmin'])){
                 $user_admin = 1;
             }
             $chatroom = Chatroom::where('user_1',$user_id)->where('user_2',$user_admin);
@@ -212,7 +212,7 @@ class ChatController extends Controller
                 # code...
                 $admin_cs = false;
                 $role = "";
-                if($value->user_from->hasRole(['admin','cs'])){
+                if($value->user_from->hasRole(['admin','cs','superadmin'])){
                     $admin_cs = true; 
                     if($value->user_from->hasRole(['cs'])){
                         $role = "cs";
@@ -261,7 +261,7 @@ class ChatController extends Controller
 
                                         $admin_cs = false;
                                         $role = "";
-                                        if($value->user_from->hasRole(['admin','cs'])){
+                                        if($value->user_from->hasRole(['admin','cs','superadmin'])){
                                             $admin_cs = true; 
                                             if($value->user_from->hasRole(['cs'])){
                                                 $role = "cs";
@@ -297,7 +297,7 @@ class ChatController extends Controller
             $user_id = $request->input('user_id');
             $user_admin = auth()->user()->id;
             
-            if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+            if(auth()->user()->hasRole(['cs','superadmin'])){
                 $user_admin = 1;
             }
 
@@ -415,7 +415,7 @@ class ChatController extends Controller
         }
 
         $user_admin = auth()->user()->id;
-        if(auth()->user()->hasRole('cs') or auth()->user()->hasRole('superadmin')){
+        if(auth()->user()->hasRole(['cs','superadmin'])){
             $user_admin = 1;
         }
         $chatroom = Chatroom::where('user_1',$user->id)->where('user_2',$user_admin);
