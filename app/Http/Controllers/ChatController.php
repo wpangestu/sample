@@ -92,7 +92,7 @@ class ChatController extends Controller
             $user_id = 1;
         }
 
-        if($type==="teknisi"){
+        if($type=="teknisi"){
 
             $new_chatroom_data = $this->getChatroomNew($user_id,'teknisi');        
             $new_user_id = [];
@@ -137,7 +137,7 @@ class ChatController extends Controller
         $chatroom = Chatroom::where('user_1',$user_id)->orWhere('user_2',$user_id)->orderBy('updated_at','desc')->get();
         foreach ($chatroom as $key => $value) {
             
-            if($value->user_1 === $user_id){
+            if($value->user_1 == $user_id){
                 $user = $value->user_2_data;
             }else{
                 $user = $value->user_1_data;
@@ -436,7 +436,7 @@ class ChatController extends Controller
         }
 
         
-        if($user->roles[0]->name ==="teknisi"){
+        if($user->roles[0]->name =="teknisi"){
 
             $new_chatroom_data = $this->getChatroomNew($user_admin,'teknisi');
 
