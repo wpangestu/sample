@@ -71,12 +71,12 @@
                       @else
                         @if(!empty($chat))
                           @foreach($chat->reverse() as $value)
-                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->user_from->hasRole(['admin', 'cs']) ?'right':''}}" data-chat_id="{{$value->id}}">
+                          <div class="direct-chat-msg @if($loop->first) first @endif {{$value->user_from->hasRole(['admin', 'cs', 'superadmin']) ?'right':''}}" data-chat_id="{{$value->id}}">
                               <div class="direct-chat-infos clearfix">
-                                <span class="direct-chat-name float-{{ $value->user_from->hasRole(['admin', 'cs']) ?'right':'left'}}"> {{ $value->user_from->name }} @if($value->user_from->hasRole('admin')) (admin) @elseif($value->user_from->hasRole('cs')) (cs) @else (user) @endif</span>
-                                <span class="pl-1 pr-1 direct-chat-timestamp float-{{ $value->user_from->hasRole(['admin', 'cs']) ? 'right':'left'}}"> [{{$value->created_at->format('d/m/Y H:i')}}] </span>
+                                <span class="direct-chat-name float-{{ $value->user_from->hasRole(['admin', 'cs', 'superadmin']) ?'right':'left'}}"> {{ $value->user_from->name }} @if($value->user_from->hasRole(['admin','superadmin'])) (admin) @elseif($value->user_from->hasRole('cs')) (cs) @else (user) @endif</span>
+                                <span class="pl-1 pr-1 direct-chat-timestamp float-{{ $value->user_from->hasRole(['admin', 'cs','superadmin']) ? 'right':'left'}}"> [{{$value->created_at->format('d/m/Y H:i')}}] </span>
                               </div>
-                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->user_from->hasRole(['admin', 'cs']) ?'right':'left'}}">
+                              <div style="width:50%;margin:5px" class="direct-chat-text float-{{ $value->user_from->hasRole(['admin', 'cs','superadmin']) ?'right':'left'}}">
                                 @isset($value->media)
                                   <img src="{{$value->media}}" class="img-fluid"> <br>                                
                                 @endisset
