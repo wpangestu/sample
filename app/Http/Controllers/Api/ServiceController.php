@@ -105,7 +105,7 @@ class ServiceController extends Controller
         $validator = Validator::make($request->all(), [
             'service_id' => 'required|integer',
             'skill' => 'required',
-            'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
+            'certificate' => 'image|mimes:img,png,jpeg,jpg|max:2048',
         ]);
 
         if($validator->fails()){
@@ -114,7 +114,7 @@ class ServiceController extends Controller
 
         if ($request->has('certificate')) {
             $validator = Validator::make($request->all(), [
-                'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
+                'certificate' => 'image|mimes:img,png,jpeg,jpg|max:2048',
             ]);        
         }
 
@@ -172,7 +172,7 @@ class ServiceController extends Controller
 
         if ($request->has('certificate')) {
             $validator = Validator::make($request->all(), [
-                'certificate' => 'required|image|mimes:img,png,jpeg,jpg|max:2048',
+                'certificate' => 'image|mimes:img,png,jpeg,jpg|max:2048',
             ]);        
         }
 

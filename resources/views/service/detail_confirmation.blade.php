@@ -81,7 +81,13 @@
                   <dt class="col-sm-3">Gambar Jasa</dt>
                   <dd class="col-sm-8"><img src="{{ $service->base_service->image??'-' }}" height="180px"></dd>
                   <dt class="col-sm-3">Gambar Sertifikat Jasa</dt>
-                  <dd class="col-sm-8"><img src="{{ $service->sertification_image??'-' }}" height="180px"></dd>
+                  <dd class="col-sm-8">
+                    @if ($service->sertification_image != null)
+                      <img src="{{ $service->sertification_image }}" height="180px">
+                    @else
+                      -
+                    @endif
+                  </dd>
 
                   <dt class="col-sm-3">Di buat</dt>
                   <dd class="col-sm-8">: {{ $service->created_at }}
