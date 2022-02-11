@@ -141,14 +141,14 @@ class ServiceController extends Controller
             }
 
             DB::commit();
-
+            $technician = auth()->user()->id;
             $fcm_token[] = $technician->fcm_token;
             fcm()->to($fcm_token)
                 ->priority('high')
                 ->timeToLive(60)
                 ->notification([
-                    'title' => $title,
-                    'body' => "Rating : " . $request->get('rating'),
+                    'title' => "Jasa Service berhasil diajukan",
+                    'body' => "Menunggu review dari admin",
                 ])
                 ->send();
     
