@@ -111,7 +111,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'phone' => 'required',
+            'phone' => 'required|unique:users',
             'id_card_number' => 'required',
             'address' => 'required',
             'id_card' => 'required|mimes:img,png,jpeg,jpg|max:2048',
