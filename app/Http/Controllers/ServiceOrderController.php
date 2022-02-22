@@ -364,12 +364,17 @@ class ServiceOrderController extends Controller
             $order = Order::find($order_id);
             $order->order_status = "waiting_order";
             $order->save();
+            $base_service[] = $order->order_detail[0]->base_id;
 
             $users = User::Role('teknisi')
-                ->where('verified', true)
-                ->whereNotNull('fcm_token')
-                ->where('on_progress', false)
-                ->get();
+                            ->whereHas('service',function($query) use ($base_service){
+                                $query->where('status','active');
+                                $query->whereIn('base_service_id',$base_service);
+                            })
+                            ->where('verified', true)
+                            ->whereNotNull('fcm_token')
+                            ->where('on_progress', false)
+                            ->get();
 
             $token_technician = $users->pluck('fcm_token')->toArray();
 
