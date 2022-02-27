@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Chat;
 use App\Models\User;
 use App\Models\Chatroom;
-use App\Models\Chat;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -296,13 +298,18 @@ class ChatController extends Controller
 
             $user_id = $request->input('user_id');
             $user_admin = auth()->user()->id;
-            
+
             if(auth()->user()->hasRole(['cs','superadmin'])){
                 $user_admin = 1;
             }
 
             $message = $request->input('message');
             $new = false;
+
+            request()->validate([
+                'media' => 'mimes:img,png,jpeg,jpg|max:2048',
+            ]);
+    
             try {
                 //code...
 
@@ -312,6 +319,16 @@ class ChatController extends Controller
                 $chat = [];
                 if($chatroom->count() == 0){
                     $chatroom = Chatroom::where('user_1',$user_admin)->where('user_2',$user_id);
+                }
+
+                $media = null;
+                if($request->hasFile('media')){
+    
+                    $uploadFolder = 'chat/'.$user_admin;
+                    $photo = $request->file('media');
+                    $photo_path = $photo->store($uploadFolder,'public');
+    
+                    $media = Storage::disk('public')->url($photo_path);
                 }
     
                 if($chatroom->count() > 0){
@@ -323,12 +340,14 @@ class ChatController extends Controller
                         "from" => auth()->user()->id,
                         "message" => $message,
                         "chatroom_id" => $chatroom->id,
+                        "media" => $media
                     ]);
 
                     $chatroom->updated_at = date("Y-m-d H:i:s");
                     $chatroom->save();
 
                 }else{
+
                     $new = true;
                     $chatroom = Chatroom::create([
                         "user_1" => $user_admin,
@@ -340,6 +359,7 @@ class ChatController extends Controller
                         "from" => $user_admin,
                         "message" => $message,
                         "chatroom_id" => $chatroom->id,
+                        "media" => $media
                     ]);
                 }
 
@@ -358,6 +378,7 @@ class ChatController extends Controller
                 $response['success'] = true;
                 $response['chat']['id'] = $chat->id;
                 $response['chat']['name'] = $chat->user_from->name;
+                $response['chat']['media'] = $chat->media;
                 $response['chat']['message'] = $chat->message;
                 $response['chat']['created_at'] = $chat->created_at->format('d/m/Y H:i');
                 if(auth()->user()->hasRole('cs')){

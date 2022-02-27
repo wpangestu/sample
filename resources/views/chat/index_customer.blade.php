@@ -99,7 +99,8 @@
                             <input required type="text" name="message" id="input_message" placeholder="Type Message ..." class="form-control">
                             <input type="hidden" name="user_id" value="{{ isset($user)?$user->id:'' }}" id="input_hidden_user_id">
                             <span class="input-group-append">
-                            <button type="submit" class="btn btn-primary">Send</button>
+                              <button type="button" class="btn btn-warning btn_image_chat"><i class="fa fa-file-image"></i></button>
+                              <button type="submit" class="btn btn-primary">Send</button>
                             </span>
                         </div>
                     </form>
@@ -119,7 +120,26 @@
   </div>
   <!-- /.content-wrapper -->
 
-
+  <x-modal id="modal_image_chat" title="Kirim pesan dengan gambar">
+    <form action="{{ route('post.chat.user') }}" method="post" id="form_chat_with_media" enctype="multipart/form-data">
+    <input type="hidden" name="user_id" value="{{ isset($user)?$user->id:'' }}">
+      @csrf
+      @method('post')
+      <div class="form-group">
+        <label for="">Gambar</label><br>
+        <input type="file" name="media" required id="media">
+        <span class="text-muted">(extensi:img,png,jpeg,jpg|max:2048)</span>
+      </div>
+      <div class="form-group">
+        <label for="">Pesan Teks(optional)</label><br>
+        <input class="form-control" type="text" name="message">
+      </div>
+      <div class="text-right">
+        <button class="btn btn-primary" type="submit">Kirim</button>
+        <button class="btn btn-secondary" data-dismiss="modal" type="button">Batal</button>
+      </div>
+    </form>
+  </x-modal>
 
 @endsection
 
@@ -129,6 +149,9 @@
 
     $(document).ready(function(){
 
+      $('body').on('click', '.btn_image_chat', function () {
+        $('#modal_image_chat').modal('show');
+      })
 
       var contend = document.getElementById('message_user');
       contend.addEventListener('scroll', function(event) {
@@ -224,7 +247,7 @@
                       </div>
                       <div style="width:50%;margin:5px" class="direct-chat-text float-${ d.admin_cs ?'right':'left'}">
                         ${ d.media !== null?'<img src="'+d.media+'" class="img-fluid"> <br>':'' }
-                        ${ d.message }
+                        ${ d.message??'' }
                       </div>
                   </div>
             `
@@ -251,7 +274,6 @@
                 "message" : message
             },
             success: function(response) {
-              console.log(response);
               if(response.chat.new){
                 $('#message_user').html('');
               }
@@ -264,6 +286,35 @@
         $('#input_message').val('');
       })
 
+      $('#form_chat_with_media').submit(function(e){
+        e.preventDefault();
+        const formData = new FormData(this);
+        $.ajax({
+          type:'POST',
+          url: $(this).attr('action'),
+          data: formData,
+          cache:false,
+          contentType: false,
+          processData: false,
+          success: (response) => {
+              $('#modal_image_chat').modal('hide');
+              if(response.chat.new){
+                $('#message_user').html('');
+              }
+              const template_post = template_post_message(response.chat);
+              $('#message_user').append(template_post);
+              var objDiv = document.getElementById("message_user");
+              objDiv.scrollTop = objDiv.scrollHeight;
+              this.reset();
+          },
+          error: function(data){
+              this.reset();
+              console.log(data);
+          }
+        });
+      })
+
+
       function template_post_message(params) {
         template = `
                 <div class="direct-chat-msg right" data-chat_id="${params.id}">
@@ -272,7 +323,8 @@
                       <span class="direct-chat-timestamp pl-1 pr-1 float-right"> [${params.created_at}] </span>
                     </div>
                     <div style="width:50%;margin:5px" class="direct-chat-text float-right">
-                      ${ params.message }
+                      ${ params.media !== null?'<img src="'+params.media+'" class="img-fluid"> <br>':'' }
+                      ${ params.message??'' }
                     </div>
                 </div>
           `
