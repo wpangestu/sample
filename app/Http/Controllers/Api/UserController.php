@@ -597,7 +597,7 @@ class UserController extends Controller
     public function update_user_profile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'mimes:img,png,jpeg,jpg|max:2048',
+            'image' => 'mimes:img,png,jpeg,jpg|max:5048',
         ]);
 
         if($validator->fails()){
