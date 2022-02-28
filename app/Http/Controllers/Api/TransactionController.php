@@ -181,8 +181,8 @@ class TransactionController extends Controller
                 ],
                 "review" => $review,
                 "address" => [
-                    "latitude" => (float)json_decode($order->address)->latitude??0,
-                    "longitude" => (float)json_decode($order->address)->longitude??0,
+                    "latitude" => (double)json_decode($order->address)->latitude??0,
+                    "longitude" => (double)json_decode($order->address)->longitude??0,
                     "description" => json_decode($order->address)->description??"",
                     "note" => json_decode($order->address)->notes??""
                 ],
@@ -347,8 +347,13 @@ class TransactionController extends Controller
 
             $origin = [
                 "description" => $result['formatted_address']??$description,
-                "latitude" => (float)$lat,
-                "longitude" => (float)$lng,
+                "latitude" => (double)$lat,
+                "longitude" => (double)$lng,
+            ];
+
+            $current_location = [
+                "latitude" => (double)$lat,
+                "longitude" => (double)$lng,
             ];
 
             $engineer = auth()->user();
@@ -365,6 +370,7 @@ class TransactionController extends Controller
             $order->order_status = "accepted";
             $order->engineer_id = auth()->user()->id;
             $order->origin = json_encode($origin);
+            $order->current_location = json_encode($current_location);
             $order->engineer->on_progress = true;
             $order->save();
             $order->engineer->save();
@@ -842,6 +848,38 @@ class TransactionController extends Controller
         } catch (\Throwable $th) {
             return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
             //throw $th;
+        }
+    }
+
+    public function update_current_location(Request $request, $order_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'lat' => 'required|numeric',
+            'lng' => 'required|numeric',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
+        try {
+            $order = Order::where('order_number',$order_id)->first();
+
+            if(empty($order)){
+                return response()->json(["message" => "Terjadi kesalahan data order tidak ditemukan"], 422);
+            }
+
+            $current_location = [
+                "latitude" => (double)$request->lat,
+                "longitude" => (double)$request->lng
+            ];
+            $order->current_location = json_encode($current_location);
+            $order->save();
+            
+            return response()->json(["message" => "Current location updated"]);
+
+        } catch (\Throwable $th) {
+            return response()->json(["message" => "Terjadi kesalahan ".$th->getMessage()], 422);
         }
     }
 }

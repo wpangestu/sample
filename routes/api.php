@@ -142,6 +142,7 @@ Route::middleware(['jwt.verify'])->group(function () {
     Route::post('/teknisi/order/complete/custom_detail/{id}',[TransactionController::class,'custom_order_complete']);
 
     Route::post('/teknisi/order/extend/{id}',[TransactionController::class,'order_extend']);
+    Route::put('/teknisi/order/current-location/{id}',[TransactionController::class,'update_current_location']);
     
     // Route::get('teknisi/user', [UserController::class,'getAuthenticatedUser']);
     Route::post('/teknisi/user/change-password',[UserController::class,'change_password_user']);
@@ -197,6 +198,7 @@ Route::middleware(['jwt.verify'])->group(function () {
         Route::post('order/cancel/{id}', [CustomerUserController::class, 'cancel_order']);
         Route::post('order/payment-approval/{id}', [CustomerUserController::class, 'payment_approval_store']);
         Route::get('order/{id}', [CustomerUserController::class, 'order']);
+        Route::get('order/current-location/{id}', [CustomerUserController::class, 'get_current_location']);
         
         Route::post('user/change-password',[UserController::class,'change_password_user']);
         Route::post('user/change-profile-photo',[UserController::class,'update_user_profile']);

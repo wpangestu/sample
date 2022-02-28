@@ -1715,4 +1715,28 @@ class UserController extends Controller
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
+
+    public function get_current_location($order_id){
+
+        try {
+            $order = Order::where('order_number',$order_id)->first();
+
+            if(empty($order)){
+                return response()->json(["message" => "Terjadi kesalahan data order tidak ditemukan"], 422);
+            }
+
+            $current_location = json_decode($order->current_location);
+
+            $response = [
+                "lat" => (double)$current_location->latitude,
+                "lng" => (double)$current_location->longitude
+            ];
+
+            return response()->json($response);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+        }
+    }
 }
