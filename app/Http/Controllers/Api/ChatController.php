@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Image;
 
 class ChatController extends Controller
 {
@@ -120,6 +121,15 @@ class ChatController extends Controller
 
     public function send_new_chat(Request $request,$chatroom_id)
     {
+
+        $validator = Validator::make($request->all(), [
+            'image' => 'mimes:img,png,jpeg,jpg|max:10048',
+        ]);
+
+        if($validator->fails()){
+            return response()->json(["message" => $validator->errors()->all()[0]], 422);
+        }
+
         try {
             //code...
 
@@ -141,14 +151,12 @@ class ChatController extends Controller
     
                 $media = null;
                 if($request->hasFile('media')){
-    
                     $uploadFolder = 'chat/'.$from;
                     $photo = $request->file('media');
-                    $photo_path = $photo->store($uploadFolder,'public');
-    
-                    $media = Storage::disk('public')->url($photo_path);
+                    $name_file = time().'.'.$photo->getClientOriginalExtension();
+                    Image::make($photo)->save(public_path('storage/'.$uploadFolder.'/'.$name_file),50,'jpeg');
+                    $media = Storage::disk('public')->url($uploadFolder."/".$name_file);
                 }
-    
                 $chat = Chat::create([
                     "to" => $to,
                     "from" => $from,
@@ -666,7 +674,7 @@ class ChatController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'message' => 'required',
-            'media' => 'image|mimes:img,png,jpeg,jpg|max:2048',
+            'media' => 'image|mimes:img,png,jpeg,jpg|max:10048',
         ]);
 
         if($validator->fails()){
@@ -699,12 +707,12 @@ class ChatController extends Controller
             }
 
             $media = null;
-            if($request->hasFile('media')){
+            if($request->hasFile('media')){                
                 $uploadFolder = 'teknisi/chat/'.$from;
                 $photo = $request->file('media');
-                $photo_path = $photo->store($uploadFolder,'public');
-
-                $media = Storage::disk('public')->url($photo_path);
+                $name_file = time().'.'.$photo->getClientOriginalExtension();
+                Image::make($photo)->save(public_path('storage/'.$uploadFolder.'/'.$name_file),50,'jpeg');
+                $media = Storage::disk('public')->url($uploadFolder."/".$name_file);
             }
     
 

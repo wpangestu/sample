@@ -1395,6 +1395,14 @@ class UserController extends Controller
 
             if ($request->hasFile('invoice_picture')) {
 
+                $validator = Validator::make($request->all(), [
+                    'image' => 'mimes:img,png,jpeg,jpg|max:2048',
+                ]);
+        
+                if($validator->fails()){
+                    return response()->json(["message" => $validator->errors()->all()[0]], 422);
+                }
+
                 $uploadFolder = 'users/photo/payment';
                 $photo = $request->file('invoice_picture');
                 $photo_path = $photo->store($uploadFolder, 'public');

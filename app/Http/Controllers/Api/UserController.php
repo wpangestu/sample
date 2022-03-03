@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Image;
 
 class UserController extends Controller
 {
@@ -597,7 +598,7 @@ class UserController extends Controller
     public function update_user_profile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'image' => 'mimes:img,png,jpeg,jpg|max:5048',
+            'image' => 'required|mimes:img,png,jpeg,jpg|max:10048',
         ]);
 
         if($validator->fails()){
@@ -609,20 +610,20 @@ class UserController extends Controller
 
             $user = User::find(auth()->user()->id);
 
-            if($request->hasFile('image')){
+            $uploadFolder = 'users/photo';
+            $photo = $request->file('image');
 
-                $uploadFolder = 'users/photo';
-                $photo = $request->file('image');
-                $photo_path = $photo->store($uploadFolder,'public');
-            
-                $user->profile_photo_path = Storage::disk('public')->url($photo_path);
-                $user->save();                
-            }
+            $name_file = time().'.'.$photo->getClientOriginalExtension();
+            Image::make($photo)->save(public_path('storage/users/photo/'.$name_file),50,'jpeg');
+            $pathFile = Storage::disk('public')->url($uploadFolder."/".$name_file);
+
+            $user->profile_photo_path = $pathFile;
+            $user->save();                
 
             return response()->json(["message" => "Photo berhasil di ubah"]);
 
         } catch (\Throwable $th) {
-            //throw $th;
+
             return response()->json(["message"=>"Terjadi kesalahan ".$th->getMessage()],422);
         }
     }

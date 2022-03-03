@@ -180,6 +180,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -236,6 +237,7 @@ return [
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class, 
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+        'Image' => Intervention\Image\Facades\Image::class,
 
 
     ],
