@@ -106,7 +106,7 @@ class ChatController extends Controller
 
             $response['chat']['id'] = $chat->id;
             $response['chat']['name'] = $chat->user_from->name;
-            $response['chat']['message'] = $chat->message;
+            $response['chat']['message'] = $chat->message??"";
             $response['chat']['created_at'] = $chat->created_at->format('d/m/Y H:i');
             $response['chat']['new'] = $new;
 
@@ -268,7 +268,7 @@ class ChatController extends Controller
                                         ->count();
 
                         $last_chat_data = [
-                            "message" => $chat->message,
+                            "message" => $chat->message??"",
                             "media" => $chat->media,
                             "from" => (int)$chat->from,
                             "is_me" => $user_id==$chat->from?true:false,
@@ -344,7 +344,7 @@ class ChatController extends Controller
                                     ->where('read',false)
                                     ->count();
                     $chat_data = [
-                        "message" => $chat->message,
+                        "message" => $chat->message??"",
                         "media" => $chat->media,
                         "from" => (int)$chat->from,
                         "is_me" => $user_id==$chat->from?true:false,
@@ -407,7 +407,7 @@ class ChatController extends Controller
                     # code...
                     $t_data = [
                         "id" => $value->id,
-                        "message" => $value->message,
+                        "message" => $value->message??"",
                         "media" => $value->media??"",
                         "from" => (int)$value->from,
                         "is_me" => $value->from==$user_id?true:false,
@@ -458,7 +458,7 @@ class ChatController extends Controller
                     # code...
                     $t_data = [
                         "id" => $value->id,
-                        "message" => $value->message,
+                        "message" => $value->message??"",
                         "media" => $value->media??'',
                         "from" => (int)$value->from,
                         "is_me" => $value->from==$user_id?true:false,
@@ -780,7 +780,7 @@ class ChatController extends Controller
             ->send();
                                 
             $response['id'] = $chat->id;
-            $response['message'] = $chat->message;
+            $response['message'] = $chat->message??"";
             $response['signature'] = $signature;
             $response['media'] = $chat->media??'';
             $response['from'] = $from;
