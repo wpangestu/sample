@@ -658,7 +658,7 @@ class ChatController extends Controller
                         # code...
                         $chat_arr[] = [
                             "id" => $value->id,
-                            "message" => $value->message,
+                            "message" => $value->message??"",
                             "media" => $value->media??'',
                             "from" => (int)$value->from,
                             "is_me" => $value->from == auth()->user()->id ? true:false,
