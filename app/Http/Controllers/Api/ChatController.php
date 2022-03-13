@@ -122,9 +122,16 @@ class ChatController extends Controller
     public function send_new_chat(Request $request,$chatroom_id)
     {
 
-        $validator = Validator::make($request->all(), [
-            'image' => 'mimes:img,png,jpeg,jpg|max:10048',
-        ]);
+        if($request->has('media')){
+            $validator = Validator::make($request->all(), [
+                'media' => 'required|image|mimes:img,png,jpeg,jpg|max:10048',
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'message' => 'required',
+                'media' => 'image|mimes:img,png,jpeg,jpg|max:10048',
+            ]);
+        }
 
         if($validator->fails()){
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
@@ -154,7 +161,11 @@ class ChatController extends Controller
                     $uploadFolder = 'chat/'.$from;
                     $photo = $request->file('media');
                     $name_file = time().'.'.$photo->getClientOriginalExtension();
-                    Image::make($photo)->save(public_path('storage/'.$uploadFolder.'/'.$name_file),50,'jpeg');
+                    $folder = public_path('storage/'.$uploadFolder);
+                    if (!Storage::exists('public/'.$uploadFolder)) {
+                        Storage::makeDirectory('public/'.$uploadFolder, 0775, true, true);
+                    }
+                    Image::make($photo)->save($folder.'/'.$name_file,50,'jpeg');
                     $media = Storage::disk('public')->url($uploadFolder."/".$name_file);
                 }
                 $chat = Chat::create([
@@ -672,10 +683,16 @@ class ChatController extends Controller
 
     public function send_chat_support(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'message' => 'required',
-            'media' => 'image|mimes:img,png,jpeg,jpg|max:10048',
-        ]);
+        if($request->has('media')){
+            $validator = Validator::make($request->all(), [
+                'media' => 'required|image|mimes:img,png,jpeg,jpg|max:10048',
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'message' => 'required',
+                'media' => 'image|mimes:img,png,jpeg,jpg|max:10048',
+            ]);
+        }
 
         if($validator->fails()){
             return response()->json(["message" => $validator->errors()->all()[0]], 422);
@@ -711,7 +728,12 @@ class ChatController extends Controller
                 $uploadFolder = 'teknisi/chat/'.$from;
                 $photo = $request->file('media');
                 $name_file = time().'.'.$photo->getClientOriginalExtension();
-                Image::make($photo)->save(public_path('storage/'.$uploadFolder.'/'.$name_file),50,'jpeg');
+
+                $folder = public_path('storage/'.$uploadFolder);
+                if (!Storage::exists('public/'.$uploadFolder)) {
+                    Storage::makeDirectory('public/'.$uploadFolder, 0775, true, true);
+                }
+                Image::make($photo)->save($folder.'/'.$name_file,50,'jpeg');
                 $media = Storage::disk('public')->url($uploadFolder."/".$name_file);
             }
     
