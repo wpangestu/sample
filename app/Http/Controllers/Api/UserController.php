@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use App\Models\Engineer;
 use App\Http\Controllers\Controller;
+use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -115,9 +116,9 @@ class UserController extends Controller
             'phone' => 'required|unique:users',
             'id_card_number' => 'required',
             'address' => 'required',
-            'id_card' => 'required|mimes:img,png,jpeg,jpg|max:2048',
-            'selfie_id_card' => 'required|mimes:img,png,jpeg,jpg|max:2048',
-            'photo' => 'required|mimes:img,png,jpeg,jpg|max:2048',
+            'id_card' => 'required|mimes:img,png,jpeg,jpg|max:10048',
+            'selfie_id_card' => 'required|mimes:img,png,jpeg,jpg|max:10048',
+            'photo' => 'required|mimes:img,png,jpeg,jpg|max:10048',
         ]);
 
         if($validator->fails()){
@@ -165,16 +166,20 @@ class UserController extends Controller
 
             $uploadFolder = 'users/card_id';
             $id_card_image = $request->file('id_card');
-            $id_card_image_path = $id_card_image->store($uploadFolder, 'public');
+            $uploadService = new UploadService();
+            $uploadImage = $uploadService->compressImage($uploadFolder,$id_card_image,50);
+            $id_card_image_path = $uploadImage;
             
             // 
             $uploadFolder = 'users/selfie_card_id';
             $id_card_selfie_image = $request->file('selfie_id_card');
-            $id_card_selfie_path = $id_card_selfie_image->store($uploadFolder,'public');
+            $uploadImage = $uploadService->compressImage($uploadFolder,$id_card_image,50);
+            $id_card_selfie_path = $uploadImage;
             
             $uploadFolder = 'users/photo';
             $photo = $request->file('photo');
-            $photo_path = $photo->store($uploadFolder,'public');
+            $uploadImage = $uploadService->compressImage($uploadFolder,$photo,50);
+            $photo_path = $uploadImage;
     
             $engineer->id_card_image = Storage::disk('public')->url($id_card_image_path);
             $engineer->id_card_selfie_image = Storage::disk('public')->url($id_card_selfie_path);
@@ -613,11 +618,9 @@ class UserController extends Controller
             $uploadFolder = 'users/photo';
             $photo = $request->file('image');
 
-            $name_file = time().'.'.$photo->getClientOriginalExtension();
-            Image::make($photo)->save(public_path('storage/users/photo/'.$name_file),50,'jpeg');
-            $pathFile = Storage::disk('public')->url($uploadFolder."/".$name_file);
-
-            $user->profile_photo_path = $pathFile;
+            $uploadService = new UploadService();
+            $uploadImage = $uploadService->compressImage($uploadFolder,$photo,50);
+            $user->profile_photo_path = $uploadImage;
             $user->save();                
 
             return response()->json(["message" => "Photo berhasil di ubah"]);
