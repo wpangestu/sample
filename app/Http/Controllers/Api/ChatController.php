@@ -279,8 +279,8 @@ class ChatController extends Controller
                                         ->count();
 
                         $last_chat_data = [
-                            "message" => $chat->message??"",
-                            "media" => $chat->media,
+                            "message" => (isset($chat->media)?"[Photo] ":"").$chat->message??"",
+                            "media" => $chat->media??"",
                             "from" => (int)$chat->from,
                             "is_me" => $user_id==$chat->from?true:false,
                             "created_at" => $chat->created_at
@@ -355,8 +355,8 @@ class ChatController extends Controller
                                     ->where('read',false)
                                     ->count();
                     $chat_data = [
-                        "message" => $chat->message??"",
-                        "media" => $chat->media,
+                        "message" => (isset($chat->media)?"[Photo] ":"").$chat->message??"",
+                        "media" => $chat->media??"",
                         "from" => (int)$chat->from,
                         "is_me" => $user_id==$chat->from?true:false,
                         "created_at" => $chat->created_at
