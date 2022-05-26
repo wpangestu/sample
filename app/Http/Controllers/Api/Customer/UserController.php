@@ -21,13 +21,14 @@ use Illuminate\Http\Request;
 use App\Models\ReviewService;
 use App\Models\CategoryService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -98,7 +99,8 @@ class UserController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -233,7 +235,8 @@ class UserController extends Controller
             }
         
         } catch (\Throwable $th) {
-                return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -266,7 +269,8 @@ class UserController extends Controller
                 return response()->json(["message" => $message], 200);
             }
         } catch (\Throwable $th) {
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -303,8 +307,8 @@ class UserController extends Controller
                 }
             }
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -341,8 +345,8 @@ class UserController extends Controller
                 return response()->json(['message' => $message], $kode);
             }
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -361,15 +365,10 @@ class UserController extends Controller
                 "email" => $user->email
             ];
 
-            // return response()->json($data);
-            // $response->header('Content-Type', 'application/json');
-
-            // return $response;
-
             return response()->json($response);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -398,8 +397,8 @@ class UserController extends Controller
 
             return response()->json(["message" => "Data berhasil di update"]);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -413,8 +412,8 @@ class UserController extends Controller
 
             return response()->json(compact('balance'));
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -440,8 +439,8 @@ class UserController extends Controller
 
             return response()->json($data_arr);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -916,7 +915,8 @@ class UserController extends Controller
             return response()->json($response);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -1080,7 +1080,8 @@ class UserController extends Controller
             return response()->json($response);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -1188,8 +1189,8 @@ class UserController extends Controller
                 return response()->json($response);
             }
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -1204,7 +1205,6 @@ class UserController extends Controller
 
             return response()->json(["message" => "Order canceled"]);
         } catch (\Throwable $th) {
-            //throw $th;
             return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
         }
     }
@@ -1222,11 +1222,10 @@ class UserController extends Controller
                 "email" => $user->email
             ];
 
-            // return response()->json($data);
             return response()->json($response);
         } catch (\Throwable $th) {
-            //throw $th;
-            dd($th->getMessage());
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -1414,7 +1413,8 @@ class UserController extends Controller
             return response()->json(['message' => 'payment-approval store success']);
         } catch (\Throwable $th) {
             //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf Terjadi kesalahan"], 422);
         }
     }
 
@@ -1464,9 +1464,9 @@ class UserController extends Controller
 
             return response()->json(['message' => 'withdraw successfully created']);
         } catch (\Throwable $th) {
-            //throw $th;
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -1504,8 +1504,8 @@ class UserController extends Controller
 
             return response()->json($response);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
@@ -1718,9 +1718,9 @@ class UserController extends Controller
 
             return response()->json(["message" => "Review submit success"]);
         } catch (\Throwable $th) {
-            //throw $th;
             DB::rollBack();
-            return response()->json(["message" => "Terjadi kesalahan " . $th->getMessage()], 422);
+            Log::error($th->getMessage());
+            return response()->json(["message" => "Maaf terjadi kesalahan"], 422);
         }
     }
 
